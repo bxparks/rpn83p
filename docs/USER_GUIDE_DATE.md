@@ -110,7 +110,6 @@ These features were inspired by various datetime libraries:
         - [Setting the Application Timezone](#setting-the-application-timezone)
         - [Get Current DateTime Now](#get-current-datetime-now)
         - [TI-OS Clock](#ti-os-clock)
-- [Timezone Conversions](#timezone-conversions)
 - [Storage Registers](#storage-registers)
 
 ## Calendar, Time, and Timezones
