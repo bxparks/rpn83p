@@ -1827,50 +1827,35 @@ to the `CEPC` menu appears.
 
 #### Epoch Conversions
 
-The Epoch date affects the following menu fuctions:
+The Epoch date affects the `ED` and `ES` functions under:
 
-- ![ROOT > DATE > EpochDays](images/menu/root-date-epochdays.png)
-- ![ROOT > DATE > EpochSeconds](images/menu/root-date-epochseconds.png)
+- ROOT > DATE > D
+- ROOT > DATE > DT
+- ROOT > DATE > DZ
 
-The first 2 involve Epoch days:
-
-- `D>DY`
-    - calculates the `epochdays` representation of a Date object
-- `DY>D`
-    - converts the `epochdays` to a Date object
-
-The next 3 involve Epoch seconds:
-
-- `Dx>S`
-    - calculates the `epochseconds` representation of a ZonedDateTime
-- `S>DZ`
-    - converts the `epochseconds` to the ZonedDateTime using the
-      currently selected Application TimeZone (see `TZ` and `TZ?` below)
-- `S>UT`
-    - same as `S>DZ` except that the timezone of the resulting ZonedDateTime is
-      always UTC+00:00.
-
-For example, let's calculate the epoch seconds of `2024-03-14 15:36:01-07:00`
+For example, let's calculate the epochseconds of `2024-03-14 15:36:01-07:00`
 using 2 different Epochs:
 
 - the Unix epoch date of 1970-01-01 UTC, and
 - the NTP epoch date of 1900-01-01 UTC
 
-The example begins with the `MATH` (Home) button to start at a known menu
-location, but if you are already within the DATE menu folder, then you can skip
-that step:
-
 | **Keys**                          | **MODE `{..}`**                                | **MODE `".."`**   |
 | -----------                       | ---------------------                          | ----------------- |
-| `MATH` `UP` `DATE` `DOWN` `DOWN`  | ![](images/date/epch/epochseconds-raw-1.png)   | ![](images/date/epch/epochseconds-str-1.png) |
-| `EPCH` `UNIX`                     | ![](images/date/epch/epochseconds-raw-2.png)   | ![](images/date/epch/epochseconds-str-2.png) |
-| `ON/EXIT` `UP`                    | ![](images/date/epch/epochseconds-raw-3.png)   | ![](images/date/epch/epochseconds-str-3.png) |
-| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/epch/epochseconds-raw-4.png)   | ![](images/date/epch/epochseconds-str-4.png) |
-| `D*>S`                            | ![](images/date/epch/epochseconds-raw-5.png)   | ![](images/date/epch/epochseconds-str-5.png) |
-| `DOWN` `EPCH` `NTP`               | ![](images/date/epch/epochseconds-raw-6.png)   | ![](images/date/epch/epochseconds-str-6.png) |
-| `ON/EXIT` `UP`                    | ![](images/date/epch/epochseconds-raw-7.png)   | ![](images/date/epch/epochseconds-str-7.png) |
-| `2ND ANS` (LASTX)                 | ![](images/date/epch/epochseconds-raw-8.png)   | ![](images/date/epch/epochseconds-str-8.png) |
-| `D*>S`                            | ![](images/date/epch/epochseconds-raw-9.png)   | ![](images/date/epch/epochseconds-str-9.png) |
+| `MATH` `Up` `DATE` `Down`         | ![](images/date/epch/epochseconds-raw-01.png)  | ![](images/date/epch/epochseconds-str-01.png) |
+| `EPCH` `UNIX`                     | ![](images/date/epch/epochseconds-raw-02.png)  | ![](images/date/epch/epochseconds-str-02.png) |
+| `ON/EXIT` `Up`                    | ![](images/date/epch/epochseconds-raw-03.png)  | ![](images/date/epch/epochseconds-str-03.png) |
+| `DZ`                              | ![](images/date/epch/epochseconds-raw-04.png)  | ![](images/date/epch/epochseconds-str-04.png) |
+| `DZ{2024,3,14,15,36,1,-7,0}`      | ![](images/date/epch/epochseconds-raw-05.png)  | ![](images/date/epch/epochseconds-str-05.png) |
+| `>ES`                             | ![](images/date/epch/epochseconds-raw-06.png)  | ![](images/date/epch/epochseconds-str-06.png) |
+| `ON/EXIT` `Down` `EPCH`           | ![](images/date/epch/epochseconds-raw-07.png)  | ![](images/date/epch/epochseconds-str-07.png) |
+| `NTP`                             | ![](images/date/epch/epochseconds-raw-08.png)  | ![](images/date/epch/epochseconds-str-08.png) |
+| `ON/EXIT` `Up`                    | ![](images/date/epch/epochseconds-raw-09.png)  | ![](images/date/epch/epochseconds-str-09.png) |
+| `DZ`                              | ![](images/date/epch/epochseconds-raw-10.png)  | ![](images/date/epch/epochseconds-str-10.png) |
+| `2ND ANS` (LASTX)                 | ![](images/date/epch/epochseconds-raw-11.png)  | ![](images/date/epch/epochseconds-str-11.png) |
+| `>ES`                             | ![](images/date/epch/epochseconds-raw-12.png)  | ![](images/date/epch/epochseconds-str-12.png) |
+
+The epochseconds is 1710455761 using the Unix epoch, and 3919444561 using the
+NTP epoch.
 
 #### Epoch Seconds Range
 
