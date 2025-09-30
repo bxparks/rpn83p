@@ -24,8 +24,9 @@
           timezone is needed in a calculation
     - HMS functions
         - Add `HMS+` and `HMS-` menu functions.
-        - Add normalization to `>HMS` conversion function to prevent bug that
-          caused `[1.32] [1.32] [HMS+]` to return `3.0360` instead of `3.04`.
+        - **Bug Fix**: Add normalization to `>HMS` conversion function to
+          prevent bug that caused `[1.32] [1.32] [HMS+]` to return `3.0360`
+          instead of `3.04`.
         - Validate `mm` and `ss` fields of `hh.mmss` and throw `Err:Invalid` if
           greater than than 60.
     - UNIT menu
@@ -38,7 +39,7 @@
         - Support misc Unit Functions (UFCN)
             - UVAL: return display value without units
             - UBAS: convert to its "base unit"
-        - Increase number of supported units from 30 to 161.
+        - Increase number of supported units from 30 to 162.
             - Support *all* units in the HP-19BII and the TI-85.
         - Reorganize UNIT menus across 13 sub MenuFolders: UFCN, LENG, AREA,
           VOL, TEMP, MASS, FORC, PRES, ENER, TIME, SPD, PWR, FUEL.
@@ -54,11 +55,11 @@
           self-documentation
         - no functional change
     - RPN Stack
-        - Fix incorrect stack lift behavior for functions that produce a value
-          without consuming the X register (e.g. PI, E, MEAN). Previously, these
-          functions would ignore the 'disable stack lift' setting. Now, they
-          will correctly interpret that flag and overwrite the existing X
-          register.
+        - **Bug Fix**: Fix incorrect stack lift behavior for functions that
+          produce a value without consuming the X register (e.g. PI, E, MEAN).
+          Previously, these functions would ignore the 'disable stack lift'
+          setting. Now, they will correctly interpret that flag and overwrite
+          the existing X register.
         - Handle an empty string input buffer correctly for all commands
           including the 'disable stack lift' behavior.
         - Avoid terminating the input buffer when a command with argument is
