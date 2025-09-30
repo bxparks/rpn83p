@@ -1206,7 +1206,7 @@ There is a 9-hour difference from UTC+01:00 and UTC-08:00.
     - `ED>`: epoch days to ZonedDateTime (assuming UTC)
     - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
     - `ES>`: epoch seconds to ZonedDateTime (assuming UTC)
-    - `ES>@`: epoch seconds to ZonedDateTime of the current application timezone
+    - `ES>@`: epoch seconds to ZonedDateTime of the current Application Timezone
       given by the `TZ` function in [`CLK`](#real-time-clock-clk)
     - `LEAP`: determine if the year component is a leap year
     - `DOW`: calculate the DayOfWeek of given ZonedZonedDateTime
@@ -1272,8 +1272,9 @@ For example, if we try to enter the invalid ZonedDateTime `2024-03-14
 
 A ZonedDateTime object support the same `>ED`, `>ED`, `>ES`, and `ES>` functions
 as the Date and DateTime objects. It also supports an extra `ES>@` function
-which converts an EpochSecond to a ZonedDateTime using the Application TimeZone,
-which is configured using the `TZ` menu function under the `CLK` folder.
+which converts an EpochSecond to a ZonedDateTime using the current application
+timeZone, which is configured using the `ATZ` menu function under the `CLK`
+folder.
 
 For example, let's calculate those quantities for 2024-03-14 15:36:01-07:00:
 
@@ -1295,8 +1296,8 @@ Notes:
 - The `ES>` function always produces a ZonedDateTime object using the UTC
   timezone.
 - The `ES>@` function converts EpochSeconds to the original `2024-03-14
-  15:36:01-07:00` because I had set my Application Timezone to `UTC-07:00` using
-  the `TZ` function of the `CLK` menu folder.
+  15:36:01-07:00` because I had set my application Timezone to `UTC-07:00` using
+  the `ATZ` function of the `CLK` menu folder.
 
 Similar to the Date and DateTime objects, the ZonedDateTime object supports the
 following functions:
@@ -1876,11 +1877,11 @@ The menu items which related to the RTC are under the `CLK` menu folder:
     - `NOWD`: get the current hardware clock as a Date
     - `NOWT`: get the current hardware clock as a Time
     - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
-    Application timezone
+    current Application Timezone
     - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
     timezone
-    - `TZ`: set the Application timezone
-    - `TZ?`: get the current Application timezone
+    - `ATZ`: set the Application Timezone
+    - `ATZ?`: get the Application Timezone
     - `CTZ`: set the hardware clock timezone
     - `CTZ?`: get the hardware clock timezone
     - `SETC`: set the datetime of the hardware clock
@@ -1888,7 +1889,7 @@ The menu items which related to the RTC are under the `CLK` menu folder:
 Before we can use retrieve the current date and time from the hardware
 clock (RTC) using the various `NOW` and `NWxx` menu commands, we must configure
 the hardware clock using the `CTZ` and `SETC` commands, and we must configure
-the Application Timezone using the `TZ` command.
+the Application Timezone using the `ATZ` command.
 
 #### Setting the Clock Timezone
 
@@ -1952,21 +1953,25 @@ converted into an epochseconds before being handed over to the hardware clock.
 #### Setting the Application Timezone
 
 In addition to the timezone of the RTC, RPN83P also allows the **Application**
-Timezone to be set and retrieved using the `TZ` and `TZ?` commands. To set the
+Timezone to be set and retrieved using the `ATZ` and `ATZ?` commands. To set the
 Application Timezone to UTC-07:00 for example, use the following:
 
 | **Keys**  | **MODE `{..}`**                                       | **MODE `".."`**   |
 | ----------| ---------------------                                 | ----------------- |
 | `TZ{-7,0}`| ![](images/date/clk/set-app-timezone-pdt-raw-1.png)   | ![](images/date/clk/set-app-timezone-pdt-str-1.png) |
-| `TZ`      | ![](images/date/clk/set-app-timezone-pdt-raw-2.png)   | ![](images/date/clk/set-app-timezone-pdt-str-2.png) |
-| `TZ?`     | ![](images/date/clk/set-app-timezone-pdt-raw-3.png)   | ![](images/date/clk/set-app-timezone-pdt-str-3.png) |
+| `ATZ`     | ![](images/date/clk/set-app-timezone-pdt-raw-2.png)   | ![](images/date/clk/set-app-timezone-pdt-str-2.png) |
+| `ATZ?`    | ![](images/date/clk/set-app-timezone-pdt-raw-3.png)   | ![](images/date/clk/set-app-timezone-pdt-str-3.png) |
 
 Currently, 4 commands are affected by the Application Timezone:
 
-- `DATE > CLK > NOWD`: Get NOW as a Date (using the current App Timezone),
-- `DATE > CLK > NWDT`: Get NOW as a DateTime (using the current App Timezone),
-- `DATE > CLK > NWDZ`: Get NOW as a ZonedDateTime (using the current App Timezone),
-- `DATE > DZ > ES>@`: Convert EpochSeconds to ZonedDateTime (using the current App Timezone).
+- `DATE > CLK > NOWD`: Get NOW as a Date (using the current application
+  timezone),
+- `DATE > CLK > NWDT`: Get NOW as a DateTime (using the current application
+  timezone),
+- `DATE > CLK > NWDZ`: Get NOW as a ZonedDateTime (using the current application
+  timezone),
+- `DATE > DZ > ES>@`: Convert EpochSeconds to ZonedDateTime (using the current
+  Application Timezone)
 
 #### Get Current DateTime Now
 

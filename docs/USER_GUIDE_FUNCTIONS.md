@@ -695,8 +695,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         Application timezone
         - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
         timezone
-        - `TZ`: set the Application timezone
-        - `TZ?`: get the current Application timezone
+        - `ATZ`: set the application timezone
+        - `ATZ?`: get the application timezone
         - `CTZ`: set the hardware clock timezone
         - `CTZ?`: get the hardware clock timezone
         - `SETC`: set the datetime of the hardware clock
