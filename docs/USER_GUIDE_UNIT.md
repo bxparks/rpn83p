@@ -114,3 +114,21 @@ calculators.
 | `AU`          | `AU`      |      |      |               |
 | `light year`  | `ly`      |      | TI   |               |
 | `parsec`      | `pc`      |      |      |               |
+
+### Area (AREA)
+
+| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
+| ------------- | --------- |------|------| ------------  |
+| `mm²`         | `mm²`     |      |      |               |
+| `cm²`         | `cm²`     |      |      |               |
+| `m²`          | `m²`      |      |      |               |
+| `km²`         | `km²`     |      |      |               |
+| `inch²`       | `in²`     |      |      |               |
+| `foot²`       | `ft²`     |      |      |               |
+| `yard²`       | `yd²`     |      |      |               |
+| `mile²`       | `mi²`     |      |      |               |
+| `nmi²`        | `nmi²`    |      |      |               |
+| `acre`        | `acre`    |      |      | 66ft\*660ft   |
+| `hectare`     | `ha`      |      |      | 100m\*100m     |
+| `usftball`    | `usfb`    |      |      | US NFL football field, 100yd\*160ft |
+| `caftball`    | `cafb`    |      |      | CA CFL football field, 110yd\*65yd |
