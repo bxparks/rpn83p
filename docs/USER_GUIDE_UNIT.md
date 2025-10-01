@@ -11,6 +11,11 @@ It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
 ## Table of Contents
 
+- [UNIT Menu](#unit-menu)
+- [UNIT Entry and Conversions](#unit-entry-and-conversions)
+- [UNIT Arithmetic](#unit-arthimetic)
+- [Supported Units](#supported-units)
+
 ## UNIT Menu
 
 - ![ROOT > UNIT](images/menu/root-unit.png) (ROOT > UNIT)
