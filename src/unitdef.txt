@@ -83,7 +83,7 @@ Units [
   Unit Parsec pc Length 30856775814913673 # 648000/pi AU
 
   # Nautical: https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Fanthom fanthom Length 1.8288 # 6 feet
+  Unit Fathom fathom Length 1.8288 # 6 feet
   Unit Cable cable Length 219.456 # 3429/15625 km by defn
   Unit NauticalMile nmi Length 1852 # by defn
 

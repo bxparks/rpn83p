@@ -76,7 +76,7 @@ unitTypeFuelId equ 12
 ;-----------------------------------------------------------------------------
 
 unitTypeNamesCount equ 163 ; number of unit names
-unitTypeNamesPoolSize equ 1355 ; size of unit type names string pool
+unitTypeNamesPoolSize equ 1354 ; size of unit type names string pool
 
 unitTypeNullTypeName:
     .db "nulltype", 0
@@ -197,9 +197,9 @@ unitParsecId equ 16
     .dw unitParsecName ; name
     .db unitTypeLengthId ; unitTypeId
     .db $00, $90, $30, $85, $67, $75, $81, $49, $13 ; scale=30856775814913673
-unitFanthomInfo:
-unitFanthomId equ 17
-    .dw unitFanthomName ; name
+unitFathomInfo:
+unitFathomId equ 17
+    .dw unitFathomName ; name
     .db unitTypeLengthId ; unitTypeId
     .db $00, $80, $18, $28, $80, $00, $00, $00, $00 ; scale=1.8288
 unitCableInfo:
@@ -933,7 +933,7 @@ unitLitersPerHundredKiloMetersId equ 162
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 163 ; number of unit names
-unitNamesPoolSize equ 1355 ; size of unit names string pool
+unitNamesPoolSize equ 1354 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -969,8 +969,8 @@ unitLightYearName:
     .db "ly", 0
 unitParsecName:
     .db "pc", 0
-unitFanthomName:
-    .db "fanthom", 0
+unitFathomName:
+    .db "fathom", 0
 unitCableName:
     .db "cable", 0
 unitNauticalMileName:

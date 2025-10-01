@@ -178,8 +178,8 @@ mUnitLeagueHandler:
 ; UNIT > LENG > NAUT > Row 1
 ;-----------------------------------------------------------------------------
 
-mUnitFanthomHandler:
-    ld a, unitFanthomId
+mUnitFathomHandler:
+    ld a, unitFathomId
     jp commonUnitHandler
 
 mUnitCableHandler:

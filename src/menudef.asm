@@ -2343,7 +2343,7 @@ mNauticalId equ 248
     .dw mUnitLenghId ; parentId
     .dw mNauticalName ; name
     .db 1 ; numRows
-    .dw mUnitFanthomId ; rowBeginId or altName
+    .dw mUnitFathomId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mAstronomy:
@@ -2468,14 +2468,14 @@ mBlank261Id equ 261
     .dw 0 ; nameSelector
 ; MenuGroup NAUT: children
 ; MenuGroup NAUT: children: row 0
-mUnitFanthom:
-mUnitFanthomId equ 262
-    .dw mUnitFanthomId ; id
+mUnitFathom:
+mUnitFathomId equ 262
+    .dw mUnitFathomId ; id
     .dw mNauticalId ; parentId
-    .dw mUnitFanthomName ; name
+    .dw mUnitFathomName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitFanthomHandler ; handler (to be implemented)
+    .dw mUnitFathomHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitCable:
 mUnitCableId equ 263
@@ -5828,7 +5828,7 @@ mUnitSurveyMileName:
     .db "svmi", 0
 mUnitLeagueName:
     .db "leag", 0
-mUnitFanthomName:
+mUnitFathomName:
     .db "fthm", 0
 mUnitCableName:
     .db "cabl", 0
