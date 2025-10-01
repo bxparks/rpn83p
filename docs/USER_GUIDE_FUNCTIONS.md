@@ -571,13 +571,13 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 - ![ROOT > DATE](images/menu/root-date.png) (ROOT > DATE)
     - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
     - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
-    - `D`: `Date` folder
-    - `T`: `Time` folder
-    - `DT`: `DateTime` folder
-    - `TZ`: `TimeZone` folder
-    - `DZ`: `ZonedDateTime` folder
-    - `DR`: `Duration` folder
-    - `DW`: `DayOfWeek` folder
+    - `D`: Date folder
+    - `T`: Time folder
+    - `DT`: DateTime folder
+    - `TZ`: TimeZone folder
+    - `DZ`: ZonedDateTime folder
+    - `DR`: Duration folder
+    - `DW`: DayOfWeek folder
     - `EPCH`: Epoch folder
     - `CLK`: Clock folder
     - ![ROOT > DATE > D](images/menu/root-date-d.png) (ROOT > DATE > D)
@@ -585,7 +585,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
         - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
         - ![ROOT > DATE > Date > Row4](images/menu/root-date-d-4.png)
-        - `D{}`: insert initialization string for `Date` object
+        - `D{}`: insert initialization string for Date object
         - `>ED`: convert Date to epoch days (assuming UTC)
         - `ED>`: epoch days to Date (assuming UTC)
         - `>ES`: convert Date to epoch seconds (assuming UTC)
@@ -603,7 +603,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
         - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
         - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
-        - `T{}`: insert initialization string for `Time` object
+        - `T{}`: insert initialization string for Time object
         - `>S`: convert Time to seconds after midnight
         - `S>`: convert seconds after midnight to Time
         - `.HR`: extract `hour` component of Time
@@ -613,7 +613,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > DATE > DateTime > Row1](images/menu/root-date-dt-1.png)
         - ![ROOT > DATE > DateTime > Row2](images/menu/root-date-dt-2.png)
         - ![ROOT > DATE > DateTime > Row3](images/menu/root-date-dt-3.png)
-        - `DT{}`: insert initialization string for `DateTime` object
+        - `DT{}`: insert initialization string for DateTime object
         - `>ED`: convert DateTime to epoch days (assuming UTC)
         - `ED>`: epoch days to DateTime (assuming UTC)
         - `>ES`: convert DateTime to epoch seconds (assuming UTC)
@@ -630,7 +630,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
         - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
         - ![ROOT > DATE > TimeZone > Row2](images/menu/root-date-tz-2.png)
-        - `TZ{}`: insert initialization string for `TimeZone` object
+        - `TZ{}`: insert initialization string for TimeZone object
         - `>HR`: convert TimeZone to floating point hours
         - `HR>`: convert floating point hours into TimeZone
         - `.HR`: extract `hour` component of TimeZone
@@ -640,7 +640,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - ![ROOT > DATE > ZonedDateTime > Row2](images/menu/root-date-dz-2.png)
         - ![ROOT > DATE > ZonedDateTime > Row3](images/menu/root-date-dz-3.png)
         - ![ROOT > DATE > ZonedDateTime > Row4](images/menu/root-date-dz-4.png)
-        - `DZ{}`: insert initialization string for `ZonedDateTime` object
+        - `DZ{}`: insert initialization string for ZonedDateTime object
         - `>ED`: convert ZonedDateTime to epoch days (assuming UTC)
         - `ED>`: epoch days to ZonedDateTime (assuming UTC)
         - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
@@ -661,7 +661,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
     - ![ROOT > DATE > DR](images/menu/root-date-dr.png) (ROOT > DATE > DR)
         - ![ROOT > DATE > Duration > Row1](images/menu/root-date-dr-1.png)
         - ![ROOT > DATE > Duration > Row2](images/menu/root-date-dr-2.png)
-        - `DR{}`: insert initialization string for `Duration` object
+        - `DR{}`: insert initialization string for Duration object
         - `DAY>`: convert days into Duration
         - `HR>`: convert hours into Duration
         - `MIN>`: convert minutes into Duration
@@ -673,7 +673,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `.SEC`: extract `second` component of Duration
     - ![ROOT > DATE > DW](images/menu/root-date-dw.png) (ROOT > DATE > DW)
         - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-dw-1.png)
-        - `DW{}`: insert initialization string for `DayOfWeek` object
+        - `DW{}`: insert initialization string for DayOfWeek object
         - `>ISO`: convert DayOfWeek into ISO day of week number (Mon=1,Sun=7)
         - `ISO>`: convert ISO day of week number into DayOfWeek (Mon=1,Sun=7)
         - `>UNX`: convert DayOfWeek into Unix day of week number (Sun=0,Sat=6)
