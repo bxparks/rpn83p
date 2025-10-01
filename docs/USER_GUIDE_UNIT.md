@@ -112,7 +112,7 @@ the following:
 | **`LENG > NAUT`**    |           |      |      |               |
 | `fathom`      | `fath`    | HP   | TI   | 6 feet        |
 | `cable`       | `cabl`    |      |      | 3429/15625 km |
-| `nmi`         | `nmi`     | HP   | TI   | 1852 m        |
+| `nmi`         | `nmi`     | HP   | TI   | 1852 m (exact) by defn |
 | **`LENG > ASTR`**    |           |      |      |               |
 | `light sec`   | `lsec`    |      |      |               |
 | `AU`          | `AU`      |      |      |               |
@@ -174,9 +174,9 @@ the following:
 | `imp cup`     | `cup`     |      |      | 1/2 imp pint     |
 | `imp pint`    | `pint`    |      |      | 1/2 imp quart    |
 | `imp quart`   | `qt`      |      |      | 1/4 imp gal      |
-| `imp gal`     | `gal`     | HP   | TI   | 4.54609 liter by defn   |
+| `imp gal`     | `gal`     | HP   | TI   | 4.54609 liter (exact) by defn   |
 | **`VOL > DRY`**     |           |      |      |               |
-| `dry pt`      | `drpt`    |      |      | 33.6003125 in^3 by defn |
+| `dry pt`      | `drpt`    |      |      | 33.6003125 in^3 (exact) by defn |
 | `dry qt`      | `drqt`    |      |      | 2 dry pint      |
 | `dry gal`     | `dgal`    | HP   |      | 4 dry quart     |
 | `peck`        | `peck`    | HP   |      | 2 dry gallon    |
@@ -197,3 +197,34 @@ the following:
 | `°F`          | `°F`      | HP   | TI   | Fahrenheit = Celsius * 9 / 5 + 32 |
 | `°R`          | `°R`      | HP   | TI   | Rankine = Kelvin * 9 / 5 |
 | `°K`          | `°K`      | HP   | TI   | Kelvin, degree symbol used for UI consistency |
+
+### Mass (MASS)
+
+| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment** |
+| ------------- | --------- |------|------| ----------- |
+| **`MASS`**    |           |      |      |             |
+| `μg`          | `μg`      |      |      | 1e-6 g      |
+| `mg`          | `mg`      | HP   |      |             |
+| `g`           | `g`       | HP   | TI   |             |
+| `kg`          | `kg`      | HP   | TI   |             |
+| `met ton`     | `t`       | HP   | TI   | metric ton, also known as tonne, 1000 kg  |
+| `amu`         | `amu`     |      | TI   | atomic mass unit, also known as Dalton, 1.66053906892e-27 kg (measured) |
+| **`MASS > US`**    |           |      |      |             |
+| `grain`       | `grai`    | HP   |      | 1/7000 lb |
+| `dram`        | `dram`    | HP   |      | 1/16 oz |
+| `ounce`       | `oz`      | HP   |      | 1/16 lb |
+| `pound`       | `lb`      | HP   | TI   | 0.45359237 kg (exact) by defn |
+| `slug`        | `slug`    | HP   | TI   | 14.593902937207 kg (approx) |
+| `cwt`         | `cwt`     | HP   |      | hundredweight, 100 lbs |
+| `short ton`   | `ston`    | HP   | TI   | short ton, 200 cwt, 2000 lbs |
+| **`MASS > IMP`**    |           |      |      |             |
+| `pound`       | `lb`      | HP   | TI   | 0.45359237 kg (exact) by defn |
+| `stone`       | `stne`    | HP   |      | 14 lbs |
+| `quarter`     | `qrtr`    |      |      | 2 stones |
+| `long cwt`    | `lcwt`    | HP   |      | long hundredweight, 8 stones, 112 lbs |
+| `long ton`    | `lton`    | HP   |      | long ton, 200 lcwt, 2240 lbs |
+| **`MASS > TROY`**    |           |      |      |             |
+| `grain`       | `grai`    |      |      | 1/7000 lb |
+| `troy dwt`    | `dwt`     |      |      | troy pennyweight, 24 grains |
+| `troy ozt`    | `ozt`     | HP   |      | troy ounce, 20 troy pennyweight |
+| `troy lbt`    | `lbt`     |      |      | troy pound, 12 troy oz |
