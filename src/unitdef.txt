@@ -68,11 +68,18 @@ Units [
   Unit KiloMeter km Length 1e3
 
   # https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Mil mil Length 0.0254e-3
+  Unit Mil mil Length 0.0254e-3 # 1/1000 inch
   Unit Inch inch Length 0.0254 # by defn
-  Unit Foot foot Length 0.3048
+  Unit Foot foot Length 0.3048 # 12 inch
   Unit Yard yard Length 0.9144 # 3 feet
-  Unit Mile mile Length 1609.344
+  Unit Mile mile Length 1609.344 # 5280 ft, 1760 yd
+
+  # Typography
+  # https://en.wikipedia.org/wiki/Point_(typography)
+  # https://en.wikipedia.org/wiki/United_States_customary_units
+  Unit Twip twip Length 17.638888888889e-6 # 1/20 pt
+  Unit Point point Length 0.35277777777778e-3 # 1/72 inch by defn
+  Unit Pica pica Length 4.2333333333333e-3 # 12 point
 
   # Astronomical
   # https://en.wikipedia.org/wiki/Light-second

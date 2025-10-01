@@ -143,6 +143,22 @@ mUnitMileHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > LENG > TYPO > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitTwipHandler:
+    ld a, unitTwipId
+    jp commonUnitHandler
+
+mUnitPointHandler:
+    ld a, unitPointId
+    jp commonUnitHandler
+
+mUnitPicaHandler:
+    ld a, unitPicaId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ; UNIT > LENG > SURV > Row 1
 ;-----------------------------------------------------------------------------
 

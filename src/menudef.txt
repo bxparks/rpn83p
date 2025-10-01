@@ -375,7 +375,7 @@ MenuGroup root mRoot [
             MenuItem UBAS mUnitBase # convert to denominate in base unit
           ]
         ]
-        MenuGroup LENG mUnitLengh [
+        MenuGroup LENG mUnitLength [
           MenuRow [
             MenuItem ferm mUnitFermi
             MenuItem angs mUnitAngstrom
@@ -397,6 +397,13 @@ MenuGroup root mRoot [
           ]
           # More obscure length units in subfolders here
           MenuRow [
+            MenuGroup TYPO mTypography [
+              MenuRow [
+                MenuItem twip mUnitTwip
+                MenuItem pt mUnitPoint
+                MenuItem pica mUnitPica
+              ]
+            ]
             MenuGroup SURV mSurvey [
               MenuRow [
                 MenuItem svft mUnitSurveyFoot
