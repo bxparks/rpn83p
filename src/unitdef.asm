@@ -76,7 +76,7 @@ unitTypeFuelId equ 12
 ;-----------------------------------------------------------------------------
 
 unitTypeNamesCount equ 170 ; number of unit names
-unitTypeNamesPoolSize equ 1449 ; size of unit type names string pool
+unitTypeNamesPoolSize equ 1674 ; size of unit type names string pool
 
 unitTypeNullTypeName:
     .db "nulltype", 0
@@ -968,7 +968,7 @@ unitLitersPerHundredKiloMetersId equ 169
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 170 ; number of unit names
-unitNamesPoolSize equ 1449 ; size of unit names string pool
+unitNamesPoolSize equ 1674 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -1085,15 +1085,15 @@ unitCuMileName:
 unitCuNauticalMileName:
     .db 'n', 'm', 'i', Scube, 0
 unitMicroLiterName:
-    .db Smu, 'L', 0
+    .db Smu, 'l', 'i', 't', 'e', 'r', 0
 unitMilliLiterName:
-    .db "mL", 0
+    .db "milliliter", 0
 unitLiterName:
-    .db "L", 0
+    .db "liter", 0
 unitMetricTeaspoonName:
-    .db 'm', 'e', 't', Sspace, 't', 's', 'p', 0
+    .db 'm', 'e', 't', 'r', 'i', 'c', Sspace, 't', 's', 'p', 0
 unitMetricTablespoonName:
-    .db 'm', 'e', 't', Sspace, 't', 'b', 's', 'p', 0
+    .db 'm', 'e', 't', 'r', 'i', 'c', Sspace, 't', 'b', 's', 'p', 0
 unitTeaspoonName:
     .db "tsp", 0
 unitTablespoonName:
@@ -1125,23 +1125,23 @@ unitImpPintName:
 unitImpQuartName:
     .db 'i', 'm', 'p', Sspace, 'q', 'u', 'a', 'r', 't', 0
 unitImpGallonName:
-    .db 'i', 'm', 'p', Sspace, 'g', 'a', 'l', 0
+    .db 'i', 'm', 'p', Sspace, 'g', 'a', 'l', 'l', 'o', 'n', 0
 unitDryPintName:
-    .db 'd', 'r', 'y', Sspace, 'p', 't', 0
+    .db 'd', 'r', 'y', Sspace, 'p', 'i', 'n', 't', 0
 unitDryQuartName:
-    .db 'd', 'r', 'y', Sspace, 'q', 't', 0
+    .db 'd', 'r', 'y', Sspace, 'q', 'u', 'a', 'r', 't', 0
 unitDryGallonName:
-    .db 'd', 'r', 'y', Sspace, 'g', 'a', 'l', 0
+    .db 'd', 'r', 'y', Sspace, 'g', 'a', 'l', 'l', 'o', 'n', 0
 unitPeckName:
     .db "peck", 0
 unitBushelName:
     .db "bushel", 0
 unitDryBarrelName:
-    .db 'd', 'r', 'y', Sspace, 'b', 'b', 'l', 0
+    .db 'd', 'r', 'y', Sspace, 'b', 'a', 'r', 'r', 'e', 'l', 0
 unitBoardFootName:
     .db 'b', 'o', 'a', 'r', 'd', SdotIcon, 'f', 'o', 'o', 't', 0
 unitOilBarrelName:
-    .db "barrel", 0
+    .db 'o', 'i', 'l', Sspace, 'b', 'a', 'r', 'r', 'e', 'l', 0
 unitOlympicPoolName:
     .db 'o', 'l', 'y', 'm', Sspace, 'p', 'o', 'o', 'l', 0
 unitAcreFootName:
@@ -1149,15 +1149,15 @@ unitAcreFootName:
 unitAtomicMassUnitName:
     .db "amu", 0
 unitMicroGramName:
-    .db Smu, 'g', 0
+    .db Smu, 'g', 'r', 'a', 'm', 0
 unitMilliGramName:
-    .db "mg", 0
+    .db "milligram", 0
 unitGramName:
-    .db "g", 0
+    .db "gram", 0
 unitKiloGramName:
-    .db "kg", 0
+    .db "kilogram", 0
 unitMetricTonName:
-    .db 'm', 'e', 't', Sspace, 't', 'o', 'n', 0
+    .db 'm', 'e', 't', 'r', 'i', 'c', Sspace, 't', 'o', 'n', 0
 unitGrainName:
     .db "grain", 0
 unitDramName:
@@ -1169,7 +1169,7 @@ unitPoundName:
 unitSlugName:
     .db "slug", 0
 unitHundredWeightName:
-    .db "cwt", 0
+    .db 's', 'h', 'o', 'r', 't', Sspace, 'c', 'w', 't', 0
 unitShortTonName:
     .db 's', 'h', 'o', 'r', 't', Sspace, 't', 'o', 'n', 0
 unitStoneName:
@@ -1183,9 +1183,9 @@ unitLongTonName:
 unitTroyPennyWeightName:
     .db 't', 'r', 'o', 'y', Sspace, 'd', 'w', 't', 0
 unitTroyOunceName:
-    .db 't', 'r', 'o', 'y', Sspace, 'o', 'z', 't', 0
+    .db 't', 'r', 'o', 'y', Sspace, 'o', 'u', 'n', 'c', 'e', 0
 unitTroyPoundName:
-    .db 't', 'r', 'o', 'y', Sspace, 'l', 'b', 't', 0
+    .db 't', 'r', 'o', 'y', Sspace, 'p', 'o', 'u', 'n', 'd', 0
 unitCelsiusName:
     .db Stemp, 'C', 0
 unitFahrenheitName:
@@ -1199,29 +1199,29 @@ unitDyneName:
 unitNewtonName:
     .db "newton", 0
 unitKilogramForceName:
-    .db "kgf", 0
+    .db 'k', 'g', Sspace, 'f', 'o', 'r', 'c', 'e', 0
 unitMetricTonForceName:
-    .db "tonf", 0
+    .db 't', 'o', 'n', Sspace, 'f', 'o', 'r', 'c', 'e', 0
 unitPoundalName:
     .db "poundal", 0
 unitPoundForceName:
-    .db "lbf", 0
+    .db 'l', 'b', Sspace, 'f', 'o', 'r', 'c', 'e', 0
 unitShortTonForceName:
-    .db "stonf", 0
+    .db 's', 't', 'o', 'n', Sspace, 'f', 'o', 'r', 'c', 'e', 0
 unitLongTonForceName:
-    .db "ltonf", 0
+    .db 'l', 't', 'o', 'n', Sspace, 'f', 'o', 'r', 'c', 'e', 0
 unitMilliPascalName:
-    .db "mPa", 0
+    .db "mpascal", 0
 unitPascalName:
-    .db "Pa", 0
+    .db "pascal", 0
 unitHectoPascalName:
-    .db "hPa", 0
+    .db "hpascal", 0
 unitKiloPascalName:
-    .db "kPa", 0
+    .db "kpascal", 0
 unitMilliBarName:
-    .db "mbar", 0
+    .db "millibar", 0
 unitDeciBarName:
-    .db "dbar", 0
+    .db "decibar", 0
 unitBarName:
     .db "bar", 0
 unitPoundSquareInchName:
@@ -1243,15 +1243,15 @@ unitElectronVoltName:
 unitErgName:
     .db "erg", 0
 unitJouleName:
-    .db "J", 0
+    .db "joule", 0
 unitWattHourName:
-    .db "Wh", 0
+    .db 'w', 'a', 't', 't', SdotIcon, 'h', 0
 unitKiloWattHourName:
-    .db "kWh", 0
+    .db 'k', 'w', 'a', 't', 't', SdotIcon, 'h', 0
 unitCalorieName:
-    .db "cal", 0
+    .db "calorie", 0
 unitKiloCalorieName:
-    .db "kCal", 0
+    .db "kcalorie", 0
 unitFootPoundEnergyName:
     .db 'f', 't', SdotIcon, 'l', 'b', 'f', 0
 unitBritishThermalUnitName:
@@ -1263,19 +1263,19 @@ unitTonTNTName:
 unitLiterAtmosphereName:
     .db 'l', 'i', 't', 'e', 'r', SdotIcon, 'a', 't', 'm', 0
 unitWattName:
-    .db "W", 0
+    .db "watt", 0
 unitKiloWattName:
-    .db "kW", 0
+    .db "kilowatt", 0
 unitFootPoundEnergyPerSecondName:
     .db 'f', 't', SdotIcon, 'l', 'b', 'f', Sslash, 's', 0
 unitCaloriePerSecondName:
     .db 'c', 'a', 'l', Sslash, 's', 0
 unitBtuPerHourName:
-    .db 'B', 't', 'u', Sslash, 'h', 'r', 0
+    .db 'B', 't', 'u', Sslash, 'h', 0
 unitBtuPerMinuteName:
     .db 'B', 't', 'u', Sslash, 'm', 'i', 'n', 0
 unitHorsepowerName:
-    .db "hp", 0
+    .db "horsepower", 0
 unitNanoSecondName:
     .db "ns", 0
 unitMicroSecondName:
@@ -1297,11 +1297,11 @@ unitJulianYearName:
 unitMeterPerSecondName:
     .db 'm', Sslash, 's', 0
 unitFootPerSecondName:
-    .db 'f', 't', Sslash, 's', 0
+    .db 'f', 'o', 'o', 't', Sslash, 's', 0
 unitKiloMeterPerHourName:
-    .db 'k', 'm', Sslash, 'h', 'r', 0
+    .db 'k', 'm', Sslash, 'h', 0
 unitMilePerHourName:
-    .db 'm', 'i', Sslash, 'h', 'r', 0
+    .db 'm', 'i', 'l', 'e', Sslash, 'h', 0
 unitKnotName:
     .db "knot", 0
 unitLightSpeedName:

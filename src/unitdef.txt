@@ -161,13 +161,13 @@ Units [
   Unit CuMile mile<Scube> Volume 4.1681818254406e9 # 1609.344^3
   Unit CuNauticalMile nmi<Scube> Volume 6352182208 # 1852^3
 
-  Unit MicroLiter <Smu>L Volume 1e-9
-  Unit MilliLiter mL Volume 1e-6
-  Unit Liter L Volume 1e-3
+  Unit MicroLiter <Smu>liter Volume 1e-9
+  Unit MilliLiter milliliter Volume 1e-6
+  Unit Liter liter Volume 1e-3
   # https://en.wikipedia.org/wiki/Teaspoon
-  Unit MetricTeaspoon met<Sspace>tsp Volume 5e-6
+  Unit MetricTeaspoon metric<Sspace>tsp Volume 5e-6
   # https://en.wikipedia.org/wiki/Tablespoon
-  Unit MetricTablespoon met<Sspace>tbsp Volume 15e-6
+  Unit MetricTablespoon metric<Sspace>tbsp Volume 15e-6
 
   # https://en.wikipedia.org/wiki/United_States_customary_units
   Unit Teaspoon tsp Volume 4.92892159375e-6 # 1/3 tbsp
@@ -176,7 +176,7 @@ Units [
   Unit Gill gill Volume 1.1829411825e-4 # 1/2 cup
   Unit Cup cup Volume 2.365882365e-4 # 1/2 pint
   Unit Pint pint Volume 4.73176473e-4 # 1/2 quart; pt
-  Unit Quart quart Volume 9.46352946e-4 # 1/4 gal; qt
+  Unit Quart quart Volume 9.46352946e-4 # 1/4 gallon; qt
   Unit Gallon gallon Volume 3.785411784e-3 # 231 in^3 by defn
 
   # https://en.wikipedia.org/wiki/Imperial_units
@@ -188,16 +188,16 @@ Units [
   Unit ImpGill imp<Sspace>gill Volume 1.420653125e-4 # 1/2 imp cup
   Unit ImpCup imp<Sspace>cup Volume 2.84130625e-4 # 1/2 imp pint
   Unit ImpPint imp<Sspace>pint Volume 5.6826125e-4 # 1/2 imp quart
-  Unit ImpQuart imp<Sspace>quart Volume 1.1365225e-3 # 1/4 imp gal
-  Unit ImpGallon imp<Sspace>gal Volume 4.54609e-3 # 4.54609L by defn
+  Unit ImpQuart imp<Sspace>quart Volume 1.1365225e-3 # 1/4 imp gallon
+  Unit ImpGallon imp<Sspace>gallon Volume 4.54609e-3 # 4.54609L by defn
 
   # Dry: https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit DryPint dry<Sspace>pt Volume 0.5506104713575e-3 # 33.6003125 in^3 by defn
-  Unit DryQuart dry<Sspace>qt Volume 1.101220942715e-3 # 2 dry pt
-  Unit DryGallon dry<Sspace>gal Volume 4.40488377086e-3 # 4 dry qt
-  Unit Peck peck Volume 8.80976754172e-3 # 2 dry gal
+  Unit DryPint dry<Sspace>pint Volume 0.5506104713575e-3 # 33.6003125 in^3 by defn
+  Unit DryQuart dry<Sspace>quart Volume 1.101220942715e-3 # 2 dry pint
+  Unit DryGallon dry<Sspace>gallon Volume 4.40488377086e-3 # 4 dry quart
+  Unit Peck peck Volume 8.80976754172e-3 # 2 dry gallon
   Unit Bushel bushel Volume 35.23907016688e-3 # 4 peck
-  Unit DryBarrel dry<Sspace>bbl Volume 0.115627123584 # 7056 in^3
+  Unit DryBarrel dry<Sspace>barrel Volume 0.115627123584 # 7056 in^3
 
   # Other weird measures
 
@@ -205,7 +205,7 @@ Units [
   Unit BoardFoot board<SdotIcon>foot Volume 2.359737216e-3 # 1/12 ft^3 by defn
 
   # https://en.wikipedia.org/wiki/Barrel_(unit)
-  Unit OilBarrel barrel Volume 1.58987294928e-1 # 42USgal by defn; bbl
+  Unit OilBarrel oil<Sspace>barrel Volume 1.58987294928e-1 # 42USgal by defn; bbl
 
   # https://en.wikipedia.org/wiki/Olympic-size_swimming_pool
   # "at least 2m deep"
@@ -224,11 +224,11 @@ Units [
   # https://en.wikipedia.org/wiki/Dalton_(unit)
   Unit AtomicMassUnit amu Mass 1.66053906892e-27
 
-  Unit MicroGram <Smu>g Mass 1e-9
-  Unit MilliGram mg Mass 1e-6
-  Unit Gram g Mass 1e-3
-  Unit KiloGram kg Mass 1
-  Unit MetricTon met<Sspace>ton Mass 1000
+  Unit MicroGram <Smu>gram Mass 1e-9
+  Unit MilliGram milligram Mass 1e-6
+  Unit Gram gram Mass 1e-3
+  Unit KiloGram kilogram Mass 1
+  Unit MetricTon metric<Sspace>ton Mass 1000
 
   # US System
   # https://en.wikipedia.org/wiki/United_States_customary_units
@@ -246,7 +246,7 @@ Units [
   # slug = 14.593902937207 kg
   Unit Slug slug Mass 14.593902937207
   # https://en.wikipedia.org/wiki/Hundredweight
-  Unit HundredWeight cwt Mass 45.359237 # 100 lbs by defn
+  Unit HundredWeight short<Sspace>cwt Mass 45.359237 # 100 lbs by defn
   # https://en.wikipedia.org/wiki/Short_ton
   Unit ShortTon short<Sspace>ton Mass 907.18474 # 2000 lbs
 
@@ -263,8 +263,8 @@ Units [
   # https://en.wikipedia.org/wiki/Troy_weight
   # https://en.wikipedia.org/wiki/Pennyweight
   Unit TroyPennyWeight troy<Sspace>dwt Mass 1.55517384e-3 # 24 grains by defn
-  Unit TroyOunce troy<Sspace>ozt Mass 31.1034768e-3 # 20 pennyweights by defn
-  Unit TroyPound troy<Sspace>lbt Mass 373.2417216e-3 # 12 troy oz by defn
+  Unit TroyOunce troy<Sspace>ounce Mass 31.1034768e-3 # 20 pennyweights by defn
+  Unit TroyPound troy<Sspace>pound Mass 373.2417216e-3 # 12 troy oz by defn
 
   #----------------------------------------------------------------------------
   # Temperature, requires special handlers
@@ -284,10 +284,10 @@ Units [
   Unit Newton newton Force 1
 
   # https://en.wikipedia.org/wiki/Kilogram-force
-  Unit KilogramForce kgf Force 9.80665 # by defn
+  Unit KilogramForce kg<Sspace>force Force 9.80665 # by defn
 
   # https://en.wikipedia.org/wiki/Ton-force#Tonne-force
-  Unit MetricTonForce tonf Force 9.80665e3 # by defn
+  Unit MetricTonForce ton<Sspace>force Force 9.80665e3 # by defn
 
   # https://en.wikipedia.org/wiki/Poundal
   # 1 pdl := (1 lb) * (1 ft/s^2)
@@ -298,27 +298,27 @@ Units [
   # https://en.wikipedia.org/wiki/Pound_(force)
   # 1 lbf := (1 lb) * (0.45359237 kg/lb) * (9.80665 m/s^2)
   #        = 4.4482216152605 N (exact)
-  Unit PoundForce lbf Force 4.4482216152605
+  Unit PoundForce lb<Sspace>force Force 4.4482216152605
 
   # stonf = 2000 lbs*(0.45359237 kg/lb)*9.80665 = 8.896443230521e3 N
-  Unit ShortTonForce stonf Force 8.896443230521e3 # by defn
+  Unit ShortTonForce ston<Sspace>force Force 8.896443230521e3 # by defn
 
   # ltonf = 2240 lbs*(0.45359237 kg/lb)*9.80665 = 9.96401641818352e3 N
-  Unit LongTonForce ltonf Force 9.96401641818352e3
+  Unit LongTonForce lton<Sspace>force Force 9.96401641818352e3
 
   #----------------------------------------------------------------------------
   # Pressure
   # https://en.wikipedia.org/wiki/Pressure
   #----------------------------------------------------------------------------
 
-  Unit MilliPascal mPa Pressure 1e-3
-  Unit Pascal Pa Pressure 1
-  Unit HectoPascal hPa Pressure 1e2
-  Unit KiloPascal kPa Pressure 1e3
+  Unit MilliPascal mpascal Pressure 1e-3
+  Unit Pascal pascal Pressure 1
+  Unit HectoPascal hpascal Pressure 1e2
+  Unit KiloPascal kpascal Pressure 1e3
 
   # https://en.wikipedia.org/wiki/Bar_(unit)
-  Unit MilliBar mbar Pressure 1e2
-  Unit DeciBar dbar Pressure 1e4
+  Unit MilliBar millibar Pressure 1e2
+  Unit DeciBar decibar Pressure 1e4
   Unit Bar bar Pressure 1e5
 
   # See https://en.wikipedia.org/wiki/Pound_per_square_inch.
@@ -363,16 +363,16 @@ Units [
   # https://en.wikipedia.org/wiki/Erg
   Unit Erg erg Energy 1e-7
 
-  Unit Joule J Energy 1
+  Unit Joule joule Energy 1
 
-  Unit WattHour Wh Energy 3.6e3
+  Unit WattHour watt<SdotIcon>h Energy 3.6e3
 
   # https://en.wikipedia.org/wiki/Kilowatt-hour
-  Unit KiloWattHour kWh Energy 3.6e6
+  Unit KiloWattHour kwatt<SdotIcon>h Energy 3.6e6
 
   # https://en.wikipedia.org/wiki/Calorie
-  Unit Calorie cal Energy 4.184 # by defn
-  Unit KiloCalorie kCal Energy 4.184e3
+  Unit Calorie calorie Energy 4.184 # by defn
+  Unit KiloCalorie kcalorie Energy 4.184e3
 
   # https://en.wikipedia.org/wiki/Foot-pound_(energy)
   # ftlbf = 1 lbf * 1 ft = (1 lb) * (0.45359237 kg/lb) * (9.80665 m/s^2)
@@ -399,19 +399,19 @@ Units [
   # https://en.wikipedia.org/wiki/Power_(physics)
   #----------------------------------------------------------------------------
 
-  Unit Watt W Power 1
-  Unit KiloWatt kW Power 1000
+  Unit Watt watt Power 1
+  Unit KiloWatt kilowatt Power 1000
 
   # https://en.wikipedia.org/wiki/Foot-pound_(energy)
   Unit FootPoundEnergyPerSecond ft<SdotIcon>lbf<Sslash>s Power 1.3558179483314
 
   # https://en.wikipedia.org/wiki/Calorie
-  Unit CaloriePerSecond cal<Sslash>s Power 4.184
+  Unit CaloriePerSecond cal<Sslash>s Power 4.184 # exact by defn
 
   # https://en.wikipedia.org/wiki/British_thermal_unit
   # Btu/hour = 1055J/(3600s) = .29305555555556 W (used frequently in AC and
   # heating systems for homes)
-  Unit BtuPerHour Btu<Sslash>hr Power .29305555555556
+  Unit BtuPerHour Btu<Sslash>h Power .29305555555556
 
   # Btu/min = 1055J/(60s) = 17.583333333333 W (added for compatibility with
   # TI-85)
@@ -423,7 +423,7 @@ Units [
   #   = 550 ft*lbf/s
   #   = 550 ft*lbf/s * 0.3048 m/ft * 9.806 65 m/s^2 * 0.453 592 37 kg/lbs
   #   ~ 0.745 699 871 582 270 22 kW
-  Unit Horsepower hp Power 745.69987158227022
+  Unit Horsepower horsepower Power 745.69987158227022
 
   #----------------------------------------------------------------------------
   # Time
@@ -448,11 +448,11 @@ Units [
   #----------------------------------------------------------------------------
 
   Unit MeterPerSecond m<Sslash>s Speed 1
-  Unit FootPerSecond ft<Sslash>s Speed 0.3048
-  Unit KiloMeterPerHour km<Sslash>hr Speed 0.27777777777778
-  Unit MilePerHour mi<Sslash>hr Speed 0.44704
+  Unit FootPerSecond foot<Sslash>s Speed 0.3048
+  Unit KiloMeterPerHour km<Sslash>h Speed 0.27777777777778
+  Unit MilePerHour mile<Sslash>h Speed 0.44704
   # https://en.wikipedia.org/wiki/Knot_(unit)
-  Unit Knot knot Speed 0.51444444444444 # 1852m/h by defn
+  Unit Knot knot Speed 0.51444444444444 # nmi/h=1852m/h by defn
   Unit LightSpeed lightc Speed 299792458 # by defn
 
   #----------------------------------------------------------------------------
