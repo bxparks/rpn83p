@@ -187,3 +187,13 @@ the following:
 | `barrel`      | `bbl`     | HP   |      | oil barrel, 42 US gal by defn |
 | `olmp pool`   | `olmp`    |      |      | Olympic swimming pool, 50m\*25m\*2m |
 | `acre foot`   | `acft`    | HP   |      | acre-foot, 66ft\*660ft\*1ft |
+
+### Temperature (TEMP)
+
+| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
+| ------------- | --------- |------|------| ------------  |
+| **`TEMP`**    |           |      |      |               |
+| `°C`          | `°C`      | HP   | TI   | Celsius = 273.15 + Kelvin |
+| `°F`          | `°F`      | HP   | TI   | Fahrenheit = Celsius * 9 / 5 + 32 |
+| `°R`          | `°R`      | HP   | TI   | Rankine = Kelvin * 9 / 5 |
+| `°K`          | `°K`      | HP   | TI   | Kelvin, degree symbol used for UI consistency |
