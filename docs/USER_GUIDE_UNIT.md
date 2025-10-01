@@ -291,3 +291,18 @@ the following:
 | `Btu/min`         | `Bt/m`    |       | TI    | Btu/minute, 17.583333333333 W (rounded to 14 digits) |
 | `cal/s`           | `ca/s`    |       | TI    | calorie/second, 4.184 W (exact) by defn |
 | `hp`              | `hp`      |       | TI    | horsepower, 745.69987158227 W (rounded to 14 digits) |
+
+### Time (TIME)
+
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
+| -------------     | --------- |------ |------ | -----------   |
+| **`TIME`**        |           |       |       |               |
+| `ns`              | `ns`      |       | TI    | 1e-9 s        |
+| `μs`              | `μs`      |       | TI    | 1e-6 s        |
+| `ms`              | `ms`      |       | TI    | 1e-3 s        |
+| `second`          | `sec`     |       | TI    | base unit     |
+| `minute`          | `min`     |       | TI    | 60 seconds    |
+| `hour`            | `hour`    |       | TI    | 60 minutes    |
+| `day`             | `day`     |       | TI    | 24 hours      |
+| `week`            | `week`    |       | TI    | 7 days        |
+| `year`            | `year`    |       | TI    | Julian year, 365.25 days (exact) by defn |
