@@ -193,7 +193,7 @@ Units [
   # Other weird measures
 
   # https://en.wikipedia.org/wiki/Board_foot
-  Unit BoardFoot board<SdotIcon>foot Volume 2.359737216e-3 # 1/12 cuft by defn
+  Unit BoardFoot board<SdotIcon>foot Volume 2.359737216e-3 # 1/12 ft^3 by defn
 
   # https://en.wikipedia.org/wiki/Barrel_(unit)
   Unit OilBarrel barrel Volume 1.58987294928e-1 # 42USgal by defn; bbl
@@ -283,12 +283,12 @@ Units [
   # https://en.wikipedia.org/wiki/Poundal
   # 1 pdl := (1 lb) * (1 ft/s^2)
   #        = (1 lb) * (0.45359237 kg/lb) * (1 ft/s^2) * (0.3048 m / ft)
-  #        = 0.138254954376 N
+  #        = 0.138254954376 N (exact)
   Unit Poundal poundal Force 0.138254954376
 
   # https://en.wikipedia.org/wiki/Pound_(force)
   # 1 lbf := (1 lb) * (0.45359237 kg/lb) * (9.80665 m/s^2)
-  #        = 4.4482216152605 N
+  #        = 4.4482216152605 N (exact)
   Unit PoundForce lbf Force 4.4482216152605
 
   # stonf = 2000 lbs*(0.45359237 kg/lb)*9.80665 = 8.896443230521e3 N
@@ -450,8 +450,8 @@ Units [
   # Fuel Consumption
   # Requires special conversion handlers.
   #
-  #   Lkm = 100/[mpg * (km/mile) / (litre/gal)]
-  #   mpg = 100/lkm * (litre/gal) / (km/mile).
+  #   Lkm = 100 * (liter/gal) / (km/mile) / mpg = 235.21458333333 / mpg
+  #   mpg = 100 * (liter/gal) / (km/mile) / Lkm = 235.21458333333 / Lkm
   #----------------------------------------------------------------------------
 
   Unit MilesPerGallon mpg Fuel 1
