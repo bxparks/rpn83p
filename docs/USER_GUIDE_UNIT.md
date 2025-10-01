@@ -137,3 +137,53 @@ the following:
 | `hectare`     | `ha`      | HP   | TI   | 100m\*100m    |
 | `usftball`    | `usfb`    |      |      | US football field, 100yd\*160ft |
 | `caftball`    | `cafb`    |      |      | CA football field, 110yd\*65yd |
+
+### Volume (VOL)
+
+| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
+| ------------- | --------- |------|------| ------------  |
+| **`VOL`**     |           |      |      |               |
+| `mm³`         | `mm³`     |      |      |               |
+| `cm³`         | `cm³`     |      | TI   |               |
+| `m³`          | `m³`      | HP   | TI   |               |
+| `km³`         | `km³`     |      |      |               |
+| `inch³`       | `in³`     | HP   | TI   |               |
+| `foot³`       | `ft³`     | HP   | TI   |               |
+| `yard³`       | `yd³`     | HP   |      |               |
+| `mile³`       | `mi³`     |      |      |               |
+| `nmi³`        | `nmi³`    |      |      |               |
+| `μL`          | `μL`      |      |      |               |
+| `mL`          | `mL`      | HP   | TI   |               |
+| `L`           | `L`       | HP   | TI   |               |
+| `met tsp`     | `mtsp`    |      |      | metric teaspoon, 5 mL |
+| `met tbsp`    | `mtbs`    |      |      | metric tablespoon, 15 mL |
+| **`VOL > US`**     |           |      |      |               |
+| `tsp`         | `tsp`     | HP   | TI   | 1/3 tbsp        |
+| `tbsp`        | `tbsp`    | HP   | TI   | 1/2 floz        |
+| `floz`        | `floz`    | HP   | TI   | 1/4 gill        |
+| `gill`        | `gill`    |      |      | 1/2 cup         |
+| `cup`         | `cup`     | HP   | TI   | 1/2 pint        |
+| `pint`        | `pint`    | HP   | TI   | 1/2 quart       |
+| `quart`       | `qt`      | HP   | TI   | 1/4 gal         |
+| `gal`         | `gal`     | HP   | TI   | 231 in^3 by defn|
+| **`VOL > IMP`**     |           |      |      |               |
+| `imp tsp`     | `tsp`     |      |      | **1/4** imp tbsp |
+| `imp tbsp`    | `tbsp`    |      |      | 1/2 imp floz     |
+| `imp floz`    | `floz`    |      | TI   | **1/5** imp gill |
+| `imp gill`    | `gill`    |      |      | 1/2 imp cup      |
+| `imp cup`     | `cup`     |      |      | 1/2 imp pint     |
+| `imp pint`    | `pint`    |      |      | 1/2 imp quart    |
+| `imp quart`   | `qt`      |      |      | 1/4 imp gal      |
+| `imp gal`     | `gal`     | HP   | TI   | 4.54609 liter by defn   |
+| **`VOL > DRY`**     |           |      |      |               |
+| `dry pt`      | `drpt`    |      |      | 33.6003125 in^3 by defn |
+| `dry qt`      | `drqt`    |      |      | 2 dry pint      |
+| `dry gal`     | `dgal`    | HP   |      | 4 dry quart     |
+| `peck`        | `peck`    | HP   |      | 2 dry gallon    |
+| `bushel`      | `bush`    | HP   |      | 4 peck          |
+| `dry bbl`     | `dbbl`    |      |      | 7056 in^3       |
+| **`VOL > MISC`**     |           |      |      |               |
+| `board foot`  | `bdft`    | HP   |      | 1/12 ft^3       |
+| `barrel`      | `bbl`     | HP   |      | oil barrel, 42 US gal by defn |
+| `olmp pool`   | `olmp`    |      |      | Olympic swimming pool, 50m\*25m\*2m |
+| `acre foot`   | `acft`    | HP   |      | acre-foot, 66ft\*660ft\*1ft |
