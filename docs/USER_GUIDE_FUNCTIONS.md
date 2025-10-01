@@ -629,7 +629,6 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `DLNK`: link (merge) Date and Time into a DateTime
     - ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
         - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
-        - ![ROOT > DATE > TimeZone > Row2](images/menu/root-date-tz-2.png)
         - `TZ{}`: insert initialization string for TimeZone object
         - `>HR`: convert TimeZone to floating point hours
         - `HR>`: convert floating point hours into TimeZone
