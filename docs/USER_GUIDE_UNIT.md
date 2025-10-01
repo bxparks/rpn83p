@@ -94,18 +94,19 @@ calculators.
 | `foot`        | `ft`      | HP    | TI    |               |
 | `yard`        | `yd`      | HP    | TI    |               |
 | `mile`        | `mi`      | HP    | TI    |               |
-| **`ASTR`**    |           |       |       |               |
-| `AU`          | `AU`      |       |       |               |
-| `ly`          | `ly`      |       |       |               |
-| `pc`          | `pc`      |       |       |               |
-| **`NAUT`**    |           |       |       |               |
-| `fathom`      | `fthm`    | HP    | TI    | 6 feet        |
-| `cable`       | `cabl`    |       |       |               |
-| `nmi`         | `nmi`     | HP    | TI    |               |
 | **`SURV`**    |           |       |       |               |
-| `survey ft`   | `svft`    | HP    | TI    | 1200/3937 m, deprecated after 2023 |
+| `survey ft`   | `svft`    | HP    | TI    | using pre-2023 defn of 1200/3937 m |
 | `rod`         | `rod`     | HP    | TI    | 16.5 ft       |
 | `chain`       | `chai`    | HP    | TI    | 4 rods, 66 ft |
 | `furlong`     | `frlg`    |       |       | 10 chains     |
-| `survey mi`   | `svmi`    | HP    |       | 6336/3937 km, called "statutory mile" in HP-19BII, deprecated after 2023 |
-| `league`      | `leag`    |       |       | 3 mi by defn after 2023 |
+| `survey mi`   | `svmi`    | HP    |       | using pre-2023 defn of 6336/3937 km; called "statutory mile" in HP-19BII |
+| `league`      | `leag`    |       |       | 3 (normal) miles |
+| **`NAUT`**    |           |       |       |               |
+| `fathom`      | `fath`    | HP    | TI    | 6 feet        |
+| `cable`       | `cabl`    |       |       | 3429/15625 km |
+| `nmi`         | `nmi`     | HP    | TI    | 1852 m        |
+| **`ASTR`**    |           |       |       |               |
+| `light sec`   | `lsec`    |       |       |               |
+| `AU`          | `AU`      |       |       |               |
+| `light year`  | `ly`      |       |       |               |
+| `parsec`      | `pc`      |       |       |               |
