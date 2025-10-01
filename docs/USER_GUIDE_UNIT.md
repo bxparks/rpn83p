@@ -114,9 +114,9 @@ the following:
 | `cable`           | `cabl`    |       |       | 3429/15625 km |
 | `nmi`             | `nmi`     | HP    | TI    | 1852 m (exact) by defn |
 | **`LENG > ASTR`** |           |       |       |               |
-| `light sec`       | `lsec`    |       |       |               |
+| `light·sec`       | `lsec`    |       |       |               |
 | `AU`              | `AU`      |       |       |               |
-| `light year`      | `ly`      |       | TI    |               |
+| `light·year`      | `ly`      |       | TI    |               |
 | `parsec`          | `pc`      |       |       |               |
 
 ### Area (AREA)
@@ -183,10 +183,10 @@ the following:
 | `bushel`          | `bush`    | HP    |       | 4 peck          |
 | `dry bbl`         | `dbbl`    |       |       | 7056 in^3       |
 | **`VOL > MISC`**  |           |       |       |               |
-| `board foot`      | `bdft`    | HP    |       | 1/12 ft^3       |
+| `board·foot`      | `bdft`    | HP    |       | 1/12 ft^3       |
 | `barrel`          | `bbl`     | HP    |       | oil barrel, 42 US gal by defn |
 | `olmp pool`       | `olmp`    |       |       | Olympic swimming pool, 50m\*25m\*2m |
-| `acre foot`       | `acft`    | HP    |       | acre-foot, 66ft\*660ft\*1ft |
+| `acre·foot`       | `acft`    | HP    |       | acre-foot, 66ft\*660ft\*1ft |
 
 ### Temperature (TEMP)
 
@@ -235,7 +235,7 @@ the following:
 | -------------     | --------- |------ |------ | ----------- |
 | **`FORC`**        |           |       |       |             |
 | `dyne`            | `dyne`    |       | TI    | 1e-5 N      |
-| `newton`          | `N`       |       | TI    |             |
+| `newton`          | `N`       |       | TI    | base unit, kg\*m/s^2 |
 | `kgf`             | `kgf`     |       | TI    | kilogram force = 9.80665 N (exact) by defn |
 | `tonf`            | `tonf`    |       | TI    | metric ton force = 1000 kgf    |
 | `poundal`         | `pdl`     |       |       | 1lb * 1ft/s^2 = 0.45359237 * 0.3048 = 0.138254954376 N (exact) |
@@ -248,7 +248,7 @@ the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
 | -------------     | --------- |------ |------ | ----------- |
 | **`PRES`**        |           |       |       |             |
-| `Pa`              | `Pa`      |       | TI    |             |
+| `Pa`              | `Pa`      |       | TI    | base unit, N/m^2 |
 | `hPa`             | `hPa`     |       |       | 100 Pa      |
 | `kPa`             | `kPa`     |       |       | 1000 Pa     |
 | `torr`            | `torr`    |       |       | 1/760 atm   |
@@ -256,7 +256,7 @@ the following:
 | `mbar`            | `mbar`    |       |       | 1e-3 bar    |
 | `dbar`            | `dbar`    |       |       | 1e-2 bar    |
 | `bar`             | `bar`     |       | TI    | 100 kPa by defn |
-| `psi`             | `psi`     |       | TI    | lbs per sq inch = 6894.7572931684 Pa (to 14 digits) |
+| `psi`             | `psi`     |       | TI    | lbs per sq inch = 6894.7572931684 Pa (rounded to 14 digits) |
 | `mmHg`            | `mmH`     |       | TI    | mm of mercury = 133.322387415 Pa (exact) |
 | `inHg`            | `inHg`    |       | TI    | inch of mercurcy = 3386.388640341 Pa (exact) |
 | `mmH2O`           | `mmw`     |       | TI    | mm of water gauge = 9.80665 (exact) by defn |
@@ -274,7 +274,20 @@ the following:
 | `kWh`             | `kWh`     |       | TI    | 3600e3 J      |
 | `cal`             | `cal`     |       | TI    | 4.184 J (exact) by defn |
 | `kcal`            | `kcal`    |       |       | 4.184 kJ, used for food energy |
-| `ft lbf`          | `ftlb`    |       | TI    | 1.3558179483314 (to 14 digits) |
+| `ft·lbf`          | `ftlb`    |       | TI    | 1.3558179483314 J (rounded to 14 digits) |
 | `Btu`             | `Btu`     |       | TI    | British thermal unit, 1055 (approx, various defns) |
 | `tonTNT`          | `tTNT`    |       |       | metric ton of equivalent of TNT, 4.184e9 J (exact) by defn |
-| `liter atm`       | `Latm`    |       | TI    | liter atmosphere, 101.325 J (exact) by defn |
+| `liter·atm`       | `Latm`    |       | TI    | liter atmosphere, 101.325 J (exact) by defn |
+
+### Power (PWR)
+
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
+| -------------     | --------- |------ |------ | ----------- |
+| **`PWR`**         |           |       |       |             |
+| `W`               | `W`       |       | TI    | base unit, joule/s |
+| `kW`              | `kW`      |       |       | 1000 W      |
+| `ft·lbf/s`        | `fl/s`    |       | TI    | foot-pound energy per second, 1.3558179483314 W (rounded to 14 digits) |
+| `Btu/h`           | `Bt/h`    |       |       | Btu/hour, .29305555555556 W (rounded to 14 digits) |
+| `Btu/min`         | `Bt/m`    |       | TI    | Btu/minute, 17.583333333333 W (rounded to 14 digits) |
+| `cal/s`           | `ca/s`    |       | TI    | calorie/second, 4.184 W (exact) by defn |
+| `hp`              | `hp`      |       | TI    | horsepower, 745.69987158227 W (rounded to 14 digits) |
