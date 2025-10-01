@@ -242,3 +242,22 @@ the following:
 | `lbf`             | `lbf`     |       | TI    | pound force = 1lb * 9.80665m/s^2 = 0.45359237 * 9.80665 = 4.4482216152605 N (exact) |
 | `stonf`           | `stonf`   |       |       | short ton force = 2000 lbf    |
 | `ltonf`           | `ltonf`   |       |       | long ton force = 2240 lbf    |
+
+### Press (PRES)
+
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
+| -------------     | --------- |------ |------ | ----------- |
+| **`PRES`**        |           |       |       |             |
+| `Pa`              | `Pa`      |       | TI    |             |
+| `hPa`             | `hPa`     |       |       | 100 Pa      |
+| `kPa`             | `kPa`     |       |       | 1000 Pa     |
+| `torr`            | `torr`    |       |       | 1/760 atm   |
+| `atm`             | `atm`     |       | TI    | 101.325 kPa by defn |
+| `mbar`            | `mbar`    |       |       | 1e-3 bar    |
+| `dbar`            | `dbar`    |       |       | 1e-2 bar    |
+| `bar`             | `bar`     |       | TI    | 100 kPa by defn |
+| `psi`             | `psi`     |       | TI    | lbs per sq inch = 6894.7572931684 Pa (to 14 digits) |
+| `mmHg`            | `mmH`     |       | TI    | mm of mercury = 133.322387415 Pa (exact) |
+| `inHg`            | `inHg`    |       | TI    | inch of mercurcy = 3386.388640341 Pa (exact) |
+| `mmH2O`           | `mmw`     |       | TI    | mm of water gauge = 9.80665 (exact) by defn |
+| `inH2O`           | `inwg`    |       | TI    | inch of water gauge = 249.08891 Pa (exact) |
