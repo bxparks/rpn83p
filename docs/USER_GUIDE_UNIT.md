@@ -81,35 +81,35 @@ calculators.
 | **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
 | ------------- | --------- |------|------| ------------  |
 | **`LENG`**    |           |      |      |               |
-| `fermi`       | `ferm`    |      | TI   |               |
-| `angstrom`    | `angs`    |      | TI   |               |
-| `nm`          | `nm`      |      | TI   |               |
-| `μm`          | `μm`      |      |      |               |
+| `fermi`       | `ferm`    |      | TI   | 1e-15 m       |
+| `angstrom`    | `angs`    |      | TI   | 1e-10 m       |
+| `nm`          | `nm`      |      | TI   | 1e-9 m        |
+| `μm`          | `μm`      |      |      | 1e-6 m        |
 | `mm`          | `mm`      | HP   | TI   |               |
 | `cm`          | `cm`      | HP   | TI   |               |
 | `m`           | `m`       | HP   | TI   |               |
 | `km`          | `km`      | HP   | TI   |               |
-| `mil`         | `mil`     |      | TI   |               |
-| `inch`        | `in`      | HP   | TI   |               |
-| `foot`        | `ft`      | HP   | TI   |               |
-| `yard`        | `yd`      | HP   | TI   |               |
-| `mile`        | `mi`      | HP   | TI   |               |
-| **`TYPO`**    |           |      |      |               |
+| `mil`         | `mil`     |      | TI   | 1/1000 in     |
+| `inch`        | `in`      | HP   | TI   | 25.4 mm       |
+| `foot`        | `ft`      | HP   | TI   | 12 in         |
+| `yard`        | `yd`      | HP   | TI   | 3 ft          |
+| `mile`        | `mi`      | HP   | TI   | 1760 yd       |
+| **`LENG > TYPO`**    |           |      |      |               |
 | `twip`        | `twip`    |      |      | 1/20 pt       |
 | `point`       | `pt`      |      |      | 1/72 inch     |
 | `pica`        | `pica`    |      |      | 12 pt         |
-| **`SURV`**    |           |      |      |               |
+| **`LENG > SURV`**    |           |      |      |               |
 | `survey ft`   | `svft`    | HP   | TI   | using pre-2023 defn of 1200/3937 m |
 | `rod`         | `rod`     | HP   | TI   | 16.5 ft       |
 | `chain`       | `chai`    | HP   | TI   | 4 rods, 66 ft |
 | `furlong`     | `frlg`    |      |      | 10 chains     |
 | `survey mi`   | `svmi`    | HP   |      | using pre-2023 defn of 6336/3937 km; called "statutory mile" in HP-19BII |
 | `league`      | `leag`    |      |      | 3 (normal) miles |
-| **`NAUT`**    |           |      |      |               |
+| **`LENG > NAUT`**    |           |      |      |               |
 | `fathom`      | `fath`    | HP   | TI   | 6 feet        |
 | `cable`       | `cabl`    |      |      | 3429/15625 km |
 | `nmi`         | `nmi`     | HP   | TI   | 1852 m        |
-| **`ASTR`**    |           |      |      |               |
+| **`LENG > ASTR`**    |           |      |      |               |
 | `light sec`   | `lsec`    |      |      |               |
 | `AU`          | `AU`      |      |      |               |
 | `light year`  | `ly`      |      | TI   |               |
@@ -119,16 +119,17 @@ calculators.
 
 | **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
 | ------------- | --------- |------|------| ------------  |
+| **`AREA`**    |           |      |      |               |
 | `mm²`         | `mm²`     |      |      |               |
-| `cm²`         | `cm²`     |      |      |               |
-| `m²`          | `m²`      |      |      |               |
-| `km²`         | `km²`     |      |      |               |
-| `inch²`       | `in²`     |      |      |               |
-| `foot²`       | `ft²`     |      |      |               |
-| `yard²`       | `yd²`     |      |      |               |
-| `mile²`       | `mi²`     |      |      |               |
+| `cm²`         | `cm²`     | HP   | TI   |               |
+| `m²`          | `m²`      | HP   | TI   |               |
+| `km²`         | `km²`     | HP   | TI   |               |
+| `inch²`       | `in²`     | HP   | TI   |               |
+| `foot²`       | `ft²`     | HP   | TI   |               |
+| `yard²`       | `yd²`     | HP   | TI   |               |
+| `mile²`       | `mi²`     | HP   | TI   |               |
 | `nmi²`        | `nmi²`    |      |      |               |
-| `acre`        | `acre`    |      |      | 66ft\*660ft   |
-| `hectare`     | `ha`      |      |      | 100m\*100m     |
+| `acre`        | `acre`    | HP   | TI   | 66ft\*660ft   |
+| `hectare`     | `ha`      | HP   | TI   | 100m\*100m    |
 | `usftball`    | `usfb`    |      |      | US NFL football field, 100yd\*160ft |
 | `caftball`    | `cafb`    |      |      | CA CFL football field, 110yd\*65yd |
