@@ -2328,13 +2328,13 @@ mUnitMileId equ 246
     .dw mUnitMileHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup LENG: children: row 3
-mAstronomy:
-mAstronomyId equ 247
-    .dw mAstronomyId ; id
+mSurvey:
+mSurveyId equ 247
+    .dw mSurveyId ; id
     .dw mUnitLenghId ; parentId
-    .dw mAstronomyName ; name
-    .db 1 ; numRows
-    .dw mUnitAstronomicalUnitId ; rowBeginId or altName
+    .dw mSurveyName ; name
+    .db 2 ; numRows
+    .dw mUnitSurveyFootId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mNautical:
@@ -2346,13 +2346,13 @@ mNauticalId equ 248
     .dw mUnitFanthomId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mSurvey:
-mSurveyId equ 249
-    .dw mSurveyId ; id
+mAstronomy:
+mAstronomyId equ 249
+    .dw mAstronomyId ; id
     .dw mUnitLenghId ; parentId
-    .dw mSurveyName ; name
-    .db 2 ; numRows
-    .dw mUnitSurveyFootId ; rowBeginId or altName
+    .dw mAstronomyName ; name
+    .db 1 ; numRows
+    .dw mUnitAstronomicalUnitId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank250:
@@ -2373,104 +2373,10 @@ mBlank251Id equ 251
     .dw 0 ; rowBeginId or altName
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-; MenuGroup ASTR: children
-; MenuGroup ASTR: children: row 0
-mUnitAstronomicalUnit:
-mUnitAstronomicalUnitId equ 252
-    .dw mUnitAstronomicalUnitId ; id
-    .dw mAstronomyId ; parentId
-    .dw mUnitAstronomicalUnitName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mUnitAstronomicalUnitHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mUnitLightYear:
-mUnitLightYearId equ 253
-    .dw mUnitLightYearId ; id
-    .dw mAstronomyId ; parentId
-    .dw mUnitLightYearName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mUnitLightYearHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mUnitParsec:
-mUnitParsecId equ 254
-    .dw mUnitParsecId ; id
-    .dw mAstronomyId ; parentId
-    .dw mUnitParsecName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mUnitParsecHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank255:
-mBlank255Id equ 255
-    .dw mBlank255Id ; id
-    .dw mAstronomyId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank256:
-mBlank256Id equ 256
-    .dw mBlank256Id ; id
-    .dw mAstronomyId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-; MenuGroup NAUT: children
-; MenuGroup NAUT: children: row 0
-mUnitFanthom:
-mUnitFanthomId equ 257
-    .dw mUnitFanthomId ; id
-    .dw mNauticalId ; parentId
-    .dw mUnitFanthomName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mUnitFanthomHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mUnitCable:
-mUnitCableId equ 258
-    .dw mUnitCableId ; id
-    .dw mNauticalId ; parentId
-    .dw mUnitCableName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mUnitCableHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mUnitNauticalMile:
-mUnitNauticalMileId equ 259
-    .dw mUnitNauticalMileId ; id
-    .dw mNauticalId ; parentId
-    .dw mUnitNauticalMileName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mUnitNauticalMileHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank260:
-mBlank260Id equ 260
-    .dw mBlank260Id ; id
-    .dw mNauticalId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
-mBlank261:
-mBlank261Id equ 261
-    .dw mBlank261Id ; id
-    .dw mNauticalId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
-    .dw 0 ; nameSelector
 ; MenuGroup SURV: children
 ; MenuGroup SURV: children: row 0
 mUnitSurveyFoot:
-mUnitSurveyFootId equ 262
+mUnitSurveyFootId equ 252
     .dw mUnitSurveyFootId ; id
     .dw mSurveyId ; parentId
     .dw mUnitSurveyFootName ; name
@@ -2479,7 +2385,7 @@ mUnitSurveyFootId equ 262
     .dw mUnitSurveyFootHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitRod:
-mUnitRodId equ 263
+mUnitRodId equ 253
     .dw mUnitRodId ; id
     .dw mSurveyId ; parentId
     .dw mUnitRodName ; name
@@ -2488,7 +2394,7 @@ mUnitRodId equ 263
     .dw mUnitRodHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitChain:
-mUnitChainId equ 264
+mUnitChainId equ 254
     .dw mUnitChainId ; id
     .dw mSurveyId ; parentId
     .dw mUnitChainName ; name
@@ -2497,7 +2403,7 @@ mUnitChainId equ 264
     .dw mUnitChainHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitFurlong:
-mUnitFurlongId equ 265
+mUnitFurlongId equ 255
     .dw mUnitFurlongId ; id
     .dw mSurveyId ; parentId
     .dw mUnitFurlongName ; name
@@ -2506,7 +2412,7 @@ mUnitFurlongId equ 265
     .dw mUnitFurlongHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitSurveyMile:
-mUnitSurveyMileId equ 266
+mUnitSurveyMileId equ 256
     .dw mUnitSurveyMileId ; id
     .dw mSurveyId ; parentId
     .dw mUnitSurveyMileName ; name
@@ -2516,7 +2422,7 @@ mUnitSurveyMileId equ 266
     .dw 0 ; nameSelector
 ; MenuGroup SURV: children: row 1
 mUnitLeague:
-mUnitLeagueId equ 267
+mUnitLeagueId equ 257
     .dw mUnitLeagueId ; id
     .dw mSurveyId ; parentId
     .dw mUnitLeagueName ; name
@@ -2524,28 +2430,122 @@ mUnitLeagueId equ 267
     .dw 0 ; rowBeginId or altName
     .dw mUnitLeagueHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mBlank268:
-mBlank268Id equ 268
-    .dw mBlank268Id ; id
+mBlank258:
+mBlank258Id equ 258
+    .dw mBlank258Id ; id
     .dw mSurveyId ; parentId
     .dw mNullName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
-mBlank269:
-mBlank269Id equ 269
-    .dw mBlank269Id ; id
+mBlank259:
+mBlank259Id equ 259
+    .dw mBlank259Id ; id
     .dw mSurveyId ; parentId
     .dw mNullName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+mBlank260:
+mBlank260Id equ 260
+    .dw mBlank260Id ; id
+    .dw mSurveyId ; parentId
+    .dw mNullName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+mBlank261:
+mBlank261Id equ 261
+    .dw mBlank261Id ; id
+    .dw mSurveyId ; parentId
+    .dw mNullName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+; MenuGroup NAUT: children
+; MenuGroup NAUT: children: row 0
+mUnitFanthom:
+mUnitFanthomId equ 262
+    .dw mUnitFanthomId ; id
+    .dw mNauticalId ; parentId
+    .dw mUnitFanthomName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitFanthomHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mUnitCable:
+mUnitCableId equ 263
+    .dw mUnitCableId ; id
+    .dw mNauticalId ; parentId
+    .dw mUnitCableName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitCableHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mUnitNauticalMile:
+mUnitNauticalMileId equ 264
+    .dw mUnitNauticalMileId ; id
+    .dw mNauticalId ; parentId
+    .dw mUnitNauticalMileName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitNauticalMileHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mBlank265:
+mBlank265Id equ 265
+    .dw mBlank265Id ; id
+    .dw mNauticalId ; parentId
+    .dw mNullName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+mBlank266:
+mBlank266Id equ 266
+    .dw mBlank266Id ; id
+    .dw mNauticalId ; parentId
+    .dw mNullName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mNullHandler ; handler (predefined)
+    .dw 0 ; nameSelector
+; MenuGroup ASTR: children
+; MenuGroup ASTR: children: row 0
+mUnitAstronomicalUnit:
+mUnitAstronomicalUnitId equ 267
+    .dw mUnitAstronomicalUnitId ; id
+    .dw mAstronomyId ; parentId
+    .dw mUnitAstronomicalUnitName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitAstronomicalUnitHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mUnitLightYear:
+mUnitLightYearId equ 268
+    .dw mUnitLightYearId ; id
+    .dw mAstronomyId ; parentId
+    .dw mUnitLightYearName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitLightYearHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mUnitParsec:
+mUnitParsecId equ 269
+    .dw mUnitParsecId ; id
+    .dw mAstronomyId ; parentId
+    .dw mUnitParsecName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitParsecHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mBlank270:
 mBlank270Id equ 270
     .dw mBlank270Id ; id
-    .dw mSurveyId ; parentId
+    .dw mAstronomyId ; parentId
     .dw mNullName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
@@ -2554,7 +2554,7 @@ mBlank270Id equ 270
 mBlank271:
 mBlank271Id equ 271
     .dw mBlank271Id ; id
-    .dw mSurveyId ; parentId
+    .dw mAstronomyId ; parentId
     .dw mNullName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
@@ -5810,24 +5810,12 @@ mUnitYardName:
     .db "yd", 0
 mUnitMileName:
     .db "mi", 0
-mAstronomyName:
-    .db "ASTR", 0
-mNauticalName:
-    .db "NAUT", 0
 mSurveyName:
     .db "SURV", 0
-mUnitAstronomicalUnitName:
-    .db "AU", 0
-mUnitLightYearName:
-    .db "ly", 0
-mUnitParsecName:
-    .db "pc", 0
-mUnitFanthomName:
-    .db "fthm", 0
-mUnitCableName:
-    .db "cabl", 0
-mUnitNauticalMileName:
-    .db "nmi", 0
+mNauticalName:
+    .db "NAUT", 0
+mAstronomyName:
+    .db "ASTR", 0
 mUnitSurveyFootName:
     .db "svft", 0
 mUnitRodName:
@@ -5840,6 +5828,18 @@ mUnitSurveyMileName:
     .db "svmi", 0
 mUnitLeagueName:
     .db "leag", 0
+mUnitFanthomName:
+    .db "fthm", 0
+mUnitCableName:
+    .db "cabl", 0
+mUnitNauticalMileName:
+    .db "nmi", 0
+mUnitAstronomicalUnitName:
+    .db "AU", 0
+mUnitLightYearName:
+    .db "ly", 0
+mUnitParsecName:
+    .db "pc", 0
 mUnitSqMilliMeterName:
     .db 'm', 'm', Sarea, 0
 mUnitSqCentiMeterName:

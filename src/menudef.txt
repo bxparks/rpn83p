@@ -397,20 +397,6 @@ MenuGroup root mRoot [
           ]
           # More obscure length units in subfolders here
           MenuRow [
-            MenuGroup ASTR mAstronomy [
-              MenuRow [
-                MenuItem AU mUnitAstronomicalUnit
-                MenuItem ly mUnitLightYear
-                MenuItem pc mUnitParsec
-              ]
-            ]
-            MenuGroup NAUT mNautical [
-              MenuRow [
-                MenuItem fthm mUnitFanthom
-                MenuItem cabl mUnitCable
-                MenuItem nmi mUnitNauticalMile
-              ]
-            ]
             MenuGroup SURV mSurvey [
               MenuRow [
                 MenuItem svft mUnitSurveyFoot
@@ -421,6 +407,20 @@ MenuGroup root mRoot [
               ]
               MenuRow [
                 MenuItem leag mUnitLeague
+              ]
+            ]
+            MenuGroup NAUT mNautical [
+              MenuRow [
+                MenuItem fthm mUnitFanthom
+                MenuItem cabl mUnitCable
+                MenuItem nmi mUnitNauticalMile
+              ]
+            ]
+            MenuGroup ASTR mAstronomy [
+              MenuRow [
+                MenuItem AU mUnitAstronomicalUnit
+                MenuItem ly mUnitLightYear
+                MenuItem pc mUnitParsec
               ]
             ]
           ]

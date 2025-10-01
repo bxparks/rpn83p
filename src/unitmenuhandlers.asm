@@ -143,38 +143,6 @@ mUnitMileHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
-; UNIT > LENG > ASTR > Row 1
-;-----------------------------------------------------------------------------
-
-mUnitAstronomicalUnitHandler:
-    ld a, unitAstronomicalUnitId
-    jp commonUnitHandler
-
-mUnitLightYearHandler:
-    ld a, unitLightYearId
-    jp commonUnitHandler
-
-mUnitParsecHandler:
-    ld a, unitParsecId
-    jp commonUnitHandler
-
-;-----------------------------------------------------------------------------
-; UNIT > LENG > NAUT > Row 1
-;-----------------------------------------------------------------------------
-
-mUnitFanthomHandler:
-    ld a, unitFanthomId
-    jp commonUnitHandler
-
-mUnitCableHandler:
-    ld a, unitCableId
-    jp commonUnitHandler
-
-mUnitNauticalMileHandler:
-    ld a, unitNauticalMileId
-    jp commonUnitHandler
-
-;-----------------------------------------------------------------------------
 ; UNIT > LENG > SURV > Row 1
 ;-----------------------------------------------------------------------------
 
@@ -204,6 +172,38 @@ mUnitSurveyMileHandler:
 
 mUnitLeagueHandler:
     ld a, unitLeagueId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > LENG > NAUT > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitFanthomHandler:
+    ld a, unitFanthomId
+    jp commonUnitHandler
+
+mUnitCableHandler:
+    ld a, unitCableId
+    jp commonUnitHandler
+
+mUnitNauticalMileHandler:
+    ld a, unitNauticalMileId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > LENG > ASTR > Row 1
+;-----------------------------------------------------------------------------
+
+mUnitAstronomicalUnitHandler:
+    ld a, unitAstronomicalUnitId
+    jp commonUnitHandler
+
+mUnitLightYearHandler:
+    ld a, unitLightYearId
+    jp commonUnitHandler
+
+mUnitParsecHandler:
+    ld a, unitParsecId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
