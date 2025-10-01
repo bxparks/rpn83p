@@ -98,7 +98,7 @@ Units [
 
   # Survey: https://en.wikipedia.org/wiki/United_States_customary_units
   # After 2023, most of these were standardized on the SI units. However, the
-  # following units starting with "Survey" uses the pre-2023 definition for
+  # following units starting with "Survey" use the pre-2023 definition for
   # historical purposes.
   #
   # SurveyFoot is deprecated after 2023. Use the pre-2023 definition of
@@ -108,7 +108,7 @@ Units [
   Unit Chain chain Length 20.1168 # 66ft by defn after 2023
   Unit Furlong furlong Length 201.168 # 10 chains by defn after 2023
   # SurveyMile after 2023 is identical to a regular Mile. So this version uses
-  # the pre-2023 definition of 6336/3937km.
+  # the pre-2023 definition of 6336/3937 km.
   Unit SurveyMile survey<Sspace>mi Length 1609.3472186944
   Unit League league Length 4828.032 # 3mi by defn after 2023
 
@@ -128,8 +128,17 @@ Units [
   Unit SqMile mile<Sarea> Area 2.589988110336e6 # 1609.344^2
   Unit SqNauticalMile nmi<Sarea> Area 3429904 # 1852^2
 
-  Unit Acre acre Area 4.0468564224e3 # 66ft*660ft=43560sqft
-  Unit Hectare hectare Area 1e4 # 100m*100m
+  # https://en.wikipedia.org/wiki/Rod_(unit)
+  Unit SqRod rod<Sarea> Area 25.29285264 # (16.5ft)^2=25.29285264 m^2
+  Unit SqChain chain<Sarea> Area 404.68564224 # (66ft)^2=404.68564224 m^2
+  Unit SqFurlong furlong<Sarea> Area 40468.564224 # (660ft)^2=40468.564224 m^2
+
+  # https://en.wikipedia.org/wiki/Acre
+  # acre=66ft*660ft=1chain*1furlong=10sqchain=43560sqft
+  Unit Acre acre Area 4046.8564224
+  # https://en.wikipedia.org/wiki/Hectare
+  # 100m*100m
+  Unit Hectare hectare Area 1e4
 
   # https://en.wikipedia.org/wiki/American_football_field
   Unit USFootball usftball Area 4.45934592e3 # 100yd*160ft=48000sqft

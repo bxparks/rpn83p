@@ -452,6 +452,13 @@ MenuGroup root mRoot [
             MenuItem ha mUnitHectare
             MenuItem usfb mUnitUSFootball
             MenuItem cafb mUnitCAFootball
+            MenuGroup SURV mUnitAreaSurv [
+              MenuRow [
+                MenuItem rod<Sarea> mUnitSqRod
+                MenuItem chn<Sarea> mUnitSqChain
+                MenuItem fur<Sarea> mUnitSqFurlong
+              ]
+            ]
           ]
         ]
         MenuGroup VOL mUnitVol [

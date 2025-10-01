@@ -291,6 +291,22 @@ mUnitCAFootballHandler:
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
+; UNIT > AREA > SURV > ROW 1
+;-----------------------------------------------------------------------------
+
+mUnitSqRodHandler:
+    ld a, unitSqRodId
+    jp commonUnitHandler
+
+mUnitSqChainHandler:
+    ld a, unitSqChainId
+    jp commonUnitHandler
+
+mUnitSqFurlongHandler:
+    ld a, unitSqFurlongId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
 ; UNIT > VOL > Row 1
 ;-----------------------------------------------------------------------------
 
