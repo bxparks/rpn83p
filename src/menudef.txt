@@ -411,7 +411,7 @@ MenuGroup root mRoot [
             ]
             MenuGroup NAUT mNautical [
               MenuRow [
-                MenuItem fthm mUnitFathom
+                MenuItem fath mUnitFathom
                 MenuItem cabl mUnitCable
                 MenuItem nmi mUnitNauticalMile
               ]

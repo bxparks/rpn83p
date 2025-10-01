@@ -5829,7 +5829,7 @@ mUnitSurveyMileName:
 mUnitLeagueName:
     .db "leag", 0
 mUnitFathomName:
-    .db "fthm", 0
+    .db "fath", 0
 mUnitCableName:
     .db "cabl", 0
 mUnitNauticalMileName:
