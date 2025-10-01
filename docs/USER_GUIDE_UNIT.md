@@ -70,11 +70,15 @@ Two miscellaneous functions are available under the `UFCN` menu folder:
 
 ## Supported Units
 
-The following is the list of all units supported. The column `HP` indicates that
-the unit is available on the HP-19BII. The column `TI` indicates that the unit
-is available on the TI-85. RPN83P supports *all* units from both of these
-calculators.
+The following is the complete list of supported units in RPN83P. It includes
+*all* units from both the HP-19BII and the TI-85 calculators. The columns mean
+the following:
 
+- **Unit Name**: the full display name of the unit (up to 10 characters)
+- **Menu**: the short name on the soft menu (3-4 characters)
+- **HP**: the unit is found on the HP-19BII
+- **TI**: the unit is found on the TI-85
+- **Comment**: definitions of the less common units, and other comments
 
 ### Length (LENG)
 
@@ -131,5 +135,5 @@ calculators.
 | `nmi²`        | `nmi²`    |      |      |               |
 | `acre`        | `acre`    | HP   | TI   | 66ft\*660ft   |
 | `hectare`     | `ha`      | HP   | TI   | 100m\*100m    |
-| `usftball`    | `usfb`    |      |      | US NFL football field, 100yd\*160ft |
-| `caftball`    | `cafb`    |      |      | CA CFL football field, 110yd\*65yd |
+| `usftball`    | `usfb`    |      |      | US football field, 100yd\*160ft |
+| `caftball`    | `cafb`    |      |      | CA football field, 110yd\*65yd |
