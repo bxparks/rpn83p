@@ -261,3 +261,20 @@ the following:
 | `inHg`            | `inHg`    |       | TI    | inch of mercurcy = 3386.388640341 Pa (exact) |
 | `mmH2O`           | `mmw`     |       | TI    | mm of water gauge = 9.80665 (exact) by defn |
 | `inH2O`           | `inwg`    |       | TI    | inch of water gauge = 249.08891 Pa (exact) |
+
+### Energy (ENER)
+
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
+| -------------     | --------- |------ |------ | ----------- |
+| **`ENER`**        |           |       |       |             |
+| `eV`              | `eV`      |       | TI    | electron volt |
+| `erg`             | `erg`     |       | TI    | 1e-7 J        |
+| `J`               | `J`       |       |       | base unit, kg\*m/s^2 |
+| `Wh`              | `Wh`      |       |       | 3600 J        |
+| `kWh`             | `kWh`     |       | TI    | 3600e3 J      |
+| `cal`             | `cal`     |       | TI    | 4.184 J (exact) by defn |
+| `kcal`            | `kcal`    |       |       | 4.184 kJ, used for food energy |
+| `ft lbf`          | `ftlb`    |       | TI    | 1.3558179483314 (to 14 digits) |
+| `Btu`             | `Btu`     |       | TI    | British thermal unit, 1055 (approx, various defns) |
+| `tonTNT`          | `tTNT`    |       |       | metric ton of equivalent of TNT, 4.184e9 J (exact) by defn |
+| `liter atm`       | `Latm`    |       | TI    | liter atmosphere, 101.325 J (exact) by defn |
