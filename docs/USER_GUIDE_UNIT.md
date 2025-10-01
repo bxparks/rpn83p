@@ -318,3 +318,11 @@ the following:
 | `mi/hr`           | `mph`     |       | TI    | 1609.344/3600 m/s  (exact) by defn |
 | `knot`            | `knot`    |       | TI    | nautical mile per hour, 1852 m/h (exact) by defn |
 | `light c`         | `c`       |       |       | speed of light, 299792458 m/s (exact) by defn |
+
+### Fuel (FUEL)
+
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
+| -------------     | --------- |------ |------ | -----------   |
+| **`FUEL`**        |           |       |       |               |
+| `L/100km`         | `Lkm`     |       |       | liters per 100 km, Lkm = 100 * (liter/gal) / (km/mile) / mpg |
+| `mpg`             | `mpg`     |       |       | miles per US gal, mpg = 100 * (liter/gal) / (km/mile) / Lkm |
