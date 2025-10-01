@@ -341,19 +341,15 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `ft`: foot
         - `yd`: yard
         - `mi`: mile
-        - `ASTR`: Astronomy units
-        - `NAUT`: Nautical units
+        - `TYPO`: Typographical units
         - `SURV`: Survey units
-        - ![ROOT > UNIT > LENG > ASTR](images/menu/root-unit-leng-astr.png) (ROOT > UNIT > LENG > ASTR)
-            - ![ROOT > UNIT > LENG > ASTR > Row1](images/menu/root-unit-leng-astr-1.png)
-            - `AU`: Astronomical Unit
-            - `ly`: light year
-            - `pc`: parsec
-        - ![ROOT > UNIT > LENG > NAUT](images/menu/root-unit-leng-naut.png) (ROOT > UNIT > LENG > NAUT)
-            - ![ROOT > UNIT > LENG > NAUT > Row1](images/menu/root-unit-leng-naut-1.png)
-            - `fthm`: fanthom
-            - `cabl`: cable
-            - `nmi`: nautical mile
+        - `NAUT`: Nautical units
+        - `ASTR`: Astronomy units
+        - ![ROOT > UNIT > LENG > TYPO](images/menu/root-unit-leng-typo.png) (ROOT > UNIT > LENG > TYPO)
+            - ![ROOT > UNIT > LENG > TYPO > Row1](images/menu/root-unit-leng-typo-1.png)
+            - `twip`: twip (1/20 point)
+            - `pt`: point (1/72 inch)
+            - `pica`: pica (12 point)
         - ![ROOT > UNIT > LENG > SURV](images/menu/root-unit-leng-surv.png) (ROOT > UNIT > LENG > SURV)
             - ![ROOT > UNIT > LENG > SURV > Row1](images/menu/root-unit-leng-surv-1.png)
             - ![ROOT > UNIT > LENG > SURV > Row2](images/menu/root-unit-leng-surv-2.png)
@@ -363,6 +359,17 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
             - `frlg`: furlong
             - `svmi`: survey mile (pre-2023)
             - `league`: league
+        - ![ROOT > UNIT > LENG > NAUT](images/menu/root-unit-leng-naut.png) (ROOT > UNIT > LENG > NAUT)
+            - ![ROOT > UNIT > LENG > NAUT > Row1](images/menu/root-unit-leng-naut-1.png)
+            - `fath`: fathom
+            - `cabl`: cable
+            - `nmi`: nautical mile
+        - ![ROOT > UNIT > LENG > ASTR](images/menu/root-unit-leng-astr.png) (ROOT > UNIT > LENG > ASTR)
+            - ![ROOT > UNIT > LENG > ASTR > Row1](images/menu/root-unit-leng-astr-1.png)
+            - `lsec`: light second
+            - `AU`: Astronomical Unit
+            - `ly`: light year
+            - `pc`: parsec
     - ![ROOT > UNIT > AREA](images/menu/root-unit-area.png) (ROOT > UNIT > AREA)
         - ![ROOT > UNIT > AREA > Row1](images/menu/root-unit-area-1.png)
         - ![ROOT > UNIT > AREA > Row2](images/menu/root-unit-area-2.png)
@@ -469,7 +476,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
             - `lb`: pound
             - `slug`: slug
             - `cwt`: hundred weight (100 lbs)
-            - `ton`: short ton (20 cwt, 2000 lbs)
+            - `ston`: short ton (20 cwt, 2000 lbs)
         - ![ROOT > UNIT > MASS > IMP](images/menu/root-unit-mass-imp.png) (ROOT > UNIT > MASS > IMP)
             - ![ROOT > UNIT > MASS > IMP > Row1](images/menu/root-unit-mass-imp-1.png)
             - `lb`: pound
