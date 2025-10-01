@@ -306,3 +306,15 @@ the following:
 | `day`             | `day`     |       | TI    | 24 hours      |
 | `week`            | `week`    |       | TI    | 7 days        |
 | `year`            | `year`    |       | TI    | Julian year, 365.25 days (exact) by defn |
+
+### Speed (SPD)
+
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
+| -------------     | --------- |------ |------ | -----------   |
+| **`SPD`**         |           |       |       |               |
+| `m/s`             | `m/s`     |       | TI    | base unit     |
+| `ft/s`            | `ft/s`    |       | TI    | 0.3048 m/s (exact) by defn |
+| `km/hr`           | `kph`     |       | TI    | 1000/3600 m/s |
+| `mi/hr`           | `mph`     |       | TI    | 1609.344/3600 m/s  (exact) by defn |
+| `knot`            | `knot`    |       | TI    | nautical mile per hour, 1852 m/h (exact) by defn |
+| `light c`         | `c`       |       |       | speed of light, 299792458 m/s (exact) by defn |
