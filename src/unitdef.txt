@@ -78,9 +78,9 @@ Units [
   # https://en.wikipedia.org/wiki/Astronomical_unit
   Unit AstronomicalUnit AU Length 149597870700 # by defn
   # https://en.wikipedia.org/wiki/Light-year
-  Unit LightYear ly Length 9460730472580.8e3 # exact, 365.25days*c
+  Unit LightYear light<SdotIcon>year Length 9460730472580.8e3 # exact, 365.25days*c
   # https://en.wikipedia.org/wiki/Parsec
-  Unit Parsec pc Length 30856775814913673 # 648000/pi AU
+  Unit Parsec parsec Length 30856775814913673 # 648000/pi AU
 
   # Nautical: https://en.wikipedia.org/wiki/United_States_customary_units
   Unit Fathom fathom Length 1.8288 # 6 feet

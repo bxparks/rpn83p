@@ -76,7 +76,7 @@ unitTypeFuelId equ 12
 ;-----------------------------------------------------------------------------
 
 unitTypeNamesCount equ 163 ; number of unit names
-unitTypeNamesPoolSize equ 1354 ; size of unit type names string pool
+unitTypeNamesPoolSize equ 1375 ; size of unit type names string pool
 
 unitTypeNullTypeName:
     .db "nulltype", 0
@@ -933,7 +933,7 @@ unitLitersPerHundredKiloMetersId equ 162
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 163 ; number of unit names
-unitNamesPoolSize equ 1354 ; size of unit names string pool
+unitNamesPoolSize equ 1375 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -966,9 +966,9 @@ unitMileName:
 unitAstronomicalUnitName:
     .db "AU", 0
 unitLightYearName:
-    .db "ly", 0
+    .db 'l', 'i', 'g', 'h', 't', SdotIcon, 'y', 'e', 'a', 'r', 0
 unitParsecName:
-    .db "pc", 0
+    .db "parsec", 0
 unitFathomName:
     .db "fathom", 0
 unitCableName:
