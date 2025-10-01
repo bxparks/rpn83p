@@ -194,6 +194,10 @@ mUnitNauticalMileHandler:
 ; UNIT > LENG > ASTR > Row 1
 ;-----------------------------------------------------------------------------
 
+mUnitLightSecondHandler:
+    ld a, unitLightSecondId
+    jp commonUnitHandler
+
 mUnitAstronomicalUnitHandler:
     ld a, unitAstronomicalUnitId
     jp commonUnitHandler

@@ -418,6 +418,7 @@ MenuGroup root mRoot [
             ]
             MenuGroup ASTR mAstronomy [
               MenuRow [
+                MenuItem lsec mUnitLightSecond
                 MenuItem AU mUnitAstronomicalUnit
                 MenuItem ly mUnitLightYear
                 MenuItem pc mUnitParsec

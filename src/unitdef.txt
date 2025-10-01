@@ -75,6 +75,8 @@ Units [
   Unit Mile mile Length 1609.344
 
   # Astronomical
+  # https://en.wikipedia.org/wiki/Light-second
+  Unit LightSecond light<SdotIcon>sec Length 299792458 # by defn
   # https://en.wikipedia.org/wiki/Astronomical_unit
   Unit AstronomicalUnit AU Length 149597870700 # by defn
   # https://en.wikipedia.org/wiki/Light-year

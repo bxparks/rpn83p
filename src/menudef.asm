@@ -2352,7 +2352,7 @@ mAstronomyId equ 249
     .dw mUnitLenghId ; parentId
     .dw mAstronomyName ; name
     .db 1 ; numRows
-    .dw mUnitAstronomicalUnitId ; rowBeginId or altName
+    .dw mUnitLightSecondId ; rowBeginId or altName
     .dw mGroupHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank250:
@@ -2515,8 +2515,17 @@ mBlank266Id equ 266
     .dw 0 ; nameSelector
 ; MenuGroup ASTR: children
 ; MenuGroup ASTR: children: row 0
+mUnitLightSecond:
+mUnitLightSecondId equ 267
+    .dw mUnitLightSecondId ; id
+    .dw mAstronomyId ; parentId
+    .dw mUnitLightSecondName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitLightSecondHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mUnitAstronomicalUnit:
-mUnitAstronomicalUnitId equ 267
+mUnitAstronomicalUnitId equ 268
     .dw mUnitAstronomicalUnitId ; id
     .dw mAstronomyId ; parentId
     .dw mUnitAstronomicalUnitName ; name
@@ -2525,7 +2534,7 @@ mUnitAstronomicalUnitId equ 267
     .dw mUnitAstronomicalUnitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitLightYear:
-mUnitLightYearId equ 268
+mUnitLightYearId equ 269
     .dw mUnitLightYearId ; id
     .dw mAstronomyId ; parentId
     .dw mUnitLightYearName ; name
@@ -2534,22 +2543,13 @@ mUnitLightYearId equ 268
     .dw mUnitLightYearHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitParsec:
-mUnitParsecId equ 269
+mUnitParsecId equ 270
     .dw mUnitParsecId ; id
     .dw mAstronomyId ; parentId
     .dw mUnitParsecName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitParsecHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank270:
-mBlank270Id equ 270
-    .dw mBlank270Id ; id
-    .dw mAstronomyId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank271:
 mBlank271Id equ 271
@@ -5307,8 +5307,8 @@ mSetClockId equ 566
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 474 ; number of names and altnames
-mNamesPoolSize equ 3978 ; size of names string pool
+mNamesCount equ 475 ; number of names and altnames
+mNamesPoolSize equ 3983 ; size of names string pool
 
 mNullName:
     .db 0
@@ -5834,6 +5834,8 @@ mUnitCableName:
     .db "cabl", 0
 mUnitNauticalMileName:
     .db "nmi", 0
+mUnitLightSecondName:
+    .db "lsec", 0
 mUnitAstronomicalUnitName:
     .db "AU", 0
 mUnitLightYearName:
