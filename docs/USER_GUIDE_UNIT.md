@@ -74,7 +74,7 @@ The following is the complete list of supported units in RPN83P. It includes
 *all* units from both the HP-19BII and the TI-85 calculators. The columns mean
 the following:
 
-- **Unit Name**: the full display name of the unit (up to 10 characters)
+- **Display Name**: the display name of the unit (up to 10 characters)
 - **Menu**: the short name on the soft menu (3-4 characters)
 - **HP**: the unit is found on the HP-19BII
 - **TI**: the unit is found on the TI-85
@@ -82,149 +82,149 @@ the following:
 
 ### Length (LENG)
 
-| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
-| ------------- | --------- |------|------| ------------  |
-| **`LENG`**    |           |      |      |               |
-| `fermi`       | `ferm`    |      | TI   | 1e-15 m       |
-| `angstrom`    | `angs`    |      | TI   | 1e-10 m       |
-| `nm`          | `nm`      |      | TI   | 1e-9 m        |
-| `μm`          | `μm`      |      |      | 1e-6 m        |
-| `mm`          | `mm`      | HP   | TI   |               |
-| `cm`          | `cm`      | HP   | TI   |               |
-| `m`           | `m`       | HP   | TI   |               |
-| `km`          | `km`      | HP   | TI   |               |
-| `mil`         | `mil`     |      | TI   | 1/1000 in     |
-| `inch`        | `in`      | HP   | TI   | 25.4 mm       |
-| `foot`        | `ft`      | HP   | TI   | 12 in         |
-| `yard`        | `yd`      | HP   | TI   | 3 ft          |
-| `mile`        | `mi`      | HP   | TI   | 1760 yd       |
-| **`LENG > TYPO`**    |           |      |      |               |
-| `twip`        | `twip`    |      |      | 1/20 pt       |
-| `point`       | `pt`      |      |      | 1/72 inch     |
-| `pica`        | `pica`    |      |      | 12 pt         |
-| **`LENG > SURV`**    |           |      |      |               |
-| `survey ft`   | `svft`    | HP   | TI   | using pre-2023 defn of 1200/3937 m |
-| `rod`         | `rod`     | HP   | TI   | 16.5 ft       |
-| `chain`       | `chai`    | HP   | TI   | 4 rods, 66 ft |
-| `furlong`     | `frlg`    |      |      | 10 chains     |
-| `survey mi`   | `svmi`    | HP   |      | using pre-2023 defn of 6336/3937 km; called "statutory mile" in HP-19BII |
-| `league`      | `leag`    |      |      | 3 (normal) miles |
-| **`LENG > NAUT`**    |           |      |      |               |
-| `fathom`      | `fath`    | HP   | TI   | 6 feet        |
-| `cable`       | `cabl`    |      |      | 3429/15625 km |
-| `nmi`         | `nmi`     | HP   | TI   | 1852 m (exact) by defn |
-| **`LENG > ASTR`**    |           |      |      |               |
-| `light sec`   | `lsec`    |      |      |               |
-| `AU`          | `AU`      |      |      |               |
-| `light year`  | `ly`      |      | TI   |               |
-| `parsec`      | `pc`      |      |      |               |
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
+| -------------     | --------- |------ |------ | ------------  |
+| **`LENG`**        |           |       |       |               |
+| `fermi`           | `ferm`    |       | TI    | 1e-15 m       |
+| `angstrom`        | `angs`    |       | TI    | 1e-10 m       |
+| `nm`              | `nm`      |       | TI    | 1e-9 m        |
+| `μm`              | `μm`      |       |       | 1e-6 m        |
+| `mm`              | `mm`      | HP    | TI    |               |
+| `cm`              | `cm`      | HP    | TI    |               |
+| `m`               | `m`       | HP    | TI    |               |
+| `km`              | `km`      | HP    | TI    |               |
+| `mil`             | `mil`     |       | TI    | 1/1000 in     |
+| `inch`            | `in`      | HP    | TI    | 25.4 mm       |
+| `foot`            | `ft`      | HP    | TI    | 12 in         |
+| `yard`            | `yd`      | HP    | TI    | 3 ft          |
+| `mile`            | `mi`      | HP    | TI    | 1760 yd       |
+| **`LENG > TYPO`** |           |       |       |               |
+| `twip`            | `twip`    |       |       | 1/20 pt       |
+| `point`           | `pt`      |       |       | 1/72 inch     |
+| `pica`            | `pica`    |       |       | 12 pt         |
+| **`LENG > SURV`** |           |       |       |               |
+| `survey ft`       | `svft`    | HP    | TI    | using pre-2023 defn of 1200/3937 m |
+| `rod`             | `rod`     | HP    | TI    | 16.5 ft       |
+| `chain`           | `chai`    | HP    | TI    | 4 rods, 66 ft |
+| `furlong`         | `frlg`    |       |       | 10 chains     |
+| `survey mi`       | `svmi`    | HP    |       | using pre-2023 defn of 6336/3937 km; called "statutory mile" in HP-19BII |
+| `league`          | `leag`    |       |       | 3 (normal) miles |
+| **`LENG > NAUT`** |           |       |       |               |
+| `fathom`          | `fath`    | HP    | TI    | 6 feet        |
+| `cable`           | `cabl`    |       |       | 3429/15625 km |
+| `nmi`             | `nmi`     | HP    | TI    | 1852 m (exact) by defn |
+| **`LENG > ASTR`** |           |       |       |               |
+| `light sec`       | `lsec`    |       |       |               |
+| `AU`              | `AU`      |       |       |               |
+| `light year`      | `ly`      |       | TI    |               |
+| `parsec`          | `pc`      |       |       |               |
 
 ### Area (AREA)
 
-| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
-| ------------- | --------- |------|------| ------------  |
-| **`AREA`**    |           |      |      |               |
-| `mm²`         | `mm²`     |      |      |               |
-| `cm²`         | `cm²`     | HP   | TI   |               |
-| `m²`          | `m²`      | HP   | TI   |               |
-| `km²`         | `km²`     | HP   | TI   |               |
-| `inch²`       | `in²`     | HP   | TI   |               |
-| `foot²`       | `ft²`     | HP   | TI   |               |
-| `yard²`       | `yd²`     | HP   | TI   |               |
-| `mile²`       | `mi²`     | HP   | TI   |               |
-| `nmi²`        | `nmi²`    |      |      |               |
-| `acre`        | `acre`    | HP   | TI   | 66ft\*660ft   |
-| `hectare`     | `ha`      | HP   | TI   | 100m\*100m    |
-| `usftball`    | `usfb`    |      |      | US football field, 100yd\*160ft |
-| `caftball`    | `cafb`    |      |      | CA football field, 110yd\*65yd |
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
+| -------------     | --------- |------ |------ | ------------  |
+| **`AREA`**        |           |       |       |               |
+| `mm²`             | `mm²`     |       |       |               |
+| `cm²`             | `cm²`     | HP    | TI    |               |
+| `m²`              | `m²`      | HP    | TI    |               |
+| `km²`             | `km²`     | HP    | TI    |               |
+| `inch²`           | `in²`     | HP    | TI    |               |
+| `foot²`           | `ft²`     | HP    | TI    |               |
+| `yard²`           | `yd²`     | HP    | TI    |               |
+| `mile²`           | `mi²`     | HP    | TI    |               |
+| `nmi²`            | `nmi²`    |       |       |               |
+| `acre`            | `acre`    | HP    | TI    | 66ft\*660ft   |
+| `hectare`         | `ha`      | HP    | TI    | 100m\*100m    |
+| `usftball`        | `usfb`    |       |       | US football field, 100yd\*160ft |
+| `caftball`        | `cafb`    |       |       | CA football field, 110yd\*65yd |
 
 ### Volume (VOL)
 
-| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
-| ------------- | --------- |------|------| ------------  |
-| **`VOL`**     |           |      |      |               |
-| `mm³`         | `mm³`     |      |      |               |
-| `cm³`         | `cm³`     |      | TI   |               |
-| `m³`          | `m³`      | HP   | TI   |               |
-| `km³`         | `km³`     |      |      |               |
-| `inch³`       | `in³`     | HP   | TI   |               |
-| `foot³`       | `ft³`     | HP   | TI   |               |
-| `yard³`       | `yd³`     | HP   |      |               |
-| `mile³`       | `mi³`     |      |      |               |
-| `nmi³`        | `nmi³`    |      |      |               |
-| `μL`          | `μL`      |      |      |               |
-| `mL`          | `mL`      | HP   | TI   |               |
-| `L`           | `L`       | HP   | TI   |               |
-| `met tsp`     | `mtsp`    |      |      | metric teaspoon, 5 mL |
-| `met tbsp`    | `mtbs`    |      |      | metric tablespoon, 15 mL |
-| **`VOL > US`**     |           |      |      |               |
-| `tsp`         | `tsp`     | HP   | TI   | 1/3 tbsp        |
-| `tbsp`        | `tbsp`    | HP   | TI   | 1/2 floz        |
-| `floz`        | `floz`    | HP   | TI   | 1/4 gill        |
-| `gill`        | `gill`    |      |      | 1/2 cup         |
-| `cup`         | `cup`     | HP   | TI   | 1/2 pint        |
-| `pint`        | `pint`    | HP   | TI   | 1/2 quart       |
-| `quart`       | `qt`      | HP   | TI   | 1/4 gal         |
-| `gal`         | `gal`     | HP   | TI   | 231 in^3 by defn|
-| **`VOL > IMP`**     |           |      |      |               |
-| `imp tsp`     | `tsp`     |      |      | **1/4** imp tbsp |
-| `imp tbsp`    | `tbsp`    |      |      | 1/2 imp floz     |
-| `imp floz`    | `floz`    |      | TI   | **1/5** imp gill |
-| `imp gill`    | `gill`    |      |      | 1/2 imp cup      |
-| `imp cup`     | `cup`     |      |      | 1/2 imp pint     |
-| `imp pint`    | `pint`    |      |      | 1/2 imp quart    |
-| `imp quart`   | `qt`      |      |      | 1/4 imp gal      |
-| `imp gal`     | `gal`     | HP   | TI   | 4.54609 liter (exact) by defn   |
-| **`VOL > DRY`**     |           |      |      |               |
-| `dry pt`      | `drpt`    |      |      | 33.6003125 in^3 (exact) by defn |
-| `dry qt`      | `drqt`    |      |      | 2 dry pint      |
-| `dry gal`     | `dgal`    | HP   |      | 4 dry quart     |
-| `peck`        | `peck`    | HP   |      | 2 dry gallon    |
-| `bushel`      | `bush`    | HP   |      | 4 peck          |
-| `dry bbl`     | `dbbl`    |      |      | 7056 in^3       |
-| **`VOL > MISC`**     |           |      |      |               |
-| `board foot`  | `bdft`    | HP   |      | 1/12 ft^3       |
-| `barrel`      | `bbl`     | HP   |      | oil barrel, 42 US gal by defn |
-| `olmp pool`   | `olmp`    |      |      | Olympic swimming pool, 50m\*25m\*2m |
-| `acre foot`   | `acft`    | HP   |      | acre-foot, 66ft\*660ft\*1ft |
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
+| -------------     | --------- |------ |------ | ------------  |
+| **`VOL`**         |           |       |       |               |
+| `mm³`             | `mm³`     |       |       |               |
+| `cm³`             | `cm³`     |       | TI    |               |
+| `m³`              | `m³`      | HP    | TI    |               |
+| `km³`             | `km³`     |       |       |               |
+| `inch³`           | `in³`     | HP    | TI    |               |
+| `foot³`           | `ft³`     | HP    | TI    |               |
+| `yard³`           | `yd³`     | HP    |       |               |
+| `mile³`           | `mi³`     |       |       |               |
+| `nmi³`            | `nmi³`    |       |       |               |
+| `μL`              | `μL`      |       |       |               |
+| `mL`              | `mL`      | HP    | TI    |               |
+| `L`               | `L`       | HP    | TI    |               |
+| `met tsp`         | `mtsp`    |       |       | metric teaspoon, 5 mL |
+| `met tbsp`        | `mtbs`    |       |       | metric tablespoon, 15 mL |
+| **`VOL > US`**    |           |       |       |               |
+| `tsp`             | `tsp`     | HP    | TI    | 1/3 tbsp        |
+| `tbsp`            | `tbsp`    | HP    | TI    | 1/2 floz        |
+| `floz`            | `floz`    | HP    | TI    | 1/4 gill        |
+| `gill`            | `gill`    |       |       | 1/2 cup         |
+| `cup`             | `cup`     | HP    | TI    | 1/2 pint        |
+| `pint`            | `pint`    | HP    | TI    | 1/2 quart       |
+| `quart`           | `qt`      | HP    | TI    | 1/4 gal         |
+| `gal`             | `gal`     | HP    | TI    | 231 in^3 by defn|
+| **`VOL > IMP`**   |           |       |       |               |
+| `imp tsp`         | `tsp`     |       |       | **1/4** imp tbsp |
+| `imp tbsp`        | `tbsp`    |       |       | 1/2 imp floz     |
+| `imp floz`        | `floz`    |       | TI    | **1/5** imp gill |
+| `imp gill`        | `gill`    |       |       | 1/2 imp cup      |
+| `imp cup`         | `cup`     |       |       | 1/2 imp pint     |
+| `imp pint`        | `pint`    |       |       | 1/2 imp quart    |
+| `imp quart`       | `qt`      |       |       | 1/4 imp gal      |
+| `imp gal`         | `gal`     | HP    | TI    | 4.54609 liter (exact) by defn   |
+| **`VOL > DRY`**   |           |       |       |               |
+| `dry pt`          | `drpt`    |       |       | 33.6003125 in^3 (exact) by defn |
+| `dry qt`          | `drqt`    |       |       | 2 dry pint      |
+| `dry gal`         | `dgal`    | HP    |       | 4 dry quart     |
+| `peck`            | `peck`    | HP    |       | 2 dry gallon    |
+| `bushel`          | `bush`    | HP    |       | 4 peck          |
+| `dry bbl`         | `dbbl`    |       |       | 7056 in^3       |
+| **`VOL > MISC`**  |           |       |       |               |
+| `board foot`      | `bdft`    | HP    |       | 1/12 ft^3       |
+| `barrel`          | `bbl`     | HP    |       | oil barrel, 42 US gal by defn |
+| `olmp pool`       | `olmp`    |       |       | Olympic swimming pool, 50m\*25m\*2m |
+| `acre foot`       | `acft`    | HP    |       | acre-foot, 66ft\*660ft\*1ft |
 
 ### Temperature (TEMP)
 
-| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment**   |
-| ------------- | --------- |------|------| ------------  |
-| **`TEMP`**    |           |      |      |               |
-| `°C`          | `°C`      | HP   | TI   | Celsius = 273.15 + Kelvin |
-| `°F`          | `°F`      | HP   | TI   | Fahrenheit = Celsius * 9 / 5 + 32 |
-| `°R`          | `°R`      | HP   | TI   | Rankine = Kelvin * 9 / 5 |
-| `°K`          | `°K`      | HP   | TI   | Kelvin, degree symbol used for UI consistency |
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
+| -------------     | --------- |------ |------ | ------------  |
+| **`TEMP`**        |           |       |       |               |
+| `°C`              | `°C`      | HP    | TI    | Celsius = 273.15 + Kelvin |
+| `°F`              | `°F`      | HP    | TI    | Fahrenheit = Celsius * 9 / 5 + 32 |
+| `°R`              | `°R`      | HP    | TI    | Rankine = Kelvin * 9 / 5 |
+| `°K`              | `°K`      | HP    | TI    | Kelvin, degree symbol used for UI consistency |
 
 ### Mass (MASS)
 
-| **Unit Name** | **Menu**  |**HP**|**TI**| **Comment** |
-| ------------- | --------- |------|------| ----------- |
-| **`MASS`**    |           |      |      |             |
-| `μg`          | `μg`      |      |      | 1e-6 g      |
-| `mg`          | `mg`      | HP   |      |             |
-| `g`           | `g`       | HP   | TI   |             |
-| `kg`          | `kg`      | HP   | TI   |             |
-| `met ton`     | `t`       | HP   | TI   | metric ton, also known as tonne, 1000 kg  |
-| `amu`         | `amu`     |      | TI   | atomic mass unit, also known as Dalton, 1.66053906892e-27 kg (measured) |
-| **`MASS > US`**    |           |      |      |             |
-| `grain`       | `grai`    | HP   |      | 1/7000 lb |
-| `dram`        | `dram`    | HP   |      | 1/16 oz |
-| `ounce`       | `oz`      | HP   |      | 1/16 lb |
-| `pound`       | `lb`      | HP   | TI   | 0.45359237 kg (exact) by defn |
-| `slug`        | `slug`    | HP   | TI   | 14.593902937207 kg (approx) |
-| `cwt`         | `cwt`     | HP   |      | hundredweight, 100 lbs |
-| `short ton`   | `ston`    | HP   | TI   | short ton, 200 cwt, 2000 lbs |
-| **`MASS > IMP`**    |           |      |      |             |
-| `pound`       | `lb`      | HP   | TI   | 0.45359237 kg (exact) by defn |
-| `stone`       | `stne`    | HP   |      | 14 lbs |
-| `quarter`     | `qrtr`    |      |      | 2 stones |
-| `long cwt`    | `lcwt`    | HP   |      | long hundredweight, 8 stones, 112 lbs |
-| `long ton`    | `lton`    | HP   |      | long ton, 200 lcwt, 2240 lbs |
-| **`MASS > TROY`**    |           |      |      |             |
-| `grain`       | `grai`    |      |      | 1/7000 lb |
-| `troy dwt`    | `dwt`     |      |      | troy pennyweight, 24 grains |
-| `troy ozt`    | `ozt`     | HP   |      | troy ounce, 20 troy pennyweight |
-| `troy lbt`    | `lbt`     |      |      | troy pound, 12 troy oz |
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
+| -------------     | --------- |------ |------ | ----------- |
+| **`MASS`**        |           |       |       |             |
+| `μg`              | `μg`      |       |       | 1e-6 g      |
+| `mg`              | `mg`      | HP    |       |             |
+| `g`               | `g`       | HP    | TI    |             |
+| `kg`              | `kg`      | HP    | TI    |             |
+| `met ton`         | `t`       | HP    | TI    | metric ton, also known as tonne, 1000 kg  |
+| `amu`             | `amu`     |       | TI    | atomic mass unit, also known as Dalton, 1.66053906892e-27 kg (measured) |
+| **`MASS > US`**   |           |       |       |             |
+| `grain`           | `grai`    | HP    |       | 1/7000 lb |
+| `dram`            | `dram`    | HP    |       | 1/16 oz |
+| `ounce`           | `oz`      | HP    |       | 1/16 lb |
+| `pound`           | `lb`      | HP    | TI    | 0.45359237 kg (exact) by defn |
+| `slug`            | `slug`    | HP    | TI    | 14.593902937207 kg (approx) |
+| `cwt`             | `cwt`     | HP    |       | hundredweight, 100 lbs |
+| `short ton`       | `ston`    | HP    | TI    | short ton, 200 cwt, 2000 lbs |
+| **`MASS > IMP`**  |           |       |       |             |
+| `pound`           | `lb`      | HP    | TI    | 0.45359237 kg (exact) by defn |
+| `stone`           | `stne`    | HP    |       | 14 lbs |
+| `quarter`         | `qrtr`    |       |       | 2 stones |
+| `long cwt`        | `lcwt`    | HP    |       | long hundredweight, 8 stones, 112 lbs |
+| `long ton`        | `lton`    | HP    |       | long ton, 200 lcwt, 2240 lbs |
+| **`MASS > TROY`** |           |       |       |             |
+| `grain`           | `grai`    |       |       | 1/7000 lb |
+| `troy dwt`        | `dwt`     |       |       | troy pennyweight, 24 grains |
+| `troy ozt`        | `ozt`     | HP    |       | troy ounce, 20 troy pennyweight |
+| `troy lbt`        | `lbt`     |       |       | troy pound, 12 troy oz |
