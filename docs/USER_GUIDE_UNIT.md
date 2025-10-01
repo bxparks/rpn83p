@@ -228,3 +228,17 @@ the following:
 | `troy dwt`        | `dwt`     |       |       | troy pennyweight, 24 grains |
 | `troy ozt`        | `ozt`     | HP    |       | troy ounce, 20 troy pennyweight |
 | `troy lbt`        | `lbt`     |       |       | troy pound, 12 troy oz |
+
+### Force (FORC)
+
+| **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
+| -------------     | --------- |------ |------ | ----------- |
+| **`FORC`**        |           |       |       |             |
+| `dyne`            | `dyne`    |       | TI    | 1e-5 N      |
+| `newton`          | `N`       |       | TI    |             |
+| `kgf`             | `kgf`     |       | TI    | kilogram force = 9.80665 N (exact) by defn |
+| `tonf`            | `tonf`    |       | TI    | metric ton force = 1000 kgf    |
+| `poundal`         | `pdl`     |       |       | 1lb * 1ft/s^2 = 0.45359237 * 0.3048 = 0.138254954376 N (exact) |
+| `lbf`             | `lbf`     |       | TI    | pound force = 1lb * 9.80665m/s^2 = 0.45359237 * 9.80665 = 4.4482216152605 N (exact) |
+| `stonf`           | `stonf`   |       |       | short ton force = 2000 lbf    |
+| `ltonf`           | `ltonf`   |       |       | long ton force = 2240 lbf    |
