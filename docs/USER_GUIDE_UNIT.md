@@ -65,13 +65,30 @@ Basic arithmetic operations are supported on Denominate objects:
 
 | **Operation**                 | **Result**    |
 | -------------------------     | ----------    |
-| {Denominate} + {Denominate}   | {Denominate}  |
-| {Denominate} - {Denominate}   | {Denominate}  |
+| {Denominate} + {Denominate}   | {Denominate} (using unit of `Y`) |
+| {Denominate} - {Denominate}   | {Denominate} (using unit of `Y`) |
 | {float} * {Denominate}        | {Denominate}  |
 | {Denominate} * {float}        | {Denominate}  |
 | {Denominate} / {float}        | {Denominate}  |
 
-TODO: Insert screenshots of UNIT arithmetics.
+Let's enter '6 feet 2 inches', convert that to inches, then divide that by 3:
+
+| **Keys**          | **Display**                      |
+| ----------------  | ---------------------            |
+| `6`               | ![](images/unit/unit-arithmetic-leng-1.png) |
+| `ft`              | ![](images/unit/unit-arithmetic-leng-2.png) |
+| `2`               | ![](images/unit/unit-arithmetic-leng-3.png) |
+| `in`              | ![](images/unit/unit-arithmetic-leng-4.png) |
+| `+`               | ![](images/unit/unit-arithmetic-leng-5.png) |
+| `3`               | ![](images/unit/unit-arithmetic-leng-6.png) |
+| `/`               | ![](images/unit/unit-arithmetic-leng-7.png) |
+| `in`              | ![](images/unit/unit-arithmetic-leng-8.png) |
+
+For the `+` and `-` operations, the result uses the unit of the Denominate
+object in the `Y` register (not the `X`). This seemed to be the more convenient
+behavior because I was often accumulating multiple measurements or items into
+the `Y` register, for example, adding 3 wooden pieces of '3ft 3in', '2ft 1in',
+and '1ft 8in', and I wanted to retain the larger unit.
 
 ## UNIT FCN
 
