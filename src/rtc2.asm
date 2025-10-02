@@ -70,7 +70,7 @@ RtcGetOffsetDateTimeForUtc:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Set the RTC time zone to the Offset{} or Real given in OP1.
+; Description: Set the RTC timezone to the Offset{} or Real given in OP1.
 ; If a Real is given, it is converted into an Offset{}, then stored.
 ; Input: OP1:RpnOffset{} or Real
 ; Output: (rtcTimeZone) updated
@@ -95,7 +95,7 @@ rtcSetTimeZoneForOffset:
     ld (rtcTimeZone), bc
     ret
 
-; Description: Get the RTC time zone into OP1.
+; Description: Get the RTC timezone into OP1.
 ; Input: OP1:RpnOffset
 ; Output: none
 RtcGetTimeZone:

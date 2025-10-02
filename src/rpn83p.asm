@@ -611,10 +611,10 @@ currentEpochDate equ epochType + 1 ; Date{y,m,d}, 4 bytes
 ; Custom value of the Epoch Date if epochTypeCustom selected.
 customEpochDate equ currentEpochDate + 4 ; Date{y,m,d}, 4 bytes
 
-; Set default time zone.
+; Set application timezone.
 appTimeZone equ customEpochDate + 4 ; Offset{hh,mm}, 2 bytes
 
-; Set clock time zone
+; Set clock timezone
 rtcTimeZone equ appTimeZone + 2 ; Offset{hh,mm}, 2 bytes
 
 ; End application variables.
