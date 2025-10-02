@@ -5402,7 +5402,7 @@ mSetClockId equ 576
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 483 ; number of names and altnames
-mNamesPoolSize equ 4040 ; size of names string pool
+mNamesPoolSize equ 2275 ; size of names string pool
 
 mNullName:
     .db 0

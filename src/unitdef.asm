@@ -75,8 +75,8 @@ unitTypeFuelId equ 12
 ; List of UnitType names.
 ;-----------------------------------------------------------------------------
 
-unitTypeNamesCount equ 170 ; number of unit names
-unitTypeNamesPoolSize equ 1680 ; size of unit type names string pool
+unitTypeNamesCount equ 170 ; number of unit type names
+unitTypeNamesPoolSize equ 82 ; size of unit type names string pool
 
 unitTypeNullTypeName:
     .db "nulltype", 0
@@ -968,7 +968,7 @@ unitLitersPerHundredKiloMetersId equ 169
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 170 ; number of unit names
-unitNamesPoolSize equ 1680 ; size of unit names string pool
+unitNamesPoolSize equ 1133 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
