@@ -3492,14 +3492,14 @@ mUnitSlugId equ 371
     .dw mUnitSlugHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 ; MenuGroup US: children: row 1
-mUnitHundredWeight:
-mUnitHundredWeightId equ 372
-    .dw mUnitHundredWeightId ; id
+mUnitShortHundredWeight:
+mUnitShortHundredWeightId equ 372
+    .dw mUnitShortHundredWeightId ; id
     .dw mUnitMassUSId ; parentId
-    .dw mUnitHundredWeightName ; name
+    .dw mUnitShortHundredWeightName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
-    .dw mUnitHundredWeightHandler ; handler (to be implemented)
+    .dw mUnitShortHundredWeightHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitShortTon:
 mUnitShortTonId equ 373
@@ -5402,7 +5402,7 @@ mSetClockId equ 576
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 483 ; number of names and altnames
-mNamesPoolSize equ 4039 ; size of names string pool
+mNamesPoolSize equ 4040 ; size of names string pool
 
 mNullName:
     .db 0
@@ -6102,8 +6102,8 @@ mUnitPoundName:
     .db "lb", 0
 mUnitSlugName:
     .db "slug", 0
-mUnitHundredWeightName:
-    .db "cwt", 0
+mUnitShortHundredWeightName:
+    .db "scwt", 0
 mUnitShortTonName:
     .db "ston", 0
 mUnitImpPoundName:

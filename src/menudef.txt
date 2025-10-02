@@ -562,7 +562,7 @@ MenuGroup root mRoot [
                 MenuItem slug mUnitSlug
               ]
               MenuRow [
-                MenuItem cwt mUnitHundredWeight
+                MenuItem scwt mUnitShortHundredWeight
                 MenuItem ston mUnitShortTon
               ]
             ]

@@ -566,7 +566,7 @@ mUnitSlugHandler:
 ; UNIT > MASS > US > Row 2
 ;-----------------------------------------------------------------------------
 
-mUnitHundredWeightHandler:
+mUnitShortHundredWeightHandler:
     ld a, unitHundredWeightId
     jp commonUnitHandler
 
