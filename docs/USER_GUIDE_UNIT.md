@@ -94,19 +94,19 @@ the following:
 | `angstrom`        | `angs`    |       | TI    | 1e-10 m       |
 | `nm`              | `nm`      |       | TI    | 1e-9 m        |
 | `μm`              | `μm`      |       |       | 1e-6 m        |
-| `mm`              | `mm`      | HP    | TI    |               |
-| `cm`              | `cm`      | HP    | TI    |               |
-| `m`               | `m`       | HP    | TI    |               |
-| `km`              | `km`      | HP    | TI    |               |
-| `mil`             | `mil`     |       | TI    | 1/1000 in     |
-| `inch`            | `in`      | HP    | TI    | 25.4 mm       |
-| `foot`            | `ft`      | HP    | TI    | 12 in         |
+| `mm`              | `mm`      | HP    | TI    | 1e-3 m        |
+| `cm`              | `cm`      | HP    | TI    | 1e-2 m        |
+| `m`               | `m`       | HP    | TI    | **base unit** |
+| `km`              | `km`      | HP    | TI    | 1e3 m         |
+| `mil`             | `mil`     |       | TI    | 1/1000 inch   |
+| `inch`            | `in`      | HP    | TI    | 25.4 mm (exact) by defn |
+| `foot`            | `ft`      | HP    | TI    | 12 inch       |
 | `yard`            | `yd`      | HP    | TI    | 3 ft          |
 | `mile`            | `mi`      | HP    | TI    | 1760 yd       |
 | **`LENG > TYPO`** |           |       |       |               |
-| `twip`            | `twip`    |       |       | 1/20 pt       |
+| `twip`            | `twip`    |       |       | 1/20 point    |
 | `point`           | `pt`      |       |       | 1/72 inch     |
-| `pica`            | `pica`    |       |       | 12 pt         |
+| `pica`            | `pica`    |       |       | 12 point      |
 | **`LENG > SURV`** |           |       |       |               |
 | `survey ft`       | `svft`    | HP    | TI    | using pre-2023 defn of 1200/3937 m |
 | `rod`             | `rod`     | HP    | TI    | 16.5 ft       |
@@ -117,27 +117,27 @@ the following:
 | **`LENG > NAUT`** |           |       |       |               |
 | `fathom`          | `fath`    | HP    | TI    | 6 feet        |
 | `cable`           | `cabl`    |       |       | 3429/15625 km |
-| `naut mile`       | `nmi`     | HP    | TI    | 1852 m (exact) by defn |
+| `nmile`           | `nmi`     | HP    | TI    | 1852 m (exact) by defn |
 | **`LENG > ASTR`** |           |       |       |               |
-| `light·sec`       | `lsec`    |       |       |               |
-| `AU`              | `AU`      |       |       |               |
-| `light·year`      | `ly`      |       | TI    |               |
-| `parsec`          | `pc`      |       |       |               |
+| `light·sec`       | `lsec`    |       |       | 299792458 m (exact) by defn |
+| `AU`              | `AU`      |       |       | 1.49597870700e11 (exact) by defn |
+| `light·year`      | `ly`      |       | TI    | 9.4607304725808e15 (exact) |
+| `parsec`          | `pc`      |       |       | 648000/pi AU = 30856775814913673 m (rounded to 14 digits) |
 
 ### Area (AREA)
 
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
 | -------------     | --------- |------ |------ | ------------  |
 | **`AREA`**        |           |       |       |               |
-| `mm²`             | `mm²`     |       |       |               |
-| `cm²`             | `cm²`     | HP    | TI    |               |
-| `m²`              | `m²`      | HP    | TI    |               |
-| `km²`             | `km²`     | HP    | TI    |               |
-| `inch²`           | `in²`     | HP    | TI    |               |
-| `foot²`           | `ft²`     | HP    | TI    |               |
-| `yard²`           | `yd²`     | HP    | TI    |               |
-| `mile²`           | `mi²`     | HP    | TI    |               |
-| `nmi²`            | `nmi²`    |       |       |               |
+| `mm²`             | `mm²`     |       |       | 1e-6 m^2      |
+| `cm²`             | `cm²`     | HP    | TI    | 1e-4 m^2      |
+| `m²`              | `m²`      | HP    | TI    | **base unit** |
+| `km²`             | `km²`     | HP    | TI    | 1e+6 m^2      |
+| `inch²`           | `in²`     | HP    | TI    | (0.0254m)^2   |
+| `foot²`           | `ft²`     | HP    | TI    | (0.3048m)^2   |
+| `yard²`           | `yd²`     | HP    | TI    | (0.9144m)^2   |
+| `mile²`           | `mi²`     | HP    | TI    | (1609.344m)^2  (exact) |
+| `nmile²`          | `nmi²`    |       |       | (1852m)^2 (exact) |
 | `acre`            | `acre`    | HP    | TI    | 66ft\*660ft   |
 | `hectare`         | `ha`      | HP    | TI    | 100m\*100m    |
 | `usftball`        | `usfb`    |       |       | US football field, 100yd\*160ft |
@@ -152,18 +152,18 @@ the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
 | -------------     | --------- |------ |------ | ------------  |
 | **`VOL`**         |           |       |       |               |
-| `mm³`             | `mm³`     |       |       |               |
-| `cm³`             | `cm³`     |       | TI    |               |
-| `m³`              | `m³`      | HP    | TI    |               |
-| `km³`             | `km³`     |       |       |               |
-| `inch³`           | `in³`     | HP    | TI    |               |
-| `foot³`           | `ft³`     | HP    | TI    |               |
-| `yard³`           | `yd³`     | HP    |       |               |
-| `mile³`           | `mi³`     |       |       |               |
-| `nmi³`            | `nmi³`    |       |       |               |
-| `μliter`          | `μL`      |       |       |               |
-| `milliliter`      | `mL`      | HP    | TI    |               |
-| `liter`           | `L`       | HP    | TI    |               |
+| `mm³`             | `mm³`     |       |       | 1e-9 m^3      |
+| `cm³`             | `cm³`     |       | TI    | 1e-6 m^3      |
+| `m³`              | `m³`      | HP    | TI    | **base unit** |
+| `km³`             | `km³`     |       |       | 1e6 m^3       |
+| `inch³`           | `in³`     | HP    | TI    | (0.0254m)^3   |
+| `foot³`           | `ft³`     | HP    | TI    | (0.3048m)^3   |
+| `yard³`           | `yd³`     | HP    |       | (0.9144m)^3   |
+| `mile³`           | `mi³`     |       |       | (1609.344m)^3 |
+| `nmile³`          | `nmi³`    |       |       | (1852m)^2 (exact) |
+| `microliter`      | `μL`      |       |       | 1e-9 m^3      |
+| `milliliter`      | `mL`      | HP    | TI    | 1e-6 m^3      |
+| `liter`           | `L`       | HP    | TI    | 1e-3 m^3      |
 | `metric tsp`      | `mtsp`    |       |       | metric teaspoon, 5 mL |
 | `metric tbsp`     | `mtbs`    |       |       | metric tablespoon, 15 mL |
 | **`VOL > US`**    |           |       |       |               |
@@ -173,8 +173,8 @@ the following:
 | `gill`            | `gill`    |       |       | 1/2 cup         |
 | `cup`             | `cup`     | HP    | TI    | 1/2 pint        |
 | `pint`            | `pint`    | HP    | TI    | 1/2 quart       |
-| `quart`           | `qt`      | HP    | TI    | 1/4 gal         |
-| `gallon`          | `gal`     | HP    | TI    | 231 in^3 by defn|
+| `quart`           | `qt`      | HP    | TI    | 1/4 gallon      |
+| `gallon`          | `gal`     | HP    | TI    | 231 inch^3 by defn |
 | **`VOL > IMP`**   |           |       |       |               |
 | `imp tsp`         | `tsp`     |       |       | **1/4** imp tbsp |
 | `imp tbsp`        | `tbsp`    |       |       | 1/2 imp floz     |
@@ -182,20 +182,20 @@ the following:
 | `imp gill`        | `gill`    |       |       | 1/2 imp cup      |
 | `imp cup`         | `cup`     |       |       | 1/2 imp pint     |
 | `imp pint`        | `pint`    |       |       | 1/2 imp quart    |
-| `imp quart`       | `qt`      |       |       | 1/4 imp gal      |
+| `imp quart`       | `qt`      |       |       | 1/4 imp gallon   |
 | `imp gallon`      | `gal`     | HP    | TI    | 4.54609 liter (exact) by defn   |
 | **`VOL > DRY`**   |           |       |       |               |
-| `dry pint`        | `drpt`    |       |       | 33.6003125 in^3 (exact) by defn |
+| `dry pint`        | `drpt`    |       |       | 33.6003125 inch^3 (exact) by defn |
 | `dry quart`       | `drqt`    |       |       | 2 dry pint      |
 | `dry gallon`      | `dgal`    | HP    |       | 4 dry quart     |
 | `peck`            | `peck`    | HP    |       | 2 dry gallon    |
 | `bushel`          | `bush`    | HP    |       | 4 peck          |
-| `dry barrel`      | `dbbl`    |       |       | 7056 in^3       |
+| `dry barrel`      | `dbbl`    |       |       | 7056 inch^3       |
 | **`VOL > MISC`**  |           |       |       |               |
 | `board·foot`      | `bdft`    | HP    |       | 1/12 ft^3       |
-| `oil barrel`      | `bbl`     | HP    |       | 42 US gal by defn |
+| `oil barrel`      | `bbl`     | HP    |       | 42 US gallon by defn |
 | `olmp pool`       | `olmp`    |       |       | Olympic swimming pool, 50m\*25m\*2m |
-| `acre·foot`       | `acft`    | HP    |       | acre-foot, 66ft\*660ft\*1ft |
+| `acre·foot`       | `acft`    | HP    |       | 66ft\*660ft\*1ft |
 
 ### Temperature (TEMP)
 
@@ -205,17 +205,17 @@ the following:
 | `°C`              | `°C`      | HP    | TI    | Celsius = 273.15 + Kelvin |
 | `°F`              | `°F`      | HP    | TI    | Fahrenheit = Celsius * 9 / 5 + 32 |
 | `°R`              | `°R`      | HP    | TI    | Rankine = Kelvin * 9 / 5 |
-| `°K`              | `°K`      | HP    | TI    | Kelvin, degree symbol used for UI consistency |
+| `°K`              | `°K`      | HP    | TI    | **base unit**, Kelvin, degree symbol used for UI consistency |
 
 ### Mass (MASS)
 
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
 | -------------     | --------- |------ |------ | ----------- |
 | **`MASS`**        |           |       |       |             |
-| `μgram`           | `μg`      |       |       | 1e-6 g      |
-| `milligram`       | `mg`      |       |       | 1e-3 g      |
-| `gram`            | `g`       | HP    | TI    |             |
-| `kilogram`        | `kg`      | HP    | TI    | base unit   |
+| `microgram`       | `μg`      |       |       | 1e-9 kg     |
+| `milligram`       | `mg`      |       |       | 1e-6 kg     |
+| `gram`            | `g`       | HP    | TI    | 1e-3 kg     |
+| `kilogram`        | `kg`      | HP    | TI    | **base unit**  |
 | `metric ton`      | `t`       | HP    | TI    | also known as tonne, 1000 kg  |
 | `amu`             | `amu`     |       | TI    | atomic mass unit, also known as Dalton, 1.66053906892e-27 kg (measured) |
 | **`MASS > US`**   |           |       |       |             |
@@ -235,8 +235,8 @@ the following:
 | **`MASS > TROY`** |           |       |       |             |
 | `grain`           | `grai`    |       |       | 1/7000 lb |
 | `troy dwt`        | `dwt`     |       |       | troy pennyweight, 24 grains |
-| `troy ozt`        | `ozt`     | HP    |       | troy ounce, 20 troy pennyweight |
-| `troy lbt`        | `lbt`     |       |       | troy pound, 12 troy oz |
+| `troy ounce`      | `ozt`     | HP    |       | troy ounce, 20 troy pennyweight |
+| `troy pound`      | `lbt`     |       |       | troy pound, 12 troy oz |
 
 ### Force (FORC)
 
@@ -244,7 +244,7 @@ the following:
 | -------------     | --------- |------ |------ | ----------- |
 | **`FORC`**        |           |       |       |             |
 | `dyne`            | `dyne`    |       | TI    | 1e-5 N      |
-| `newton`          | `N`       |       | TI    | base unit, kg\*m/s^2 |
+| `newton`          | `N`       |       | TI    | **base unit**, kg\*m/s^2 |
 | `kg force`        | `kgf`     |       | TI    | kilogram force = 9.80665 N (exact) by defn |
 | `ton force`       | `tonf`    |       | TI    | metric ton force = 1000 kgf    |
 | `poundal`         | `pdl`     |       |       | 1lb * 1ft/s^2 = 0.45359237 * 0.3048 = 0.138254954376 N (exact) |
@@ -257,18 +257,18 @@ the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
 | -------------     | --------- |------ |------ | ----------- |
 | **`PRES`**        |           |       |       |             |
-| `Pa`              | `Pa`      |       | TI    | base unit, N/m^2 |
-| `hPa`             | `hPa`     |       |       | 100 Pa      |
-| `kPa`             | `kPa`     |       |       | 1000 Pa     |
+| `pascal`          | `Pa`      |       | TI    | **base unit**, N/m^2 |
+| `hpascal`         | `hPa`     |       |       | 100 Pa      |
+| `kpascal`         | `kPa`     |       |       | 1000 Pa     |
 | `torr`            | `torr`    |       |       | 1/760 atm   |
 | `atm`             | `atm`     |       | TI    | 101.325 kPa by defn |
-| `mbar`            | `mbar`    |       |       | 1e-3 bar    |
-| `dbar`            | `dbar`    |       |       | 1e-2 bar    |
+| `millibar`        | `mbar`    |       |       | 1e-3 bar    |
+| `decibar`         | `dbar`    |       |       | 1e-2 bar    |
 | `bar`             | `bar`     |       | TI    | 100 kPa by defn |
 | `psi`             | `psi`     |       | TI    | lbs per sq inch = 6894.7572931684 Pa (rounded to 14 digits) |
 | `mmHg`            | `mmH`     |       | TI    | mm of mercury = 133.322387415 Pa (exact) |
-| `inHg`            | `inHg`    |       | TI    | inch of mercurcy = 3386.388640341 Pa (exact) |
-| `mmH2O`           | `mmw`     |       | TI    | mm of water gauge = 9.80665 (exact) by defn |
+| `inHg`            | `inHg`    |       | TI    | inch of mercury = 3386.388640341 Pa (exact) |
+| `mmH2O`           | `mmw`     |       | TI    | mm of water gauge = 9.80665 Pa (exact) by defn |
 | `inH2O`           | `inwg`    |       | TI    | inch of water gauge = 249.08891 Pa (exact) |
 
 ### Energy (ENER)
@@ -276,13 +276,13 @@ the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
 | -------------     | --------- |------ |------ | ----------- |
 | **`ENER`**        |           |       |       |             |
-| `eV`              | `eV`      |       | TI    | electron volt |
+| `eV`              | `eV`      |       | TI    | electron volt, 1.602176634e-19 J (exact) by defn |
 | `erg`             | `erg`     |       | TI    | 1e-7 J        |
-| `J`               | `J`       |       |       | base unit, kg\*m/s^2 |
-| `Wh`              | `Wh`      |       |       | 3600 J        |
-| `kWh`             | `kWh`     |       | TI    | 3600e3 J      |
-| `cal`             | `cal`     |       | TI    | 4.184 J (exact) by defn |
-| `kcal`            | `kcal`    |       |       | 4.184 kJ, used for food energy |
+| `joule`           | `J`       |       | TI    | **base unit**, kg\*m/s^2 |
+| `watt·h`          | `Wh`      |       |       | 3600 J        |
+| `kwatt·h`         | `kWh`     |       | TI    | 3600e3 J      |
+| `calorie`         | `cal`     |       | TI    | 4.184 J (exact) by defn |
+| `kcalorie`        | `kcal`    |       |       | 4.184 kJ, used for food energy |
 | `ft·lbf`          | `ftlb`    |       | TI    | 1.3558179483314 J (rounded to 14 digits) |
 | `Btu`             | `Btu`     |       | TI    | British thermal unit, 1055 (approx, various defns) |
 | `tonTNT`          | `tTNT`    |       |       | metric ton of equivalent of TNT, 4.184e9 J (exact) by defn |
@@ -293,13 +293,13 @@ the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
 | -------------     | --------- |------ |------ | ----------- |
 | **`PWR`**         |           |       |       |             |
-| `W`               | `W`       |       | TI    | base unit, joule/s |
-| `kW`              | `kW`      |       |       | 1000 W      |
+| `watt`            | `W`       |       | TI    | **base unit**, joule/s |
+| `kilowatt`        | `kW`      |       |       | 1000 W      |
 | `ft·lbf/s`        | `fl/s`    |       | TI    | foot-pound energy per second, 1.3558179483314 W (rounded to 14 digits) |
-| `Btu/h`           | `Bt/h`    |       |       | Btu/hour, .29305555555556 W (rounded to 14 digits) |
+| `Btu/h`           | `Bt/h`    |       |       | Btu/hour, 0.29305555555556 W (rounded to 14 digits) |
 | `Btu/min`         | `Bt/m`    |       | TI    | Btu/minute, 17.583333333333 W (rounded to 14 digits) |
-| `cal/s`           | `ca/s`    |       | TI    | calorie/second, 4.184 W (exact) by defn |
-| `hp`              | `hp`      |       | TI    | horsepower, 745.69987158227 W (rounded to 14 digits) |
+| `calorie/s        | `ca/s`    |       | TI    | calorie/second, 4.184 W (exact) by defn |
+| `horsepower`      | `hp`      |       | TI    | horsepower, 745.69987158227 W (rounded to 14 digits) |
 
 ### Time (TIME)
 
@@ -309,7 +309,7 @@ the following:
 | `ns`              | `ns`      |       | TI    | 1e-9 s        |
 | `μs`              | `μs`      |       | TI    | 1e-6 s        |
 | `ms`              | `ms`      |       | TI    | 1e-3 s        |
-| `second`          | `sec`     |       | TI    | base unit     |
+| `second`          | `sec`     |       | TI    | **base unit** |
 | `minute`          | `min`     |       | TI    | 60 seconds    |
 | `hour`            | `hour`    |       | TI    | 60 minutes    |
 | `day`             | `day`     |       | TI    | 24 hours      |
@@ -321,7 +321,7 @@ the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
 | -------------     | --------- |------ |------ | -----------   |
 | **`SPD`**         |           |       |       |               |
-| `m/s`             | `m/s`     |       | TI    | base unit     |
+| `m/s`             | `m/s`     |       | TI    | **base unit** |
 | `ft/s`            | `ft/s`    |       | TI    | 0.3048 m/s (exact) by defn |
 | `km/hr`           | `kph`     |       | TI    | 1000/3600 m/s |
 | `mi/hr`           | `mph`     |       | TI    | 1609.344/3600 m/s  (exact) by defn |
@@ -333,5 +333,5 @@ the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
 | -------------     | --------- |------ |------ | -----------   |
 | **`FUEL`**        |           |       |       |               |
-| `L/100km`         | `Lkm`     |       |       | liters per 100 km, Lkm = 100 * (liter/gal) / (km/mile) / mpg |
-| `mpg`             | `mpg`     |       |       | miles per US gal, mpg = 100 * (liter/gal) / (km/mile) / Lkm |
+| `L/100km`         | `Lkm`     |       |       | **base unit**, liters per 100 km, Lkm = 100 * (liter/gallon) / (km/mile) / mpg |
+| `mpg`             | `mpg`     |       |       | miles per US gallon, mpg = 100 * (liter/gallon) / (km/mile) / Lkm |
