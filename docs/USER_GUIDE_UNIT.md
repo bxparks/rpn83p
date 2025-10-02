@@ -220,7 +220,7 @@ the following:
 | `ounce`           | `oz`      | HP    |       | 1/16 lb |
 | `pound`           | `lb`      | HP    | TI    | 0.45359237 kg (exact) by defn |
 | `slug`            | `slug`    | HP    | TI    | 14.593902937207 kg (approx) |
-| `cwt`             | `cwt`     | HP    |       | hundredweight, 100 lbs |
+| `short cwt`       | `scwt`    | HP    |       | short hundredweight, 100 lbs |
 | `short ton`       | `ston`    | HP    | TI    | short ton, 200 cwt, 2000 lbs |
 | **`MASS > IMP`**  |           |       |       |             |
 | `pound`           | `lb`      | HP    | TI    | 0.45359237 kg (exact) by defn |

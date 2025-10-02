@@ -475,7 +475,7 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
             - `oz`: ounce
             - `lb`: pound
             - `slug`: slug
-            - `cwt`: hundred weight (100 lbs)
+            - `scwt`: short hundred weight (100 lbs)
             - `ston`: short ton (20 cwt, 2000 lbs)
         - ![ROOT > UNIT > MASS > IMP](images/menu/root-unit-mass-imp.png) (ROOT > UNIT > MASS > IMP)
             - ![ROOT > UNIT > MASS > IMP > Row1](images/menu/root-unit-mass-imp-1.png)
