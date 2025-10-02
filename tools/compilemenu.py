@@ -138,7 +138,9 @@ class MenuNode(TypedDict, total=False):
     name_contains_special: bool  # name contains special characters
     altname: str
     altname_contains_special: bool  # altname contains special characters
+    exploded_chars: List[str]  # name as list of single characters
     exploded_name: str  # name as a list of single characters
+    exploded_altchars: List[str]  # altname as list of single characters
     exploded_altname: str  # altname as a list of single characters
     label: str
     rows: List[MenuRow]  # List of MenuNodes in groups of 5
@@ -519,7 +521,9 @@ class StringExploder:
         if name == '*':
             return
         try:
-            node["exploded_name"] = self.explode_str(name)
+            chars = self.explode_str(name)
+            node["exploded_chars"] = chars
+            node["exploded_name"] = ", ".join(chars)
         except ValueError as e:
             raise ValueError(
                 f"Invalid syntax in menu '{name}': {str(e)}"
@@ -532,7 +536,9 @@ class StringExploder:
                 altname.find('<') >= 0 or name.find('>') >= 0
             )
             try:
-                node["exploded_altname"] = self.explode_str(altname)
+                chars = self.explode_str(altname)
+                node["exploded_altchars"] = chars
+                node["exploded_altname"] = ", ".join(chars)
             except ValueError as e:
                 raise ValueError(
                     f"Invalid syntax in menu '{altname}': {str(e)}"
@@ -553,7 +559,7 @@ class StringExploder:
                     self.explode_group(slot)
 
     @staticmethod
-    def explode_str(s: str) -> str:
+    def explode_str(s: str) -> List[str]:
         i = 0
         chars: List[str] = []
         while i < len(s):
@@ -573,7 +579,7 @@ class StringExploder:
             else:
                 raise ValueError(f"Unsupported character '{c}'")
             i += 1
-        return ", ".join(chars)
+        return chars
 
 
 # -----------------------------------------------------------------------------
@@ -827,10 +833,12 @@ mNullId equ 0
         # Calculate total size of string pool
         names_pool_size = 0
         for node in names:
-            names_pool_size += len(node["name"]) + 1  # include NUL
+            chars = node["exploded_chars"]
+            names_pool_size += len(chars) + 1  # include NUL
             alt_name = node.get("altname")
             if alt_name is not None:
-                names_pool_size += len(alt_name) + 1
+                chars = node["exploded_altchars"]
+                names_pool_size += len(chars) + 1  # include NUL
 
         # Generate the pool of C-strings
         print(f"""\

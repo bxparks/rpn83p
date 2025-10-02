@@ -384,7 +384,7 @@ mDegId equ 36
 ;-----------------------------------------------------------------------------
 
 mNamesCount equ 32 ; number of names and altnames
-mNamesPoolSize equ 174 ; size of names string pool
+mNamesPoolSize equ 143 ; size of names string pool
 
 mNullName:
     .db 0
