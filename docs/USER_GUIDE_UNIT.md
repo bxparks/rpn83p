@@ -50,7 +50,14 @@ The user interface follows the technique used by the
 - press the target UNIT menu of the target unit to convert the Denominate object
   into the target unit
 
-TODO: Insert screenshot of example UNIT to UNIT conversion.
+Let's convert 68 degrees F to Celsius, then to Kelvin:
+
+| **Keys**          | **Display**                      |
+| ----------------  | ---------------------            |
+| `68`              | ![](images/unit/unit-temp-1.png) |
+| `°F`              | ![](images/unit/unit-temp-2.png) |
+| `°C`              | ![](images/unit/unit-temp-3.png) |
+| `°K`              | ![](images/unit/unit-temp-4.png) |
 
 ## UNIT Arithmetic
 
