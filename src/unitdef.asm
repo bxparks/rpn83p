@@ -206,12 +206,12 @@ unitAstronomicalUnitInfo:
 unitAstronomicalUnitId equ 18
     .dw unitAstronomicalUnitName ; name
     .db unitTypeLengthId ; unitTypeId
-    .db $00, $8B, $14, $95, $97, $87, $07, $00, $00 ; scale=149597870700
+    .db $00, $8B, $14, $95, $97, $87, $07, $00, $00 ; scale=1.495978707e11
 unitLightYearInfo:
 unitLightYearId equ 19
     .dw unitLightYearName ; name
     .db unitTypeLengthId ; unitTypeId
-    .db $00, $8F, $94, $60, $73, $04, $72, $58, $08 ; scale=9460730472580.8e3
+    .db $00, $8F, $94, $60, $73, $04, $72, $58, $08 ; scale=9.4607304725808e15
 unitParsecInfo:
 unitParsecId equ 20
     .dw unitParsecName ; name
@@ -968,7 +968,7 @@ unitLitersPerHundredKiloMetersId equ 169
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 170 ; number of unit names
-unitNamesPoolSize equ 1141 ; size of unit names string pool
+unitNamesPoolSize equ 1146 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -1269,7 +1269,7 @@ unitKiloWattName:
 unitFootPoundEnergyPerSecondName:
     .db 'f', 't', SdotIcon, 'l', 'b', 'f', Sslash, 's', 0
 unitCaloriePerSecondName:
-    .db 'c', 'a', 'l', Sslash, 's', 0
+    .db 'c', 'a', 'l', 'o', 'r', 'i', 'e', Sslash, 's', 0
 unitBtuPerHourName:
     .db 'B', 't', 'u', Sslash, 'h', 0
 unitBtuPerMinuteName:
@@ -1305,7 +1305,7 @@ unitMilePerHourName:
 unitKnotName:
     .db "knot", 0
 unitLightSpeedName:
-    .db "lightc", 0
+    .db 'l', 'i', 'g', 'h', 't', Sspace, 'c', 0
 unitMilesPerGallonName:
     .db "mpg", 0
 unitLitersPerHundredKiloMetersName:

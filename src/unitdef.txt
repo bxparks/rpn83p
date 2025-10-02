@@ -83,11 +83,11 @@ Units [
 
   # Astronomical
   # https://en.wikipedia.org/wiki/Light-second
-  Unit LightSecond light<SdotIcon>sec Length 299792458 # by defn
+  Unit LightSecond light<SdotIcon>sec Length 299792458 # (exact) by defn
   # https://en.wikipedia.org/wiki/Astronomical_unit
-  Unit AstronomicalUnit AU Length 149597870700 # by defn
+  Unit AstronomicalUnit AU Length 1.495978707e11 # (exact) by defn
   # https://en.wikipedia.org/wiki/Light-year
-  Unit LightYear light<SdotIcon>year Length 9460730472580.8e3 # exact, 365.25days*c
+  Unit LightYear light<SdotIcon>year Length 9.4607304725808e15 # exact, 365.25days*c
   # https://en.wikipedia.org/wiki/Parsec
   Unit Parsec parsec Length 30856775814913673 # 648000/pi AU
 
@@ -375,10 +375,10 @@ Units [
   Unit KiloCalorie kcalorie Energy 4.184e3
 
   # https://en.wikipedia.org/wiki/Foot-pound_(energy)
-  # ftlbf = 1 lbf * 1 ft = (1 lb) * (0.45359237 kg/lb) * (9.80665 m/s^2)
-  #        * (1 ft) * (0.3048 m/ft)
-  #       = 1.3558179483314(004) J (exact if 3-digits in parens are included,
-  #         rounded to 14-digits below)
+  # ft-lbf = 1 lbf * 1 ft = (1 lb) * (0.45359237 kg/lb) * (9.80665 m/s^2)
+  #          * (1 ft) * (0.3048 m/ft)
+  #        = 1.3558179483314(004) J (exact if 3-digits in parens are included,
+  #          rounded to 14-digits below)
   Unit FootPoundEnergy ft<SdotIcon>lbf Energy 1.3558179483314
 
   # https://en.wikipedia.org/wiki/British_thermal_unit
@@ -406,7 +406,7 @@ Units [
   Unit FootPoundEnergyPerSecond ft<SdotIcon>lbf<Sslash>s Power 1.3558179483314
 
   # https://en.wikipedia.org/wiki/Calorie
-  Unit CaloriePerSecond cal<Sslash>s Power 4.184 # exact by defn
+  Unit CaloriePerSecond calorie<Sslash>s Power 4.184 # exact by defn
 
   # https://en.wikipedia.org/wiki/British_thermal_unit
   # Btu/hour = 1055J/(3600s) = .29305555555556 W (used frequently in AC and
@@ -453,7 +453,7 @@ Units [
   Unit MilePerHour mile<Sslash>h Speed 0.44704
   # https://en.wikipedia.org/wiki/Knot_(unit)
   Unit Knot knot Speed 0.51444444444444 # nmi/h=1852m/h by defn
-  Unit LightSpeed lightc Speed 299792458 # by defn
+  Unit LightSpeed light<Sspace>c Speed 299792458 # by defn
 
   #----------------------------------------------------------------------------
   # Fuel Consumption
