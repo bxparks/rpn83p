@@ -84,14 +84,12 @@ Let's enter '6 feet 2 inches', convert that to inches, then divide that by 3:
 
 | **Keys**          | **Display**                      |
 | ----------------  | ---------------------            |
-| `6`               | ![](images/unit/unit-arithmetic-leng-1.png) |
-| `ft`              | ![](images/unit/unit-arithmetic-leng-2.png) |
-| `2`               | ![](images/unit/unit-arithmetic-leng-3.png) |
-| `in`              | ![](images/unit/unit-arithmetic-leng-4.png) |
-| `+`               | ![](images/unit/unit-arithmetic-leng-5.png) |
-| `3`               | ![](images/unit/unit-arithmetic-leng-6.png) |
-| `/`               | ![](images/unit/unit-arithmetic-leng-7.png) |
-| `in`              | ![](images/unit/unit-arithmetic-leng-8.png) |
+| `6` `ft`          | ![](images/unit/unit-arithmetic-leng-1.png) |
+| `2` `in`          | ![](images/unit/unit-arithmetic-leng-2.png) |
+| `+`               | ![](images/unit/unit-arithmetic-leng-3.png) |
+| `3`               | ![](images/unit/unit-arithmetic-leng-4.png) |
+| `/`               | ![](images/unit/unit-arithmetic-leng-5.png) |
+| `in`              | ![](images/unit/unit-arithmetic-leng-6.png) |
 
 For the `+` and `-` operations, the result uses the unit of the Denominate
 object in the `Y` register (not the `X`). This seemed to be the more convenient
