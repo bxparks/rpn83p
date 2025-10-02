@@ -190,7 +190,7 @@ the following:
 | `dry gallon`      | `dgal`    | HP    |       | 4 dry quart     |
 | `peck`            | `peck`    | HP    |       | 2 dry gallon    |
 | `bushel`          | `bush`    | HP    |       | 4 peck          |
-| `dry barrel`      | `dbbl`    |       |       | 7056 inch^3       |
+| `dry barrel`      | `dbbl`    |       |       | 7056 inch^3 (exact) by defn |
 | **`VOL > MISC`**  |           |       |       |               |
 | `board·foot`      | `bdft`    | HP    |       | 1/12 ft^3       |
 | `oil barrel`      | `bbl`     | HP    |       | 42 US gallon by defn |
@@ -217,7 +217,7 @@ the following:
 | `gram`            | `g`       | HP    | TI    | 1e-3 kg     |
 | `kilogram`        | `kg`      | HP    | TI    | **base unit**  |
 | `metric ton`      | `t`       | HP    | TI    | also known as tonne, 1000 kg  |
-| `amu`             | `amu`     |       | TI    | atomic mass unit, also known as Dalton, 1.66053906892e-27 kg (measured) |
+| `amu`             | `amu`     |       | TI    | atomic mass unit, also known as dalton (Da), 1.66053906892e-27 kg (measured) |
 | **`MASS > US`**   |           |       |       |             |
 | `grain`           | `grai`    | HP    |       | 1/7000 lb |
 | `dram`            | `dram`    | HP    |       | 1/16 oz |
@@ -265,7 +265,7 @@ the following:
 | `millibar`        | `mbar`    |       |       | 1e-3 bar    |
 | `decibar`         | `dbar`    |       |       | 1e-2 bar    |
 | `bar`             | `bar`     |       | TI    | 100 kPa by defn |
-| `psi`             | `psi`     |       | TI    | lbs per sq inch = 6894.7572931684 Pa (rounded to 14 digits) |
+| `psi`             | `psi`     |       | TI    | pounds per square inch = 6894.7572931684 Pa (rounded to 14 digits) |
 | `mmHg`            | `mmH`     |       | TI    | mm of mercury = 133.322387415 Pa (exact) |
 | `inHg`            | `inHg`    |       | TI    | inch of mercury = 3386.388640341 Pa (exact) |
 | `mmH2O`           | `mmw`     |       | TI    | mm of water gauge = 9.80665 Pa (exact) by defn |
@@ -298,7 +298,7 @@ the following:
 | `ft·lbf/s`        | `fl/s`    |       | TI    | foot-pound energy per second, 1.3558179483314 W (rounded to 14 digits) |
 | `Btu/h`           | `Bt/h`    |       |       | Btu/hour, 0.29305555555556 W (rounded to 14 digits) |
 | `Btu/min`         | `Bt/m`    |       | TI    | Btu/minute, 17.583333333333 W (rounded to 14 digits) |
-| `calorie/s        | `ca/s`    |       | TI    | calorie/second, 4.184 W (exact) by defn |
+| `calorie/s`       | `ca/s`    |       | TI    | calorie/second, 4.184 W (exact) by defn |
 | `horsepower`      | `hp`      |       | TI    | horsepower, 745.69987158227 W (rounded to 14 digits) |
 
 ### Time (TIME)
