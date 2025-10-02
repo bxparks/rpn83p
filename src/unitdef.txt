@@ -192,12 +192,14 @@ Units [
   Unit ImpGallon imp<Sspace>gallon Volume 4.54609e-3 # (exact) by defn
 
   # Dry: https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit DryPint dry<Sspace>pint Volume 0.5506104713575e-3 # 33.6003125 in^3 by defn
-  Unit DryQuart dry<Sspace>quart Volume 1.101220942715e-3 # 2 dry pint
-  Unit DryGallon dry<Sspace>gallon Volume 4.40488377086e-3 # 4 dry quart
-  Unit Peck peck Volume 8.80976754172e-3 # 2 dry gallon
-  Unit Bushel bushel Volume 35.23907016688e-3 # 4 peck
-  Unit DryBarrel dry<Sspace>barrel Volume 0.115627123584 # 7056 in^3
+  Unit DryPint dry<Sspace>pint Volume 0.5506104713575e-3 # 33.6003125 in^3 (exact) by defn
+  Unit DryQuart dry<Sspace>quart Volume 1.101220942715e-3 # (exact) 2 dry pint
+  Unit DryGallon dry<Sspace>gallon Volume 4.40488377086e-3 # (exact) 4 dry quart
+  Unit Peck peck Volume 8.80976754172e-3 # (exact) 2 dry gallon
+  Unit Bushel bushel Volume 35.23907016688e-3 # (exact) 4 peck
+  # https://en.wikipedia.org/wiki/Barrel_(unit)#Dry_goods_in_the_US
+  # drybbl = 7056 in^3 = 0.115627123584 m^3 (exact)
+  Unit DryBarrel dry<Sspace>barrel Volume 0.115627123584
 
   # Other weird measures
 
