@@ -59,6 +59,15 @@ Let's convert 68 degrees F to Celsius, then to Kelvin:
 | `°C`              | ![](images/unit/unit-temp-3.png) |
 | `°K`              | ![](images/unit/unit-temp-4.png) |
 
+The Denominate object can only be converted within the units of the same
+unitType. For example, we cannot convert a meter of `LENG` type to a kilogram of
+`MASS` type:
+
+| **Keys**          | **Display**                      |
+| ----------------  | ---------------------            |
+| `6` `m`           | ![](images/unit/unit-conversion-invalid-1.png) |
+| `kg`              | ![](images/unit/unit-conversion-invalid-2.png) |
+
 ## UNIT Arithmetic
 
 Basic arithmetic operations are supported on Denominate objects:
