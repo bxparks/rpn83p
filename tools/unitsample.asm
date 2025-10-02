@@ -39,8 +39,8 @@ unitTypeVolumeId equ 3
 ; List of UnitType names.
 ;-----------------------------------------------------------------------------
 
-unitTypeNamesCount equ 7 ; number of unit names
-unitTypeNamesPoolSize equ 82 ; size of unit type names string pool
+unitTypeNamesCount equ 7 ; number of unit type names
+unitTypeNamesPoolSize equ 28 ; size of unit type names string pool
 
 unitTypeNullTypeName:
     .db "nulltype", 0
@@ -99,7 +99,7 @@ unitCuFeetId equ 6
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 7 ; number of unit names
-unitNamesPoolSize equ 82 ; size of unit names string pool
+unitNamesPoolSize equ 54 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0

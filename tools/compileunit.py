@@ -103,6 +103,7 @@ class UnitType(TypedDict, total=False):
     base_unit: str  # base unit for all units of this type
     # derived fields
     id: int  # integer id of class
+    exploded_chars: List[str]  # list of individual chars in name
     exploded_name: str  # exploded version of name
     name_contains_special: bool  # name contains special characters
 
@@ -118,6 +119,7 @@ class Unit(TypedDict, total=False):
     scale_float: float  # 'scale' string converted into Python float type
     scale_bytes: bytes  # 'scale' converted into 9 bytes of TIOS float type
     scale_db_string: str  # 'scale_bytes' converted into 9 hex digits
+    exploded_chars: List[str]  # list of individual chars in name
     exploded_name: str  # exploded version of name
     name_contains_special: bool  # name contains special characters
 
@@ -433,7 +435,9 @@ class StringExploder:
             name.find('<') >= 0 or name.find('>') >= 0
         )
         try:
-            unit["exploded_name"] = self.explode_str(name)
+            chars = self.explode_str(name)
+            unit["exploded_chars"] = chars
+            unit["exploded_name"] = ", ".join(chars)
         except ValueError as e:
             raise ValueError(
                 f"Invalid syntax in Unit '{label}': {str(e)}"
@@ -446,14 +450,16 @@ class StringExploder:
             name.find('<') >= 0 or name.find('>') >= 0
         )
         try:
-            unit_type["exploded_name"] = self.explode_str(name)
+            chars = self.explode_str(name)
+            unit_type["exploded_chars"] = chars
+            unit_type["exploded_name"] = ", ".join(chars)
         except ValueError as e:
             raise ValueError(
                 f"Invalid syntax in UnitType '{label}': {str(e)}"
             )
 
     @staticmethod
-    def explode_str(s: str) -> str:
+    def explode_str(s: str) -> List[str]:
         i = 0
         chars: List[str] = []
         while i < len(s):
@@ -473,7 +479,7 @@ class StringExploder:
             else:
                 raise ValueError(f"Unsupported character '{c}'")
             i += 1
-        return ", ".join(chars)
+        return chars
 
 
 # -----------------------------------------------------------------------------
@@ -619,9 +625,9 @@ unitType{label}Id equ {id}
 
         # Calculate total size of string pool
         unit_type_names_pool_size = 0
-        for unit in self.content['units']:
-            name = unit['name']
-            unit_type_names_pool_size += len(name) + 1  # include NUL
+        for unit in self.content['unit_types']:
+            chars = unit['exploded_chars']
+            unit_type_names_pool_size += len(chars) + 1  # include NUL
 
         print(f"""\
 
@@ -629,7 +635,7 @@ unitType{label}Id equ {id}
 ; List of UnitType names.
 ;-----------------------------------------------------------------------------
 
-unitTypeNamesCount equ {unit_type_names_count} ; number of unit names
+unitTypeNamesCount equ {unit_type_names_count} ; number of unit type names
 unitTypeNamesPoolSize equ {unit_type_names_pool_size} \
 ; size of unit type names string pool
 
@@ -683,8 +689,8 @@ unit{label}Id equ {id}
         # Calculate total size of string pool
         unit_names_pool_size = 0
         for unit in self.content['units']:
-            name = unit['name']
-            unit_names_pool_size += len(name) + 1  # include NUL
+            exploded_chars = unit['exploded_chars']
+            unit_names_pool_size += len(exploded_chars) + 1  # include NUL
 
         print(f"""\
 
