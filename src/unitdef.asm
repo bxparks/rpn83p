@@ -968,7 +968,7 @@ unitLitersPerHundredKiloMetersId equ 169
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 170 ; number of unit names
-unitNamesPoolSize equ 1133 ; size of unit names string pool
+unitNamesPoolSize equ 1141 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -1085,7 +1085,7 @@ unitCuMileName:
 unitCuNauticalMileName:
     .db 'n', 'm', 'i', 'l', 'e', Scube, 0
 unitMicroLiterName:
-    .db Smu, 'l', 'i', 't', 'e', 'r', 0
+    .db "microliter", 0
 unitMilliLiterName:
     .db "milliliter", 0
 unitLiterName:
@@ -1149,7 +1149,7 @@ unitAcreFootName:
 unitAtomicMassUnitName:
     .db "amu", 0
 unitMicroGramName:
-    .db Smu, 'g', 'r', 'a', 'm', 0
+    .db "microgram", 0
 unitMilliGramName:
     .db "milligram", 0
 unitGramName:

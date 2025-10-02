@@ -161,7 +161,7 @@ Units [
   Unit CuMile mile<Scube> Volume 4.1681818254406e9 # 1609.344^3
   Unit CuNauticalMile nmile<Scube> Volume 6352182208 # 1852^3
 
-  Unit MicroLiter <Smu>liter Volume 1e-9
+  Unit MicroLiter microliter Volume 1e-9
   Unit MilliLiter milliliter Volume 1e-6
   Unit Liter liter Volume 1e-3
   # https://en.wikipedia.org/wiki/Teaspoon
@@ -224,7 +224,7 @@ Units [
   # https://en.wikipedia.org/wiki/Dalton_(unit)
   Unit AtomicMassUnit amu Mass 1.66053906892e-27
 
-  Unit MicroGram <Smu>gram Mass 1e-9
+  Unit MicroGram microgram Mass 1e-9
   Unit MilliGram milligram Mass 1e-6
   Unit Gram gram Mass 1e-3
   Unit KiloGram kilogram Mass 1
