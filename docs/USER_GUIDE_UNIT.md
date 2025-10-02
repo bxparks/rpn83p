@@ -36,7 +36,7 @@ It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
     - `SPD` - Speed units
     - `FUEL` - Fuel consumption units
 
-There are 162 units organized into 12 unit types. A unit can
+There are 169 units organized into 12 unit types. A unit can
 be converted to any other unit within the same unit type.
 
 ## UNIT Entry and Conversion
@@ -49,6 +49,9 @@ The user interface follows the technique used by the
 - press the source UNIT menu to create a Denominate object with the select unit
 - press the target UNIT menu of the target unit to convert the Denominate object
   into the target unit
+
+**Terminology**: A Denominate object is composed of a value (a floating point
+number) and its unit.
 
 Let's convert 68 degrees F to Celsius, then to Kelvin:
 
@@ -80,7 +83,7 @@ Basic arithmetic operations are supported on Denominate objects:
 | {Denominate} * {float}        | {Denominate}  |
 | {Denominate} / {float}        | {Denominate}  |
 
-Let's enter '6 feet 2 inches', convert that to inches, then divide that by 3:
+Let's enter "6 feet 2 inches", divide that by 3, then convert that to inches:
 
 | **Keys**          | **Display**                      |
 | ----------------  | ---------------------            |
