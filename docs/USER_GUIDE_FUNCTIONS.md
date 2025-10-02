@@ -387,6 +387,11 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `ha`: hectare
         - `usfb`: US football field
         - `cafb`: Canadian football field
+        - `SURV`: Survey units for area
+        - ![ROOT > UNIT > AREA > SURV](images/menu/root-unit-area-surv.png) (ROOT > UNIT > AREA > SURV)
+            - `rod^2`: square rod
+            - `chn^2`: square chain
+            - `fur^2`: square furlong
     - ![ROOT > UNIT > VOL](images/menu/root-unit-vol.png) (ROOT > UNIT > VOL)
         - ![ROOT > UNIT > VOL > Row1](images/menu/root-unit-vol-1.png)
         - ![ROOT > UNIT > VOL > Row2](images/menu/root-unit-vol-2.png)

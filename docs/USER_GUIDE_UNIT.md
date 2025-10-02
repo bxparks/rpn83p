@@ -142,6 +142,10 @@ the following:
 | `hectare`         | `ha`      | HP    | TI    | 100m\*100m    |
 | `usftball`        | `usfb`    |       |       | US football field, 100yd\*160ft |
 | `caftball`        | `cafb`    |       |       | CA football field, 110yd\*65yd |
+| **`AREA > SURV`** |           |       |       |               |
+| `rod²`            | `rod²`    | HP    |       | (16.5ft)^2    |
+| `chain²`          | `chn²`    |       |       | (66ft)^2      |
+| `furlong²`        | `fur²`    |       |       | (660ft)^2     |
 
 ### Volume (VOL)
 
