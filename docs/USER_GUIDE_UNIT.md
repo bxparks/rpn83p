@@ -117,7 +117,7 @@ the following:
 | **`LENG > NAUT`** |           |       |       |               |
 | `fathom`          | `fath`    | HP    | TI    | 6 feet        |
 | `cable`           | `cabl`    |       |       | 3429/15625 km |
-| `nmi`             | `nmi`     | HP    | TI    | 1852 m (exact) by defn |
+| `naut mile`       | `nmi`     | HP    | TI    | 1852 m (exact) by defn |
 | **`LENG > ASTR`** |           |       |       |               |
 | `light·sec`       | `lsec`    |       |       |               |
 | `AU`              | `AU`      |       |       |               |
@@ -161,11 +161,11 @@ the following:
 | `yard³`           | `yd³`     | HP    |       |               |
 | `mile³`           | `mi³`     |       |       |               |
 | `nmi³`            | `nmi³`    |       |       |               |
-| `μL`              | `μL`      |       |       |               |
-| `mL`              | `mL`      | HP    | TI    |               |
-| `L`               | `L`       | HP    | TI    |               |
-| `met tsp`         | `mtsp`    |       |       | metric teaspoon, 5 mL |
-| `met tbsp`        | `mtbs`    |       |       | metric tablespoon, 15 mL |
+| `μliter`          | `μL`      |       |       |               |
+| `milliliter`      | `mL`      | HP    | TI    |               |
+| `liter`           | `L`       | HP    | TI    |               |
+| `metric tsp`      | `mtsp`    |       |       | metric teaspoon, 5 mL |
+| `metric tbsp`     | `mtbs`    |       |       | metric tablespoon, 15 mL |
 | **`VOL > US`**    |           |       |       |               |
 | `tsp`             | `tsp`     | HP    | TI    | 1/3 tbsp        |
 | `tbsp`            | `tbsp`    | HP    | TI    | 1/2 floz        |
@@ -174,7 +174,7 @@ the following:
 | `cup`             | `cup`     | HP    | TI    | 1/2 pint        |
 | `pint`            | `pint`    | HP    | TI    | 1/2 quart       |
 | `quart`           | `qt`      | HP    | TI    | 1/4 gal         |
-| `gal`             | `gal`     | HP    | TI    | 231 in^3 by defn|
+| `gallon`          | `gal`     | HP    | TI    | 231 in^3 by defn|
 | **`VOL > IMP`**   |           |       |       |               |
 | `imp tsp`         | `tsp`     |       |       | **1/4** imp tbsp |
 | `imp tbsp`        | `tbsp`    |       |       | 1/2 imp floz     |
@@ -183,17 +183,17 @@ the following:
 | `imp cup`         | `cup`     |       |       | 1/2 imp pint     |
 | `imp pint`        | `pint`    |       |       | 1/2 imp quart    |
 | `imp quart`       | `qt`      |       |       | 1/4 imp gal      |
-| `imp gal`         | `gal`     | HP    | TI    | 4.54609 liter (exact) by defn   |
+| `imp gallon`      | `gal`     | HP    | TI    | 4.54609 liter (exact) by defn   |
 | **`VOL > DRY`**   |           |       |       |               |
-| `dry pt`          | `drpt`    |       |       | 33.6003125 in^3 (exact) by defn |
-| `dry qt`          | `drqt`    |       |       | 2 dry pint      |
-| `dry gal`         | `dgal`    | HP    |       | 4 dry quart     |
+| `dry pint`        | `drpt`    |       |       | 33.6003125 in^3 (exact) by defn |
+| `dry quart`       | `drqt`    |       |       | 2 dry pint      |
+| `dry gallon`      | `dgal`    | HP    |       | 4 dry quart     |
 | `peck`            | `peck`    | HP    |       | 2 dry gallon    |
 | `bushel`          | `bush`    | HP    |       | 4 peck          |
-| `dry bbl`         | `dbbl`    |       |       | 7056 in^3       |
+| `dry barrel`      | `dbbl`    |       |       | 7056 in^3       |
 | **`VOL > MISC`**  |           |       |       |               |
 | `board·foot`      | `bdft`    | HP    |       | 1/12 ft^3       |
-| `barrel`          | `bbl`     | HP    |       | oil barrel, 42 US gal by defn |
+| `oil barrel`      | `bbl`     | HP    |       | 42 US gal by defn |
 | `olmp pool`       | `olmp`    |       |       | Olympic swimming pool, 50m\*25m\*2m |
 | `acre·foot`       | `acft`    | HP    |       | acre-foot, 66ft\*660ft\*1ft |
 
@@ -212,11 +212,11 @@ the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment** |
 | -------------     | --------- |------ |------ | ----------- |
 | **`MASS`**        |           |       |       |             |
-| `μg`              | `μg`      |       |       | 1e-6 g      |
-| `mg`              | `mg`      | HP    |       |             |
-| `g`               | `g`       | HP    | TI    |             |
-| `kg`              | `kg`      | HP    | TI    |             |
-| `met ton`         | `t`       | HP    | TI    | metric ton, also known as tonne, 1000 kg  |
+| `μgram`           | `μg`      |       |       | 1e-6 g      |
+| `milligram`       | `mg`      |       |       | 1e-3 g      |
+| `gram`            | `g`       | HP    | TI    |             |
+| `kilogram`        | `kg`      | HP    | TI    | base unit   |
+| `metric ton`      | `t`       | HP    | TI    | also known as tonne, 1000 kg  |
 | `amu`             | `amu`     |       | TI    | atomic mass unit, also known as Dalton, 1.66053906892e-27 kg (measured) |
 | **`MASS > US`**   |           |       |       |             |
 | `grain`           | `grai`    | HP    |       | 1/7000 lb |
@@ -245,12 +245,12 @@ the following:
 | **`FORC`**        |           |       |       |             |
 | `dyne`            | `dyne`    |       | TI    | 1e-5 N      |
 | `newton`          | `N`       |       | TI    | base unit, kg\*m/s^2 |
-| `kgf`             | `kgf`     |       | TI    | kilogram force = 9.80665 N (exact) by defn |
-| `tonf`            | `tonf`    |       | TI    | metric ton force = 1000 kgf    |
+| `kg force`        | `kgf`     |       | TI    | kilogram force = 9.80665 N (exact) by defn |
+| `ton force`       | `tonf`    |       | TI    | metric ton force = 1000 kgf    |
 | `poundal`         | `pdl`     |       |       | 1lb * 1ft/s^2 = 0.45359237 * 0.3048 = 0.138254954376 N (exact) |
-| `lbf`             | `lbf`     |       | TI    | pound force = 1lb * 9.80665m/s^2 = 0.45359237 * 9.80665 = 4.4482216152605 N (exact) |
-| `stonf`           | `stonf`   |       |       | short ton force = 2000 lbf    |
-| `ltonf`           | `ltonf`   |       |       | long ton force = 2240 lbf    |
+| `lb force`        | `lbf`     |       | TI    | pound force = 1lb * 9.80665m/s^2 = 0.45359237 * 9.80665 = 4.4482216152605 N (exact) |
+| `ston force`      | `stnf`    |       |       | short ton force = 2000 lbf    |
+| `lton force`      | `ltnf`    |       |       | long ton force = 2240 lbf    |
 
 ### Press (PRES)
 
