@@ -72,7 +72,7 @@ Units [
   Unit Inch inch Length 0.0254 # by defn
   Unit Foot foot Length 0.3048 # 12 inch
   Unit Yard yard Length 0.9144 # 3 feet
-  Unit Mile mile Length 1609.344 # 5280 ft, 1760 yd
+  Unit Mile mile Length 1609.344 # (exact) 5280 ft, 1760 yd
 
   # Typography
   # https://en.wikipedia.org/wiki/Point_(typography)
@@ -170,26 +170,26 @@ Units [
   Unit MetricTablespoon metric<Sspace>tbsp Volume 15e-6
 
   # https://en.wikipedia.org/wiki/United_States_customary_units
-  Unit Teaspoon tsp Volume 4.92892159375e-6 # 1/3 tbsp
-  Unit Tablespoon tbsp Volume 1.478676478125e-5 # 1/2 floz
-  Unit FluidOunce floz Volume 2.95735295625e-5 # 1/4 gill
-  Unit Gill gill Volume 1.1829411825e-4 # 1/2 cup
-  Unit Cup cup Volume 2.365882365e-4 # 1/2 pint
-  Unit Pint pint Volume 4.73176473e-4 # 1/2 quart; pt
-  Unit Quart quart Volume 9.46352946e-4 # 1/4 gallon; qt
-  Unit Gallon gallon Volume 3.785411784e-3 # 231 in^3 by defn
+  Unit Teaspoon tsp Volume 4.92892159375e-6 # (exact) 1/3 tbsp
+  Unit Tablespoon tbsp Volume 1.478676478125e-5 # (exact) 1/2 floz
+  Unit FluidOunce floz Volume 2.95735295625e-5 # (exact) 1/4 gill
+  Unit Gill gill Volume 1.1829411825e-4 # (exact) 1/2 cup
+  Unit Cup cup Volume 2.365882365e-4 # (exact) 1/2 pint
+  Unit Pint pint Volume 4.73176473e-4 # (exact) 1/2 quart; pt
+  Unit Quart quart Volume 9.46352946e-4 # (exact) 1/4 gallon; qt
+  Unit Gallon gallon Volume 3.785411784e-3 # (exact) 231 in^3 by defn
 
   # https://en.wikipedia.org/wiki/Imperial_units
   # https://en.wikipedia.org/wiki/Teaspoon
-  Unit ImpTeaspoon imp<Sspace>tsp Volume 3.5516328125e-6 # 1/4 imp tbsp
+  Unit ImpTeaspoon imp<Sspace>tsp Volume 3.5516328125e-6 # (exact) 1/4 imp tbsp
   # https://en.wikipedia.org/wiki/Tablespoon
-  Unit ImpTablespoon imp<Sspace>tbsp Volume 1.420653125e-5 # 1/2 imp floz
-  Unit ImpFluidOunce imp<Sspace>floz Volume 2.84130625e-5 # *1/5* imp gill
-  Unit ImpGill imp<Sspace>gill Volume 1.420653125e-4 # 1/2 imp cup
-  Unit ImpCup imp<Sspace>cup Volume 2.84130625e-4 # 1/2 imp pint
-  Unit ImpPint imp<Sspace>pint Volume 5.6826125e-4 # 1/2 imp quart
-  Unit ImpQuart imp<Sspace>quart Volume 1.1365225e-3 # 1/4 imp gallon
-  Unit ImpGallon imp<Sspace>gallon Volume 4.54609e-3 # 4.54609L by defn
+  Unit ImpTablespoon imp<Sspace>tbsp Volume 1.420653125e-5 # (exact) 1/2 imp floz
+  Unit ImpFluidOunce imp<Sspace>floz Volume 2.84130625e-5 # (exact) *1/5* imp gill
+  Unit ImpGill imp<Sspace>gill Volume 1.420653125e-4 # (exact) 1/2 imp cup
+  Unit ImpCup imp<Sspace>cup Volume 2.84130625e-4 # (exact) 1/2 imp pint
+  Unit ImpPint imp<Sspace>pint Volume 5.6826125e-4 # (exact) 1/2 imp quart
+  Unit ImpQuart imp<Sspace>quart Volume 1.1365225e-3 # (exact) 1/4 imp gallon
+  Unit ImpGallon imp<Sspace>gallon Volume 4.54609e-3 # (exact) by defn
 
   # Dry: https://en.wikipedia.org/wiki/United_States_customary_units
   Unit DryPint dry<Sspace>pint Volume 0.5506104713575e-3 # 33.6003125 in^3 by defn
@@ -459,8 +459,11 @@ Units [
   # Fuel Consumption
   # Requires special conversion handlers.
   #
-  #   Lkm = 100 * (liter/gal) / (km/mile) / mpg = 235.21458333333 / mpg
-  #   mpg = 100 * (liter/gal) / (km/mile) / Lkm = 235.21458333333 / Lkm
+  #   Lkm = 100 * (liter/gal) / (km/mile) / mpg
+  #       = 100 * (3.785411784) / 1.609344 / mpg
+  #       = 235.21458333333 / mpg (to 14 digits)
+  #   mpg = 100 * (liter/gal) / (km/mile) / Lkm
+  #       = 235.21458333333 / Lkm (to 14 digits)
   #----------------------------------------------------------------------------
 
   Unit MilesPerGallon mpg Fuel 1

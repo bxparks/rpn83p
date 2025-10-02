@@ -971,43 +971,25 @@ temperatureFToC:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert miles per gallon (US) to liters per 100km (everywhere
-; else).
-;   Lkm = 100/[mpg * (km/mile) / (litre/gal)]
-; Input: OP1:Real=mpg
+; Description: Convert miles per US gallon (mpg) to liters per 100km (Lkm). Or
+; visa versa. It's the same formula to go back and forth.
+;   Lkm = 100 * (litre/gal) / (km/mile) / mpg
+;       = 235.21458333333 / mpg
+;   mpg = 100 * (litre/gal) / (km/mile) / Lkm
+;       = 235.21458333333 / Lkm
+;
+; Input: OP1:Real=mpg or Lkm
+; Output: OP1:Real=Lkm or mpg
 fuelMpgToLkm:
-    call op2SetKmPerMi
-    bcall(_FPMult)
-    call op2SetLPerGal
-    bcall(_FPDiv)
-    call op1ToOp2PageTwo
-    call op1Set100PageTwo
-    bcall(_FPDiv)
-    ret
-
-; Description: Convert liters per 100km to mpg.
-;   mpg = 100/lkm * (litre/gal) / (km/mile).
-; Input: OP1:Real=Lkm
 fuelLkmToMpg:
-    call op1ToOp2PageTwo
-    call op1Set100PageTwo
-    bcall(_FPDiv)
-    call op2SetLPerGal
-    bcall(_FPMult)
-    call op2SetKmPerMi
-    bcall(_FPDiv)
+    call op1ToOp2PageTwo ; OP2=mpg|Lkm; A=A
+    call op1SetLkmMpgScale
+    bcall(_FPDiv) ; OP1=scale/(mpg|Lkm)
     ret
 
-op2SetKmPerMi:
-    ld hl, constKmPerMi
-    jp move9ToOp2PageTwo
+op1SetLkmMpgScale:
+    ld hl, constLkmMpgScale
+    jp move9ToOp1PageTwo
 
-op2SetLPerGal:
-    ld hl, constLPerGal
-    jp move9ToOp2PageTwo
-
-constKmPerMi: ; 1.609344 km/mi, exact
-    .db $00, $80, $16, $09, $34, $40, $00, $00, $00
-
-constLPerGal: ; 3.785 411 784 L/gal, exact, gallon == 231 in^3
-    .db $00, $80, $37, $85, $41, $17, $84, $00, $00
+constLkmMpgScale: ; 235.21458333333
+    .db $00, $82, $23, $52, $14, $58, $33, $33, $33
