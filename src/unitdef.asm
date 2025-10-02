@@ -76,7 +76,7 @@ unitTypeFuelId equ 12
 ;-----------------------------------------------------------------------------
 
 unitTypeNamesCount equ 170 ; number of unit names
-unitTypeNamesPoolSize equ 1687 ; size of unit type names string pool
+unitTypeNamesPoolSize equ 1680 ; size of unit type names string pool
 
 unitTypeNullTypeName:
     .db "nulltype", 0
@@ -968,7 +968,7 @@ unitLitersPerHundredKiloMetersId equ 169
 ;-----------------------------------------------------------------------------
 
 unitNamesCount equ 170 ; number of unit names
-unitNamesPoolSize equ 1687 ; size of unit names string pool
+unitNamesPoolSize equ 1680 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -1017,7 +1017,7 @@ unitFathomName:
 unitCableName:
     .db "cable", 0
 unitNauticalMileName:
-    .db 'n', 'a', 'u', 't', Sspace, 'm', 'i', 'l', 'e', 0
+    .db "nmile", 0
 unitSurveyFootName:
     .db 's', 'u', 'r', 'v', 'e', 'y', Sspace, 'f', 't', 0
 unitRodName:
@@ -1049,7 +1049,7 @@ unitSqYardName:
 unitSqMileName:
     .db 'm', 'i', 'l', 'e', Sarea, 0
 unitSqNauticalMileName:
-    .db 'n', 'm', 'i', Sarea, 0
+    .db 'n', 'm', 'i', 'l', 'e', Sarea, 0
 unitSqRodName:
     .db 'r', 'o', 'd', Sarea, 0
 unitSqChainName:
@@ -1083,7 +1083,7 @@ unitCuYardName:
 unitCuMileName:
     .db 'm', 'i', 'l', 'e', Scube, 0
 unitCuNauticalMileName:
-    .db 'n', 'm', 'i', Scube, 0
+    .db 'n', 'm', 'i', 'l', 'e', Scube, 0
 unitMicroLiterName:
     .db Smu, 'l', 'i', 't', 'e', 'r', 0
 unitMilliLiterName:

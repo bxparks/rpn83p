@@ -94,7 +94,7 @@ Units [
   # Nautical: https://en.wikipedia.org/wiki/United_States_customary_units
   Unit Fathom fathom Length 1.8288 # 6 feet
   Unit Cable cable Length 219.456 # 3429/15625 km by defn
-  Unit NauticalMile naut<Sspace>mile Length 1852 # by defn
+  Unit NauticalMile nmile Length 1852 # by defn
 
   # Survey: https://en.wikipedia.org/wiki/United_States_customary_units
   # After 2023, most of these were standardized on the SI units. However, the
@@ -126,7 +126,7 @@ Units [
   Unit SqFoot foot<Sarea> Area 0.09290304 # 0.3048^2
   Unit SqYard yard<Sarea> Area 0.83393424 # 0.9144^2
   Unit SqMile mile<Sarea> Area 2.589988110336e6 # 1609.344^2
-  Unit SqNauticalMile nmi<Sarea> Area 3429904 # 1852^2
+  Unit SqNauticalMile nmile<Sarea> Area 3429904 # 1852^2
 
   # https://en.wikipedia.org/wiki/Rod_(unit)
   Unit SqRod rod<Sarea> Area 25.29285264 # (16.5ft)^2=25.29285264 m^2
@@ -159,7 +159,7 @@ Units [
   Unit CuFoot foot<Scube> Volume 2.8316846592e-2 # 0.3048^3
   Unit CuYard yard<Scube> Volume 7.64554857984e-1 # 0.9144^3
   Unit CuMile mile<Scube> Volume 4.1681818254406e9 # 1609.344^3
-  Unit CuNauticalMile nmi<Scube> Volume 6352182208 # 1852^3
+  Unit CuNauticalMile nmile<Scube> Volume 6352182208 # 1852^3
 
   Unit MicroLiter <Smu>liter Volume 1e-9
   Unit MilliLiter milliliter Volume 1e-6
