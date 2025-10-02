@@ -39,7 +39,7 @@
         - Support misc Unit Functions (UFCN)
             - UVAL: return display value without units
             - UBAS: convert to its "base unit"
-        - Increase number of supported units from 30 to 162.
+        - Increase number of supported units from 30 to 169.
             - Support *all* units in the HP-19BII and the TI-85.
         - Reorganize UNIT menus across 13 sub MenuFolders: UFCN, LENG, AREA,
           VOL, TEMP, MASS, FORC, PRES, ENER, TIME, SPD, PWR, FUEL.
@@ -91,6 +91,29 @@
           function.
     - RPN83P application size
         - increase to 64kiB (4 flash pages) from 48kiB
+    - **WARNING** Most MODE settings will be lost when upgrading from v1.0 to
+      v1.1. Variables and registers will be preserved.
+        - Lost
+            - Pending entry in the input buffer
+            - FIX, SCI, ENG selection
+            - Trig modes (DEG, RAD)
+            - Complex result (CRES,RRES)
+            - Complex display modes (RECT, PRAD, PDEG)
+            - `,EE` or `EE,` selection
+            - `{..}` or `".."` selection
+            - 'BASE > DEC|BIN|OCT|HEX' selection
+            - 'BASE > WSIZ' selection
+            - 'BASE > CF' flag
+            - 'DATE > EPCH' selection and custom epoch date
+            - 'DATE > CLK > ATZ' application timezone
+            - 'DATE > CLK > CTZ' clock timezone
+            - TVM Solver parameters: IYR1, IYR2, TMAX
+        - Preserved
+            - Storage registers (R00-R99)
+            - Storage variables (A-Z,Theta)
+            - RPN stack registers (X,Y,Z,T,A,B,C,D)
+            - STAT registers (ΣX to ΣYLX)
+            - TVM variables: N, I%YR, PV, PMT, FV, P/YR, C/YR, BEG, END
 - 1.0.0 (2024-07-19)
     - RPN83P is now out of beta!
     - Documentation
