@@ -313,77 +313,115 @@ docs/images/%.gif: ../docs/images/%.gif
 	cp -f $< $@
 
 #-----------------------------------------------------------------------------
-# Copy the MD files to ./docs from ../docs.
+# Copy the MD files to ./docs from ../docs, with some processing:
+# - remove redundant TOC in the main USER_GUIDE.md
+# - remove link to "Parent Document: USER_GUIDE.md" since everything is
+# processed into a single PDF file
+# - remove the dangling backslash on the previous line, after "Parent Document"
+# line is removed
 #-----------------------------------------------------------------------------
 
 # Remove redudant TOC from the temporary MD file, pandoc generates its own.
-docs/USER_GUIDE.md: ../docs/USER_GUIDE.md
+docs/USER_GUIDE.md: ../docs/USER_GUIDE.md Makefile
 	@mkdir -p docs
-	sed -e '/## Chapters/,$$d' < $< > $@
+	sed -e '/## Chapters/,$$d' \
+		< $< > $@
 
-docs/USER_GUIDE_WHY.md: ../docs/USER_GUIDE_WHY.md
+docs/USER_GUIDE_WHY.md: ../docs/USER_GUIDE_WHY.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_INSTALLATION.md: ../docs/USER_GUIDE_INSTALLATION.md
+docs/USER_GUIDE_INSTALLATION.md: ../docs/USER_GUIDE_INSTALLATION.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_BASIC.md: ../docs/USER_GUIDE_BASIC.md
+docs/USER_GUIDE_BASIC.md: ../docs/USER_GUIDE_BASIC.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_FUNCTIONS.md: ../docs/USER_GUIDE_FUNCTIONS.md
+docs/USER_GUIDE_FUNCTIONS.md: ../docs/USER_GUIDE_FUNCTIONS.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_STORAGE.md: ../docs/USER_GUIDE_STORAGE.md
+docs/USER_GUIDE_STORAGE.md: ../docs/USER_GUIDE_STORAGE.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_MODE.md: ../docs/USER_GUIDE_MODE.md
+docs/USER_GUIDE_MODE.md: ../docs/USER_GUIDE_MODE.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_NUM.md: ../docs/USER_GUIDE_NUM.md
+docs/USER_GUIDE_NUM.md: ../docs/USER_GUIDE_NUM.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_BASE.md: ../docs/USER_GUIDE_BASE.md
+docs/USER_GUIDE_BASE.md: ../docs/USER_GUIDE_BASE.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_STAT.md: ../docs/USER_GUIDE_STAT.md
+docs/USER_GUIDE_STAT.md: ../docs/USER_GUIDE_STAT.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_TVM.md: ../docs/USER_GUIDE_TVM.md
+docs/USER_GUIDE_TVM.md: ../docs/USER_GUIDE_TVM.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_COMPLEX.md: ../docs/USER_GUIDE_COMPLEX.md
+docs/USER_GUIDE_COMPLEX.md: ../docs/USER_GUIDE_COMPLEX.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_UNIT.md: ../docs/USER_GUIDE_UNIT.md
+docs/USER_GUIDE_UNIT.md: ../docs/USER_GUIDE_UNIT.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_DATE.md: ../docs/USER_GUIDE_DATE.md
+docs/USER_GUIDE_DATE.md: ../docs/USER_GUIDE_DATE.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_TIOS.md: ../docs/USER_GUIDE_TIOS.md
+docs/USER_GUIDE_TIOS.md: ../docs/USER_GUIDE_TIOS.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_TROUBLESHOOTING.md: ../docs/USER_GUIDE_TROUBLESHOOTING.md
+docs/USER_GUIDE_TROUBLESHOOTING.md: ../docs/USER_GUIDE_TROUBLESHOOTING.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
-docs/USER_GUIDE_FUTURE.md: ../docs/USER_GUIDE_FUTURE.md
+docs/USER_GUIDE_FUTURE.md: ../docs/USER_GUIDE_FUTURE.md Makefile
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/^\*\*Parent Document/d' \
+		-e '/^\*\*Project Home/s/\\$$//' \
+		< $< > $@
 
 # README.md requires some URL rewriting.
 README.md: ../README.md Makefile
