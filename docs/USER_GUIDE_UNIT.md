@@ -107,6 +107,30 @@ Two miscellaneous functions are available under the `UFCN` menu folder:
 - `UVAL`: extract the unit value
 - `UBAS`: convert to the baseUnit of its UnitType
 
+The `UVAL` function extracts the display value of the  Denominate object in `X`,
+removing the unit portion.
+
+| **Keys**          | **Display**                      |
+| ----------------  | ---------------------            |
+| `6` `ft`          | ![](images/unit/unit-uval-1.png) |
+| `UVAL` or `2ND v` | ![](images/unit/unit-uval-2.png) |
+
+For convenience, `UVAL` function is also available as the `2ND v` (above the `8`
+key) so to avoid the need to traverse the menu hierarchy into the `UFCN` menu.
+
+The `UBAS` function converts the Denominate object in `X` to its base unit.
+Every unitType (e.g. `LENG`) has a baseUnit (e.g. `meter`). Every Denominate
+object is stored with its value converted in terms of its baseUnit. The `UBAS`
+function exposes the internal baseUnit and its baseValue.
+
+The `UBAS` function does not have a keyboard shortcut, because it is not
+expected to be needed as often as the `UVAL` function.
+
+| **Keys**          | **Display**                      |
+| ----------------  | ---------------------            |
+| `6` `ft`          | ![](images/unit/unit-ubas-1.png) |
+| `UBAS`            | ![](images/unit/unit-ubas-2.png) |
+
 ## Supported Units
 
 The following is the complete list of supported units in RPN83P. It includes
