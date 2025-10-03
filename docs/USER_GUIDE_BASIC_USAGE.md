@@ -743,13 +743,17 @@ The SHOW mode reverts back to the normal display mode in the following ways:
 - Any other key: Exit SHOW mode, then *continue* processing the key in normal
   mode.
 
-Prior to v1.1, any key press in SHOW mode was used to exit to normal mode, and
-eaten. A second press of the same key was required in normal mode to process it.
-This was found to be too cumbersome. It was more intuitive allow a new number to
-be entered directly from SHOW mode, without having to press the digit key twice.
-If a digit key is entered (0-9), then we go into edit mode and the digit goes
-into the input buffer. If a function key is pressed, the function acts upon the
-value in the `X` register displayed by `SHOW`.
+Prior to v1.1, any key press in SHOW mode caused it to exit to normal mode, and
+then the key press was eaten. A second press of the same key was required in
+normal mode to continue processing it. This was found to be too cumbersome,
+because it prevented the entry of a new number directly from SHOW.
+
+In v1.1, any key press causes SHOW mode to exit as before. In addition, most
+keys are then forwarded to the normal mode, so that normal processing can
+continue. In particular, if a digit key is entered (0-9) in SHOW mode, we leave
+SHOW, then immediately go into edit mode, and the digit goes into the input
+buffer. If a function key is pressed, the function acts upon the value in the
+`X` register displayed by `SHOW`.
 
 Unlike the HP-42S which automatically reverts back to the normal mode after a
 2-3 second delay, the TI calculator must wait for a keyboard event from the
