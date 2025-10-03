@@ -1,4 +1,4 @@
-# Future Enhancements
+# RPN83P User Guide: Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
 calculator app. I have grouped them into the following subsections, assuming
@@ -14,11 +14,9 @@ because it is faster and easier to use compared to a web app, especially for
 small features that can be described in a few sentences. Usually only the larger
 and more complicated features will get their own GitHub tickets.
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.0.0 (2024-07-19) \
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 

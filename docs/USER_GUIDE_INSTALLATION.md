@@ -1,4 +1,4 @@
-# RPN83P User Guide: Installation
+# RPN83P User Guide: Chapter 2: Installation
 
 This document describes how to install and run the RPN83P application.
 

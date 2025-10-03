@@ -1,4 +1,4 @@
-# RPN83P User Guide: BASE Functions
+# RPN83P User Guide: Chapter 8: BASE Functions
 
 This document describes the `BASE` functions of the RPN83P application. They
 allow numbers to be converted between 4 different bases (DEC, HEX, OCT, and

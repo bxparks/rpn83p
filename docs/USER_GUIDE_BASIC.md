@@ -1,4 +1,4 @@
-# RPN83P User Guide: Basic Usage
+# RPN83P User Guide: Chapter 3: Basic Usage
 
 This document describes the screen elements, input system, the RPN stack, the
 menu system, the help system, and the error codes used by RPN83P.

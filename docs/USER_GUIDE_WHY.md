@@ -1,4 +1,4 @@
-# RPN83P User Guide: Why?
+# RPN83P User Guide: Chapter 1: Why?
 
 This document explains the motivations for creating RPN83P.
 

@@ -1,4 +1,4 @@
-# RPN83P User Guide: Complex Numbers
+# RPN83P User Guide: Chapter 11: Complex Numbers
 
 This document describes the Complex Number features of the RPN83P application.
 

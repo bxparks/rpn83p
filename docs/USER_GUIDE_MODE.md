@@ -1,4 +1,4 @@
-# RPN83P User Guide: MODE Functions
+# RPN83P User Guide: Chapter 6: MODE Functions
 
 This document describes the menu functions under the `MODE` menu in RPN83P.
 

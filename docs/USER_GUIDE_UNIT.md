@@ -1,4 +1,4 @@
-# RPN83P User Guide: UNIT Functions
+# RPN83P User Guide: Chapter 12: UNIT Functions
 
 This document describes the menu functions under the `UNIT` menu in RPN83P.
 

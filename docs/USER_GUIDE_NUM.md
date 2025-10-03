@@ -1,4 +1,4 @@
-# RPN83P User Guide: Numerical Functions
+# RPN83P User Guide: Chapter 7: NUM Functions
 
 This document describes the menu functions under the `NUM` menu in RPN83P.
 

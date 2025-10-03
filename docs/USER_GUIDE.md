@@ -5,27 +5,6 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 **Version**: 1.0.0 (2024-07-19)\
 **Project Home**: https://github.com/bxparks/rpn83p
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Why?](#why)
-- [Installation](#installation)
-- [Basic Usage](#basic-usage)
-- [Catalog of Functions](#catalog-of-functions)
-- [Advanced Topics](#advanced-topics)
-    - [Storage Registers and Variables](#storage-registers-and-variables)
-    - [MODE Functions](#mode-functions)
-    - [NUM Functions](#num-functions)
-    - [BASE Functions](#base-functions)
-    - [STAT Functions](#stat-functions)
-    - [TVM Functions](#tvm-functions)
-    - [Complex Numbers](#complex-numbers)
-    - [UNIT Functions](#unit-functions)
-    - [DATE Functions](#date-functions)
-- [TI-OS Interaction](#ti-os-interaction)
-- [Troubleshooting](#troubleshooting)
-- [Future Enhancements](#future-enhancements)
-
 ## Introduction
 
 RPN83P is an [RPN](https://en.wikipedia.org/wiki/Reverse_Polish_notation)
@@ -144,101 +123,21 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-## Why?
+## Chapters
 
-See [USER_GUIDE_WHY.md](USER_GUIDE_WHY.md).
-
-## Installation
-
-See [USER_GUIDE_INSTALLATION.md](USER_GUIDE_INSTALLATION.md).
-
-## Basic Usage
-
-See [USER_GUIDE_BASIC.md](USER_GUIDE_BASIC.md).
-
-## Catalog of Functions
-
-All direct and menu functions supported by RPN83P are listed for reference in
-[USER_GUIDE_FUNCTIONS.md](USER_GUIDE_FUNCTIONS.md).
-
-## Advanced Topics
-
-Each module below is a collection of functions and features that are related in
-some consistent way. The modules can interact with other parts of the RPN83P
-application through the RPN stack or storage registers. But for the most part,
-they are self-contained.
-
-### MODE Functions
-
-See [USER_GUIDE_MODE.md](USER_GUIDE_MODE.md).
-
-### Storage Registers and Variables
-
-See [USER_GUIDE_STORAGE.md](USER_GUIDE_STORAGE.md).
-
-### NUM Functions
-
-The `NUM` numerical functions are described in
-[USER_GUIDE_NUM.md](USER_GUIDE_NUM.md).
-
-### BASE Functions
-
-The `BASE` functions allow numbers to be converted between 4 different bases
-(DEC, HEX, OCT, and BIN) and support various arithmetic and bitwise operations
-similar to the HP-16C.
-
-See [USER_GUIDE_BASE.md](USER_GUIDE_BASE.md) for full details.
-
-### STAT Functions
-
-The RPN83P implements *all* 1 and 2 variable statistical and curve fitting
-functionality of the HP-42S, as described in Ch. 15 of the _HP-42S User's
-Manual_.
-
-See [USER_GUIDE_STAT.md](USER_GUIDE_STAT.md) for full details.
-
-### TVM Functions
-
-The Time Value of Money (TVM) functionality is inspired by RPN financial
-calculators such as the HP-12C, HP-17B, and the HP-30b. They are available
-through the `ROOT > TVM` menu.
-
-See [USER_GUIDE_TVM.md](USER_GUIDE_TVM.md) for full details.
-
-### Complex Numbers
-
-The RPN83P has extensive support for complex numbers. They can be entered in
-rectangular form `a+bi`, polar radian form `r e^(i theta)`, or polar degree form
-(`theta` in degrees). They can be also be displayed in all three forms. The
-entry modes and the display modes are independent of each other. Most math
-functions are able to operate on complex numbers.
-
-See [USER_GUIDE_COMPLEX.md](USER_GUIDE_COMPLEX.md) for full details.
-
-### UNIT Functions
-
-See [USER_GUIDE_UNIT.md](USER_GUIDE_UNIT.md) for full details.
-
-### DATE Functions
-
-The functions under the `DATE` menu allow arithmetic and conversion operations
-on various objects (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
-Duration) that represent the Gregorian Calendar dates and UTC times. Timezones
-are implemented as fixed offsets from UTC, and datetimes can be converted into
-different timezones easily. In addition, the DATE functions can access the
-hardware real-time clock (RTC) incorporated into some calculators (TI-84+,
-TI-84+SE, TI-Nspire).
-
-See [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md) for full details.
-
-## TI-OS Interaction
-
-See [USER_GUIDE_TIOS.md](USER_GUIDE_TIOS.md).
-
-## Troubleshooting
-
-See [USER_GUIDE_TROUBLESHOOTING.md](USER_GUIDE_TROUBLESHOOTING.md).
-
-## Future Enhancements
-
-Moved to [FUTURE.md](FUTURE.md).
+- [Chapter 1: Why?](USER_GUIDE_WHY.md)
+- [Chapter 2: Installation](USER_GUIDE_INSTALLATION.md)
+- [Chapter 3: Basic Usage](USER_GUIDE_BASIC.md)
+- [Chapter 4: Catalog of Functions](USER_GUIDE_FUNCTIONS.md)
+- [Chapter 5: Storage Registers and Variables](USER_GUIDE_STORAGE.md)
+- [Chapter 6: MODE Functions](USER_GUIDE_MODE.md)
+- [Chapter 7: NUM Functions](USER_GUIDE_NUM.md)
+- [Chapter 8: BASE Functions](USER_GUIDE_BASE.md)
+- [Chapter 9: STAT Functions](USER_GUIDE_STAT.md)
+- [Chapter 10: TVM Functions](USER_GUIDE_TVM.md)
+- [Chapter 11: Complex Numbers](USER_GUIDE_COMPLEX.md)
+- [Chapter 12: UNIT Functions](SER_GUIDE_UNIT.md)
+- [Chapter 13: DATE Functions](USER_GUIDE_DATE.md)
+- [Chapter 14: TI-OS Interaction](USER_GUIDE_TIOS.md)
+- [Chapter 15: Troubleshooting](USER_GUIDE_TROUBLESHOOTING.md)
+- [Chapter 16: Future](FUTURE.md)

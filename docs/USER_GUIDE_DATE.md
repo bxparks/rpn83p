@@ -1,4 +1,4 @@
-# RPN83P User Guide: DATE Functions
+# RPN83P User Guide: Chapter 13: DATE Functions
 
 This document describes the `DATE` features of the RPN83P application.
 
@@ -86,10 +86,6 @@ This document describes the `DATE` features of the RPN83P application.
 - [Storage Registers](#storage-registers)
 
 ## DATE Feature Summary
-
-The `DATE` menu is on the third row at the top level of the menu hierarchy:
-
-![ROOT > DATE menu](images/menu/root-date.png)
 
 Here is a quick summary of the features:
 
