@@ -60,10 +60,6 @@ Summary of features:
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
     - angle conversions: `>DEG`, `>RAD`, `>REC`, `>POL`, `>HR`, `>HMS`, `HMS+`,
       `HMS-`
-    - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
-      `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
-      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`, `>Lkm`, `>mpg`, `>kPa`,
-      `>psi`, `>ha`, `>acr`
 - statistics and curve fitting, inspired by HP-42S
     - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
@@ -101,6 +97,10 @@ Summary of features:
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
+- unit conversions, inspired by HP-19BII and TI-85
+    - 169 units across 12 unit types (LENG, AREA, VOL, TEMP, MASS, FORC, PRES,
+      ENER, PWR, TIME, SPD, FUEL)
+    - all units of the HP-19BII and TI-85 are supported
 - date functions
     - date, time, datetime, timezone, and hardware clock
     - proleptic Gregorian calendar from year 0001 to 9999
