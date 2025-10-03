@@ -424,9 +424,9 @@ These are the buttons which manipulate the RPN stack:
 
 ![Input and Edit Buttons](images/fullshot/fullshot-rpn-buttons.png)
 
-- `(`: rolls RPN stack down (known as `R(downarrow)` on HP calculators)
+- `(`: rolls RPN stack down (known as `R↓` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
-- `2ND u`: rolls RPN stack up (known as `R(uparrow)` on HP calculators)
+- `2ND u`: rolls RPN stack up (known as `R↑` on HP calculators)
 - `ENTER`: saves the input buffer to the `X` register
 - `2ND` `ANS`: recalls the last `X`
 
@@ -459,12 +459,12 @@ lift the stack.
 The parenthesis `(` and `)` buttons are not used in an RPN entry system, so they
 have been repurposed for stack manipulation:
 
-- `(` key rolls the stack *down*, exactly as the same as the `R(downarrow)` or
-  just a single `(downarrow)` on the HP calculators.
+- `(` key rolls the stack *down*, exactly as the same as the `R↓` (sometimes
+  just a single `↓`) on the HP calculators.
 - `)` key performs an exchange of the `X` and `Y` registers. That functionality
   is usually marked as `X<>Y` on HP calculators.
 
-The `2ND u` is bound to the `R(up)` command. You can think of the `u` as a
+The `2ND u` is bound to the `R↑` command. You can think of the `u` as a
 mnemonic for "up". This command is marginally useful when the RPN stack size is
 only 4, but becomes more important when the RPN stack size is increased beyond
 4.

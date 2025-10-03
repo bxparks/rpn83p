@@ -302,8 +302,8 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
 - ![ROOT > STK](images/menu/root-stk.png) (ROOT > STK)
     - ![ROOT > STK > Row1](images/menu/root-stk-1.png)
     - `DUP`: duplicate `X` value and lift stack values up
-    - `R(up)`: roll stack up, also bound to `2ND u` button
-    - `R(down)`: roll stack down, also bound to `(` button
+    - `R↑`: roll stack up, also bound to `2ND u` button
+    - `R↓`: roll stack down, also bound to `(` button
     - `DROP`: delete the `X` value and drop stack values down
     - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
 - ![ROOT > UNIT](images/menu/root-unit.png) (ROOT > UNIT)
