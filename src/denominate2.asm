@@ -64,7 +64,7 @@ convertDisplayValueToRpnDenominate:
 denominateSetDisplayValue:
     ; convert displayValue to the baseValue in the baseUnit
     ld a, (hl) ; A=displayUnit
-    inc hl ; (HL):Real=baseValue
+    skipDenominateUnitHL ; (HL):Real=baseValue
     push hl ; stack=[&den.baseValue]
     call convertDisplayValueToBaseValue ; OP1=baseValue
     pop de ; stack=[]; DE=&den.baseValue
@@ -110,8 +110,8 @@ convertDisplayValueToBaseValue:
 ;   - C:u8=targetUnitId
 ; Output:
 ;   - CP1:RpnDenominate=converted
-; Destroys: A, OP1
-; Preserves: BC, DE, HL
+; Destroys: A, BC, OP1
+; Preserves: DE, HL
 changeRpnDenominateUnit:
     ld a, (OP1 + rpnDenominateFieldDisplayUnit) ; A=oldDisplayUnitId
     cp c
@@ -119,9 +119,10 @@ changeRpnDenominateUnit:
     ; Validate that the unit conversion is allowed
     ld b, a ; B=oldDisplayUnitId
     call validateCompatibleUnitType ; throws Err:Invalid if different unitType
-    ; Clobber the oldDisplayUnitId with new targetUnitId
-    ld a, c ; A=targetUnitId
-    ld (OP1 + rpnDenominateFieldDisplayUnit), a ; displayUnitId=targetUnitId
+    ; Clobber the oldDisplayUnitId with new targetUnitId, setting 'reserved'
+    ; field to 0.
+    ld b, 0 ; BC=targetUnitId
+    ld (OP1 + rpnDenominateFieldDisplayUnit), bc ; displayUnitId=targetUnitId
     ret
 
 ;-----------------------------------------------------------------------------
@@ -283,7 +284,7 @@ denominateGetDisplayValue:
 ; to worry about cleaning up the stack, because we can return early.
 denominateGetDisplayValueInternal:
     ld a, (hl) ; A=displayUnitId
-    inc hl ; HL=baseValue
+    skipDenominateUnitHL ; HL=baseValue
     call move9ToOp1PageTwo ; OP1=baseValue; preserves A
     ; Special cases for temperature units.
     cp unitKelvinId
@@ -316,7 +317,7 @@ denominateBaseValueToOp1:
     push hl
     push de
     push bc
-    inc hl ; HL=baseValue
+    skipDenominateUnitHL ; *HL=baseValue
     call move9ToOp1PageTwo ; preserves A
     pop bc
     pop de
@@ -334,7 +335,7 @@ op1ToDenominateBaseValue:
     push hl
     push de
     push bc
-    inc hl ; *HL=baseValue
+    skipDenominateUnitHL ; *HL=baseValue
     ex de, hl ; *DE=baseValue
     call move9FromOp1PageTwo ; preserves A
     pop bc

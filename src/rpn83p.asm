@@ -263,15 +263,19 @@ rpnObjectTypeDurationSizeOf equ 7
 ; easy because we just need to update the 'displayUnit' field without changing
 ; the 'baseValue'. However, this means that the 'baseValue' needs to be
 ; converted into the 'displayUnit' for display purposes.
-; - struct Denominate{displayUnit:u8, baseValue:float}, 10 bytes
-; - struct RpnDenominate{type:u8[2], denominate:Denominate}, 12 bytes
+; - struct Denominate{displayUnit:u8, reserved: u8, baseValue:float}, 11 bytes
+; - struct RpnDenominate{type:u8[2], denominate:Denominate}, 13 bytes
+; The 'reserved' field must *always* be set to zero. This allows the
+; displayUnit be changed to a u16 in the future, without doing a data
+; migration.
 rpnObjectTypeDenominate equ $27
-rpnObjectTypeDenominateSizeOf equ 12
+rpnObjectTypeDenominateSizeOf equ 13
 rpnDenominateFieldType equ 0
 rpnDenominateFieldDisplayUnit equ 2
-rpnDenominateFieldBaseValue equ 3
-#define skipDenominateUnitHL inc hl
-#define skipDenominateUnitDE inc de
+rpnDenominateFieldReserved equ 3
+rpnDenominateFieldBaseValue equ 4
+#define skipDenominateUnitHL inc hl \ inc hl
+#define skipDenominateUnitDE inc de \ inc de
 
 ; An RpnObject is the union of all Rpn objects: RpnReal, RpnComplex, and so on.
 ; See the definition of 'struct RpnObject' in vars1.asm. Its size is the

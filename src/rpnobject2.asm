@@ -250,6 +250,9 @@ setHLRpnDenominatePageTwo:
     push af
     ld a, rpnObjectTypeDenominate
     call setHLRpnObjectTypePageTwo
-    pop af ; A=unit
-    ld (hl), a
+    pop af ; A=displayUnit
+    ld (hl), a ; denominate.displayUnit=A
+    inc hl
+    ld (hl), 0 ; denominate.reserved=0
+    dec hl ; HL=denominate
     ret
