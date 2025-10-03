@@ -227,7 +227,7 @@ The columns in the table mean the following:
 | `rod`             | `rod`     | HP    | TI    | 16.5 ft       |
 | `chain`           | `chai`    | HP    | TI    | 4 rods, 66 ft |
 | `furlong`         | `frlg`    |       |       | 10 chains     |
-| `survey mi`       | `svmi`    | HP    |       | using pre-2023 defn of 6336/3937 km; called "statutory mile" in HP-19BII |
+| `survey mi`       | `svmi`    | HP    |       | using pre-2023 defn of 6336/3937 km | <!--; called "statutory mile" in HP-19BII -->
 | `league`          | `leag`    |       |       | 3 (normal) miles |
 | **`LENG > NAUT`** |           |       |       |               |
 | `fathom`          | `fath`    | HP    | TI    | 6 feet        |
@@ -237,7 +237,7 @@ The columns in the table mean the following:
 | `light·sec`       | `lsec`    |       |       | 299792458 m (exact) by defn |
 | `AU`              | `AU`      |       |       | 1.49597870700e11 (exact) by defn |
 | `light·year`      | `ly`      |       | TI    | 9.4607304725808e15 (exact) |
-| `parsec`          | `pc`      |       |       | 648000/pi AU = 30856775814913673 m (rounded to 14 digits) |
+| `parsec`          | `pc`      |       |       | 648000/pi AU = 30856775814913673 m (14 digits) |
 
 ### Area (AREA)
 
@@ -320,7 +320,7 @@ The columns in the table mean the following:
 | `°C`              | `°C`      | HP    | TI    | Celsius = 273.15 + Kelvin |
 | `°F`              | `°F`      | HP    | TI    | Fahrenheit = Celsius * 9 / 5 + 32 |
 | `°R`              | `°R`      | HP    | TI    | Rankine = Kelvin * 9 / 5 |
-| `°K`              | `°K`      | HP    | TI    | **base unit**, Kelvin, degree symbol used for UI consistency |
+| `°K`              | `°K`      | HP    | TI    | **base unit**, Kelvin |
 
 ### Mass (MASS)
 
@@ -332,7 +332,7 @@ The columns in the table mean the following:
 | `gram`            | `g`       | HP    | TI    | 1e-3 kg     |
 | `kilogram`        | `kg`      | HP    | TI    | **base unit**  |
 | `metric ton`      | `t`       | HP    | TI    | also known as tonne, 1000 kg  |
-| `amu`             | `amu`     |       | TI    | atomic mass unit, also known as dalton (Da), 1.66053906892e-27 kg (measured) |
+| `amu`             | `amu`     |       | TI    | atomic mass unit, dalton (Da), 1.66053906892e-27 kg (measured) |
 | **`MASS > US`**   |           |       |       |             |
 | `grain`           | `grai`    | HP    |       | 1/7000 lb |
 | `dram`            | `dram`    | HP    |       | 1/16 oz |
@@ -362,8 +362,8 @@ The columns in the table mean the following:
 | `newton`          | `N`       |       | TI    | **base unit**, kg\*m/s^2 |
 | `kg force`        | `kgf`     |       | TI    | kilogram force = 9.80665 N (exact) by defn |
 | `ton force`       | `tonf`    |       | TI    | metric ton force = 1000 kgf    |
-| `poundal`         | `pdl`     |       |       | 1lb * 1ft/s^2 = 0.45359237 * 0.3048 = 0.138254954376 N (exact) |
-| `lb force`        | `lbf`     |       | TI    | pound force = 1lb * 9.80665m/s^2 = 0.45359237 * 9.80665 = 4.4482216152605 N (exact) |
+| `poundal`         | `pdl`     |       |       | 0.138254954376 N (exact) |
+| `lb force`        | `lbf`     |       | TI    | pound force = 4.4482216152605 N (exact) |
 | `ston force`      | `stnf`    |       |       | short ton force = 2000 lbf    |
 | `lton force`      | `ltnf`    |       |       | long ton force = 2240 lbf    |
 
@@ -380,7 +380,7 @@ The columns in the table mean the following:
 | `millibar`        | `mbar`    |       |       | 1e-3 bar    |
 | `decibar`         | `dbar`    |       |       | 1e-2 bar    |
 | `bar`             | `bar`     |       | TI    | 100 kPa by defn |
-| `psi`             | `psi`     |       | TI    | pounds per square inch = 6894.7572931684 Pa (rounded to 14 digits) |
+| `psi`             | `psi`     |       | TI    | pounds per square inch = 6894.7572931684 Pa (14 digits) |
 | `mmHg`            | `mmH`     |       | TI    | mm of mercury = 133.322387415 Pa (exact) |
 | `inHg`            | `inHg`    |       | TI    | inch of mercury = 3386.388640341 Pa (exact) |
 | `mmH2O`           | `mmw`     |       | TI    | mm of water gauge = 9.80665 Pa (exact) by defn |
@@ -398,7 +398,7 @@ The columns in the table mean the following:
 | `kwatt·h`         | `kWh`     |       | TI    | 3600e3 J      |
 | `calorie`         | `cal`     |       | TI    | 4.184 J (exact) by defn |
 | `kcalorie`        | `kcal`    |       |       | 4.184 kJ, used for food energy |
-| `ft·lbf`          | `ftlb`    |       | TI    | 1.3558179483314 J (rounded to 14 digits) |
+| `ft·lbf`          | `ftlb`    |       | TI    | 1.3558179483314 J (14 digits) |
 | `Btu`             | `Btu`     |       | TI    | British thermal unit, 1055 (approx, various defns) |
 | `tonTNT`          | `tTNT`    |       |       | metric ton of equivalent of TNT, 4.184e9 J (exact) by defn |
 | `liter·atm`       | `Latm`    |       | TI    | liter atmosphere, 101.325 J (exact) by defn |
@@ -410,11 +410,11 @@ The columns in the table mean the following:
 | **`PWR`**         |           |       |       |             |
 | `watt`            | `W`       |       | TI    | **base unit**, joule/s |
 | `kilowatt`        | `kW`      |       |       | 1000 W      |
-| `ft·lbf/s`        | `fl/s`    |       | TI    | foot-pound energy per second, 1.3558179483314 W (rounded to 14 digits) |
-| `Btu/h`           | `Bt/h`    |       |       | Btu/hour, 0.29305555555556 W (rounded to 14 digits) |
-| `Btu/min`         | `Bt/m`    |       | TI    | Btu/minute, 17.583333333333 W (rounded to 14 digits) |
+| `ft·lbf/s`        | `fl/s`    |       | TI    | foot-pound energy per second, 1.3558179483314 W (14 digits) |
+| `Btu/h`           | `Bt/h`    |       |       | Btu/hour, 0.29305555555556 W (14 digits) |
+| `Btu/min`         | `Bt/m`    |       | TI    | Btu/minute, 17.583333333333 W (14 digits) |
 | `calorie/s`       | `ca/s`    |       | TI    | calorie/second, 4.184 W (exact) by defn |
-| `horsepower`      | `hp`      |       | TI    | horsepower, 745.69987158227 W (rounded to 14 digits) |
+| `horsepower`      | `hp`      |       | TI    | horsepower, 745.69987158227 W (14 digits) |
 
 ### Time (TIME)
 
@@ -448,5 +448,5 @@ The columns in the table mean the following:
 | **Display Name**  | **Menu**  |**HP** |**TI** | **Comment**   |
 | -------------     | --------- |------ |------ | -----------   |
 | **`FUEL`**        |           |       |       |               |
-| `L/100km`         | `Lkm`     |       |       | **base unit**, liters per 100 km, Lkm = 100 * (liter/gallon) / (km/mile) / mpg |
-| `mpg`             | `mpg`     |       |       | miles per US gallon, mpg = 100 * (liter/gallon) / (km/mile) / Lkm |
+| `L/100km`         | `Lkm`     |       |       | **base unit**, liters per 100 km, Lkm = 235.21458333333 / mpg |
+| `mpg`             | `mpg`     |       |       | miles per US gallon, mpg = 235.21458333333 / Lkm |
