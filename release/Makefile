@@ -77,7 +77,7 @@ USER_GUIDE_SRCS := \
 ../docs/USER_GUIDE_DATE.md \
 ../docs/USER_GUIDE_TIOS.md \
 ../docs/USER_GUIDE_TROUBLESHOOTING.md \
-../docs/FUTURE.md
+../docs/USER_GUIDE_FUTURE.md
 
 # List of MD files which go into USER_GUIDE.pdf, in order of Chapters.
 USER_GUIDE_CHAPTERS := $(subst ../docs/,,$(USER_GUIDE_SRCS))
@@ -380,7 +380,7 @@ docs/USER_GUIDE_TROUBLESHOOTING.md: ../docs/USER_GUIDE_TROUBLESHOOTING.md
 	@mkdir -p docs
 	cp -f $< $@
 
-docs/FUTURE.md: ../docs/FUTURE.md
+docs/USER_GUIDE_FUTURE.md: ../docs/USER_GUIDE_FUTURE.md
 	@mkdir -p docs
 	cp -f $< $@
 
