@@ -31,6 +31,7 @@
 #	- https://stackoverflow.com/questions/18178084 (fc-list command)
 #	- https://tex.stackexchange.com/questions/234786 (change font family)
 #	- https://superuser.com/questions/1517900 (--monofont flag)
+#	- https://superuser.com/questions/ (--top-level-divsion)
 #
 # I use `--from gfm` instead of `--from markdown` to handle embedded images
 # better. The `--from markdown` option separates out the images into separate
@@ -46,35 +47,77 @@
 #
 # 6) Zip-up all the files into an `rpn83p.zip` file.
 
+# List of files to be added to the rpn83p.zip file.
 TARGETS := \
 CHANGELOG.md \
-FUTURE.pdf \
 README.pdf \
-TVM.pdf \
 USER_GUIDE.pdf \
-USER_GUIDE_BASE.pdf \
-USER_GUIDE_COMPLEX.pdf \
-USER_GUIDE_DATE.pdf \
-USER_GUIDE_STAT.pdf \
-USER_GUIDE_TVM.pdf \
 rpn83p-example1.gif \
 rpn83p-example2.gif \
 rpn83p-example3.gif \
 rpn83p-example4.gif \
-rpn83p.8xk
+rpn83p.8xk \
+rpn83p.zip
 
+# Dependent files of USER_GUIDE.pdf, listed in order of Chapters.
+USER_GUIDE_SRCS := \
+../docs/USER_GUIDE.md \
+../docs/USER_GUIDE_WHY.md \
+../docs/USER_GUIDE_INSTALLATION.md \
+../docs/USER_GUIDE_BASIC.md \
+../docs/USER_GUIDE_FUNCTIONS.md \
+../docs/USER_GUIDE_STORAGE.md \
+../docs/USER_GUIDE_MODE.md \
+../docs/USER_GUIDE_NUM.md \
+../docs/USER_GUIDE_BASE.md \
+../docs/USER_GUIDE_STAT.md \
+../docs/USER_GUIDE_TVM.md \
+../docs/USER_GUIDE_COMPLEX.md \
+../docs/USER_GUIDE_UNIT.md \
+../docs/USER_GUIDE_DATE.md \
+../docs/USER_GUIDE_TIOS.md \
+../docs/USER_GUIDE_TROUBLESHOOTING.md \
+../docs/FUTURE.md
+
+# List of MD files which go into USER_GUIDE.pdf, in order of Chapters.
+USER_GUIDE_CHAPTERS := $(subst ../docs/,,$(USER_GUIDE_SRCS))
+
+# List of MD files which go into USER_GUIDE.pdf, in order of Chapters.
+USER_GUIDE_CHAPTERS_FILES := $(subst ../docs/,docs/,$(USER_GUIDE_SRCS))
+
+# List of screenshots that need to be resized because pandoc and GitHub seem to
+# disagree how big they should be in the document. Pandoc is 33% too big. The
+# only solution that I could find was to reduc the PNG sizes by 33%, before
+# converting the MD files into PDF.
 ORIG_IMAGES := \
 $(wildcard ../docs/images/*.png) \
 $(wildcard ../docs/images/*.gif) \
 $(wildcard ../docs/images/base/*.png) \
+$(wildcard ../docs/images/basic/*.png) \
 $(wildcard ../docs/images/complex/*.png) \
 $(wildcard ../docs/images/date/*.png) \
+$(wildcard ../docs/images/date/clk/*.png) \
+$(wildcard ../docs/images/date/d/*.png) \
+$(wildcard ../docs/images/date/dr/*.png) \
+$(wildcard ../docs/images/date/dt/*.png) \
+$(wildcard ../docs/images/date/dw/*.png) \
+$(wildcard ../docs/images/date/dz/*.png) \
+$(wildcard ../docs/images/date/epch/*.png) \
+$(wildcard ../docs/images/date/regs/*.png) \
+$(wildcard ../docs/images/date/t/*.png) \
+$(wildcard ../docs/images/date/tz/*.png) \
+$(wildcard ../docs/images/fullshot/*.png) \
+$(wildcard ../docs/images/installation/*.png) \
+$(wildcard ../docs/images/menu/*.png) \
+$(wildcard ../docs/images/mode/*.png) \
+$(wildcard ../docs/images/num/*.png) \
 $(wildcard ../docs/images/stat/*.png) \
-$(wildcard ../docs/images/tvm/*.png)
+$(wildcard ../docs/images/storage/*.png) \
+$(wildcard ../docs/images/tvm/*.png) \
+$(wildcard ../docs/images/unit/*.png)
 
 # Resized images are used for PDF files.
-RESIZED_IMAGES := \
-$(subst images/,resized/,$(ORIG_IMAGES))
+RESIZED_IMAGES := $(subst ../docs/,docs/,$(ORIG_IMAGES))
 
 # The default font used by xelatex seems to be "Latin Modern". Unfortunately,
 # it does not support the Unicode angle character U+2220, producing a warning
@@ -122,6 +165,10 @@ PANDOC_FLAGS := \
 # use-case.
 MAGICK := convert
 
+#-----------------------------------------------------------------------------
+# Build the final ZIP file artifact.
+#-----------------------------------------------------------------------------
+
 # Create a zip file suitable for third party archives, like cemetech.net and
 # ticalc.org.
 rpn83p.zip: $(TARGETS)
@@ -129,51 +176,27 @@ rpn83p.zip: $(TARGETS)
 	zip -r $@ $^
 
 #-----------------------------------------------------------------------------
+# Build the PDF files using pandoc.
+#-----------------------------------------------------------------------------
 
 # Convert markdown to PDF.
 README.pdf: ../README.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(docs/images/:(docs/resized/:g' < $< \
-		| (cd ..; pandoc $(PANDOC_FLAGS)) > $@
+	pandoc ../README.md $(PANDOC_FLAGS) > $@
 
-# Convert markdown to PDF.
-USER_GUIDE.pdf: ../docs/USER_GUIDE.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
-
-# Convert markdown to PDF.
-USER_GUIDE_BASE.pdf: ../docs/USER_GUIDE_BASE.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
-
-# Convert markdown to PDF.
-USER_GUIDE_COMPLEX.pdf: ../docs/USER_GUIDE_COMPLEX.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
-
-# Convert markdown to PDF.
-USER_GUIDE_DATE.pdf: ../docs/USER_GUIDE_DATE.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
-
-# Convert markdown to PDF.
-USER_GUIDE_STAT.pdf: ../docs/USER_GUIDE_STAT.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
-
-# Convert markdown to PDF.
-USER_GUIDE_TVM.pdf: ../docs/USER_GUIDE_TVM.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(images/:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
-
-# Convert markdown to PDF.
-TVM.pdf: ../docs/DEVELOPER_TVM.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(images:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
-
-# Convert markdown to PDF.
-FUTURE.pdf: ../docs/FUTURE.md Makefile $(RESIZED_IMAGES)
-	sed -e 's:(images:(resized/:g' < $< \
-		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
+# Convert multiple USER_GUIDE*.md to a single PDF.
+# Resources:
+# - concatenate multiple MD files into pandoc:
+#	https://stackoverflow.com/questions/14899283/
+# - pandocfilters to fix intra-document links
+#   https://stackoverflow.com/questions/41139830
+USER_GUIDE.pdf: $(USER_GUIDE_CHAPTERS_FILES) Makefile $(RESIZED_IMAGES)
+	(\
+	cd docs; \
+	pandoc $(USER_GUIDE_CHAPTERS) \
+		$(PANDOC_FLAGS) \
+		--toc \
+		--top-level-division=chapter \
+	) > $@
 
 # Copy the CHANGELOG.md as is, without conversion to PDF. It's just a text
 # file without any embedded images.
@@ -181,44 +204,192 @@ CHANGELOG.md: ../CHANGELOG.md Makefile
 	cp -f $< $@
 
 #-----------------------------------------------------------------------------
+# Resize the PNG files under ../docs/images and place them under ./docs/images
+# They need to be resized to 75% before embedding into PDF because pandoc
+# inserts images which are 33% larger than GitHub.
+#-----------------------------------------------------------------------------
 
-# Resize the PNG files under images/ to 75% before embedding into PDF.
-../docs/resized/%.png: ../docs/images/%.png
-	@mkdir -p ../docs/resized
+docs/images/%.png: ../docs/images/%.png
+	@mkdir -p docs/images
 	$(MAGICK) $< -adaptive-resize 75% $@
 
-# Resize the PNG files under images/date/ to 75% before embedding into PDF.
-../docs/resized/base/%.png: ../docs/images/base/%.png
-	@mkdir -p ../docs/resized/base
+docs/images/base/%.png: ../docs/images/base/%.png
+	@mkdir -p docs/images/base
 	$(MAGICK) $< -adaptive-resize 75% $@
 
-# Resize the PNG files under images/complex/ to 75% before embedding into PDF.
-../docs/resized/complex/%.png: ../docs/images/complex/%.png
-	@mkdir -p ../docs/resized/complex
+docs/images/basic/%.png: ../docs/images/basic/%.png
+	@mkdir -p docs/images/basic
 	$(MAGICK) $< -adaptive-resize 75% $@
 
-# Resize the PNG files under images/date/ to 75% before embedding into PDF.
-../docs/resized/date/%.png: ../docs/images/date/%.png
-	@mkdir -p ../docs/resized/date
+docs/images/complex/%.png: ../docs/images/complex/%.png
+	@mkdir -p docs/images/complex
 	$(MAGICK) $< -adaptive-resize 75% $@
 
-# Resize the PNG files under images/stat/ to 75% before embedding into PDF.
-../docs/resized/stat/%.png: ../docs/images/stat/%.png
-	@mkdir -p ../docs/resized/stat
+docs/images/date/%.png: ../docs/images/date/%.png
+	@mkdir -p docs/images/date
 	$(MAGICK) $< -adaptive-resize 75% $@
 
-# Resize the PNG files under images/tvm/ to 75% before embedding into PDF.
-../docs/resized/tvm/%.png: ../docs/images/tvm/%.png
-	@mkdir -p ../docs/resized/tvm
+docs/images/date/clk/%.png: ../docs/images/date/clk/%.png
+	@mkdir -p docs/images/date/clk
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/d/%.png: ../docs/images/date/d/%.png
+	@mkdir -p docs/images/date/d
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/dr/%.png: ../docs/images/date/dr/%.png
+	@mkdir -p docs/images/date/dr
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/dt/%.png: ../docs/images/date/dt/%.png
+	@mkdir -p docs/images/date/dt
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/dw/%.png: ../docs/images/date/dw/%.png
+	@mkdir -p docs/images/date/dw
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/dz/%.png: ../docs/images/date/dz/%.png
+	@mkdir -p docs/images/date/dz
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/epch/%.png: ../docs/images/date/epch/%.png
+	@mkdir -p docs/images/date/epch
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/regs/%.png: ../docs/images/date/regs/%.png
+	@mkdir -p docs/images/date/regs
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/t/%.png: ../docs/images/date/t/%.png
+	@mkdir -p docs/images/date/t
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/date/tz/%.png: ../docs/images/date/tz/%.png
+	@mkdir -p docs/images/date/tz
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/fullshot/%.png: ../docs/images/fullshot/%.png
+	@mkdir -p docs/images/fullshot
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/installation/%.png: ../docs/images/installation/%.png
+	@mkdir -p docs/images/installation
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/menu/%.png: ../docs/images/menu/%.png
+	@mkdir -p docs/images/menu
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/mode/%.png: ../docs/images/mode/%.png
+	@mkdir -p docs/images/mode
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/num/%.png: ../docs/images/num/%.png
+	@mkdir -p docs/images/num
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/stat/%.png: ../docs/images/stat/%.png
+	@mkdir -p docs/images/stat
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/storage/%.png: ../docs/images/storage/%.png
+	@mkdir -p docs/images/storage
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/tvm/%.png: ../docs/images/tvm/%.png
+	@mkdir -p docs/images/tvm
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/unit/%.png: ../docs/images/unit/%.png
+	@mkdir -p docs/images/unit
 	$(MAGICK) $< -adaptive-resize 75% $@
 
 # Just copy the GIF files, no resizing. They take too much CPU time to resize.
 # They are only used in the README.md, with only one per line, so even if they
 # are 33% too large, it's ok.
-../docs/resized/%.gif: ../docs/images/%.gif
-	@mkdir -p ../docs/resized
+docs/images/%.gif: ../docs/images/%.gif
+	@mkdir -p docs/images
 	cp -f $< $@
 
+#-----------------------------------------------------------------------------
+# Copy the MD files to ./docs from ../docs.
+#-----------------------------------------------------------------------------
+
+docs/USER_GUIDE.md: ../docs/USER_GUIDE.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_WHY.md: ../docs/USER_GUIDE_WHY.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_INSTALLATION.md: ../docs/USER_GUIDE_INSTALLATION.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_BASIC.md: ../docs/USER_GUIDE_BASIC.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_FUNCTIONS.md: ../docs/USER_GUIDE_FUNCTIONS.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_STORAGE.md: ../docs/USER_GUIDE_STORAGE.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_MODE.md: ../docs/USER_GUIDE_MODE.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_NUM.md: ../docs/USER_GUIDE_NUM.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_BASE.md: ../docs/USER_GUIDE_BASE.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_STAT.md: ../docs/USER_GUIDE_STAT.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_TVM.md: ../docs/USER_GUIDE_TVM.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_COMPLEX.md: ../docs/USER_GUIDE_COMPLEX.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_UNIT.md: ../docs/USER_GUIDE_UNIT.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_DATE.md: ../docs/USER_GUIDE_DATE.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_TIOS.md: ../docs/USER_GUIDE_TIOS.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/USER_GUIDE_TROUBLESHOOTING.md: ../docs/USER_GUIDE_TROUBLESHOOTING.md
+	@mkdir -p docs
+	cp -f $< $@
+
+docs/FUTURE.md: ../docs/FUTURE.md
+	@mkdir -p docs
+	cp -f $< $@
+
+# README.md requires some URL rewriting.
+README.md: ../README.md Makefile
+	sed -e 's:(docs/images/:(images/:g' < $< > $@
+
+#-----------------------------------------------------------------------------
+# Build and copy the binary.
 #-----------------------------------------------------------------------------
 
 # Copy to local directory to place it at top level in the zip file.
@@ -229,21 +400,23 @@ rpn83p.8xk: ../src/rpn83p.8xk
 ../src/rpn83p.8xk: ../src/*.asm
 	$(MAKE) -C ../src rpn83p.8xk
 
+#-----------------------------------------------------------------------------
 # Copy the animated GIF as a sample screenshot.
+#-----------------------------------------------------------------------------
+
 rpn83p-example1.gif: ../docs/images/rpn83p-example1.gif
 	cp -f $< $@
 
-# Copy the animated GIF as a sample screenshot.
 rpn83p-example2.gif: ../docs/images/rpn83p-example2.gif
 	cp -f $< $@
 
-# Copy the animated GIF as a sample screenshot.
 rpn83p-example3.gif: ../docs/images/rpn83p-example3.gif
 	cp -f $< $@
 
-# Copy the animated GIF as a sample screenshot.
 rpn83p-example4.gif: ../docs/images/rpn83p-example4.gif
 	cp -f $< $@
 
+#-----------------------------------------------------------------------------
+
 clean:
-	rm -rf $(TARGETS) ../docs/resized
+	rm -rf $(TARGETS) docs
