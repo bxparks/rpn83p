@@ -260,7 +260,7 @@ view the final result as a decimal number:
 
 | **Keys**              | **Display**                               |
 | ---------             | ----------                                |
-| `MATH`                | ![](docs/images/readme/example2-01.png)   |
+| `MATH` (HOME)         | ![](docs/images/readme/example2-01.png)   |
 | `DownArrow`           | ![](docs/images/readme/example2-02.png)   |
 | `BASE`                | ![](docs/images/readme/example2-03.png)   |
 | `HEX`                 | ![](docs/images/readme/example2-04.png)   |
@@ -332,21 +332,26 @@ the 4 ways that complex numbers can be entered into RPN83P:
 
 The keystrokes are:
 
-- (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
-- Press `MODE` button, `DownArrow`,  `RECT`:
-  ![MODE MenuRow 2](docs/images/menu/root-mode-2.png)
-- Press `100` `ENTER`
-- Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (X: -265.26)
-- Press `2ND LINK` (X: 100 i -265.26)
-- Press `100` `2ND i` `250` `+` (X: 200 i -15.26)
-- Press `200` `2ND ANGLE` `10` `+` (X: 396.96 i 19.47)
-- Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (X: 695.46 i 49.42)
-- Press `4` `/` (X: 173.89 i 12.35)
-- Press `PRAD` (X: 174.30 ∠ 0.07)
-- Press `PDEG` (X: 174.30 ∠° 4.04)
-- Press `MATH` button `CPLX`:
-  ![CPLX MenuRow 1](docs/images/menu/root-cplx-1.png)
-- Press `CABS` (X: 174.30)
+| **Keys**                              | **Display**                               |
+| ---------                             | ----------                                |
+| `MODE` `DownArrow` `RECT`             | ![](docs/images/readme/example4-01.png)   |
+| `100` `ENTER`                         | ![](docs/images/readme/example4-02.png)   |
+| `2` `2ND PI` `*` `60` `*`             | ![](docs/images/readme/example4-03.png)   |
+| `1` `2ND EE` `5` `(-)` `*`            | ![](docs/images/readme/example4-04.png)   |
+| `1/X` `(-)`                           | ![](docs/images/readme/example4-05.png)   |
+| `2ND LINK`                            | ![](docs/images/readme/example4-06.png)   |
+| `100` `2ND i` `250`                   | ![](docs/images/readme/example4-07.png)   |
+| `+`                                   | ![](docs/images/readme/example4-08.png)   |
+| `200` `2ND ANGLE` `10`                | ![](docs/images/readme/example4-09.png)   |
+| `+`                                   | ![](docs/images/readme/example4-10.png)   |
+| `300` `2ND ANGLE` `2ND ANGLE` `0.1`   | ![](docs/images/readme/example4-11.png)   |
+| `+`                                   | ![](docs/images/readme/example4-12.png)   |
+| `4` `/`                               | ![](docs/images/readme/example4-13.png)   |
+| `PRAD`                                | ![](docs/images/readme/example4-14.png)   |
+| `PDEG`                                | ![](docs/images/readme/example4-15.png)   |
+| `MATH` (HOME) `CPLX` `CABS`           | ![](docs/images/readme/example4-16.png)   |
+
+Here is the animated GIF that shows this calculation:
 
 ![RPN83P Example 4 GIF](docs/images/readme/rpn83p-example4.gif)
 
