@@ -8,13 +8,13 @@ This document describes the menu functions under the `NUM` menu in RPN83P.
 
 ## Table of Contents
 
-- [NUM Functions](#num-functions)
+- [NUM Menus](#num-menus)
 - [Percent](#percent)
 - [Percent Change](#percent-change)
 - [Prime Factors](#prime-factors)
 - [Rounding](#rounding)
 
-## NUM Functions
+## NUM Menus
 
 The functions under the `NUM` menu folder are numerical functions which don't
 quite fit into one of the other major categories:
