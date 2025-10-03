@@ -14,6 +14,8 @@ It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 - [UNIT Menu](#unit-menu)
 - [UNIT Entry and Conversions](#unit-entry-and-conversions)
 - [UNIT Arithmetic](#unit-arthimetic)
+- [UNIT Misc Functions (UFCN)](#unit-misc-functions-ufcn)
+- [UNIT and NUM Functions](#unit-and-num-functions)
 - [Supported Units](#supported-units)
 
 ## UNIT Menu
@@ -100,7 +102,14 @@ behavior because I was often accumulating multiple measurements or items into
 the `Y` register, for example, adding 3 wooden pieces of "3ft 3in", "2ft 1in",
 and "1ft 8in", and I wanted to retain the larger unit.
 
-## UNIT FCN
+Arithmetic operators are disabled for two unitTypes:
+
+- `TEMP`: arithmetic operations don't make sense for TEMP units (except perhaps
+  for Kelvin, but it was less confusing to disallow all TEMP units)
+- `FUEL`: fuel consumption units are reciprocals of each other, so arithmetic
+  operations do not usually make sense
+
+## UNIT Misc Functions (UFCN)
 
 Two miscellaneous functions are available under the `UFCN` menu folder:
 
@@ -132,6 +141,48 @@ function exposes the internal baseUnit and its baseValue.
 
 The `UBAS` function does not have a keyboard shortcut, because it is not
 expected to be needed as often as the `UVAL` function.
+
+## UNIT and NUM Functions
+
+Most of the numerical functions under the `ROOT > NUM` menu folder have been
+updated to support Denominate objects from `UNIT` (the exceptions are `GCD`,
+`LCM`, and `PRIM`):
+
+- `%`: `X` percent of `Y`, leaving `Y` unchanged
+- `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
+- `IP`: integer part of `X`, truncating towards 0, preserving sign
+- `FP`: fractional part of `X`, preserving sign
+- `FLR`: the floor of `X`, the largest integer <= `X`
+- `CEIL`: the ceiling of `X`, the smallest integer >= `X`
+- `NEAR`: the nearest integer to `X`
+- `ABS`: absolute value of `X`
+- `SIGN`: return -1, 0, 1 depending on whether `X` is less than, equal, or
+    greater than 0, respectively
+- `MOD`: `Y` mod `X` (remainder of `Y` after dividing by `X`)
+- `MIN`: minimum of `X` and `Y`
+- `MAX`: maximum of `X` and `Y`
+- `RNDF`: round to `FIX/SCI/ENG` digits after the decimal point
+- `RNDN`: round to user-specified `n` digits (0-9) after the decimal point
+- `RNDG`: round to remove guard digits, leaving 10 mantissa digits
+
+For example, let's calculate the percent change from 2 kWh to 2000 kcalories
+(~2.32 kWh):
+
+| **Keys**          | **Display**                      |
+| ----------------  | ---------------------            |
+| `2` `kWh`         | ![](images/unit/unit-percentch-1.png) |
+| `2000` `kcal`     | ![](images/unit/unit-percentch-2.png) |
+| `MATH` `NUM`      | ![](images/unit/unit-percentch-3.png) |
+| `%CH`             | ![](images/unit/unit-percentch-4.png) |
+
+Some `NUM` functions are not valid for units of 2 unitTypes:
+
+- `TEMP`:
+    - Allowed: `IP`, `FP`, `FLR`, `CEIL`, `NEAR`, `RNDF`, `RNDN`, `RNDG`
+    - Disallowed: `%`, `%CH`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
+- `FUEL`:
+    - Allowed: `IP`, `FP`, `FLR`, `CEIL`, `NEAR`, `RNDF`, `RNDN`, `RNDG`
+    - Disallowed: `%`, `%CH`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
 
 ## Supported Units
 
