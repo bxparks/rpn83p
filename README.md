@@ -258,26 +258,26 @@ and `65`, then see the result as an octal number (base-8), a binary number
 (base-2), then right shift the result 3 bits which sets the Carry Flag, then
 view the final result as a decimal number:
 
-| **Keys**              | **Display**                           |
-| ---------             | ----------                            |
-| `MATH`                | ![HOME](docs/images/menu/root-1.png)  |
-| `DownArrow`           | ![HOME Row BASE](docs/images/menu/root-2.png) |
-| `BASE`                | ![BASE Row DEC](docs/images/menu/root-base-dec.png)   |
-| `HEX`                 | ![BASE Row HEX](docs/images/menu/root-base-hex.png)   |
-| `ALPHA` `B` `6`       | `X:B6` |
-| `ENTER`               | `X:00 00 00 B6` |
-| `6` `5`               | `X:65` |
-| `DownArrow`           | ![BASE Row Subfolders](docs/images/menu/root-base-2.png) |
-| `LOGI`                | ![LOGI Row AND](docs/images/menu/root-base-logi-1.png) |
-| `AND`                 | `X: 00 00 00 24` |
-| `ON/EXIT` `UpArrow`   | ![BASE Row HEX](docs/images/menu/root-base-hex.png) |
-| `OCT`                 | `X: 00 000 000 044` ![BASE Row OCT](docs/images/menu/root-base-oct.png) |
-| `BIN`                 | `X: 0000 0000 0010 0100` ![BASE Row BIN](docs/images/menu/root-base-bin.png) |
-| `DownArrow`           | ![BASE Row Subfolders](docs/images/menu/root-base-2.png) |
-| `ROTS`                | ![ROTS Row SR](docs/images/menu/root-base-rots-1.png) |
-| `SR` `SR` `SR` (3X)   | `X:0000 0000 0000 0100`, Carry Flag `C` set |
-| `ON/EXIT` `UpArrow`   | ![BASE Row BIN](docs/images/menu/root-base-bin.png) |
-| `DEC`                 | `X:4` ![BASE Row DEC](docs/images/menu/root-base-dec.png) |
+| **Keys**              | **Display**                               |
+| ---------             | ----------                                |
+| `MATH`                | ![](docs/images/readme/example2-01.png)   |
+| `DownArrow`           | ![](docs/images/readme/example2-02.png)   |
+| `BASE`                | ![](docs/images/readme/example2-03.png)   |
+| `HEX`                 | ![](docs/images/readme/example2-04.png)   |
+| `ALPHA B` `6`         | ![](docs/images/readme/example2-05.png)   |
+| `ENTER`               | ![](docs/images/readme/example2-06.png)   |
+| `6` `5`               | ![](docs/images/readme/example2-07.png)   |
+| `DownArrow`           | ![](docs/images/readme/example2-08.png)   |
+| `LOGI`                | ![](docs/images/readme/example2-09.png)   |
+| `AND`                 | ![](docs/images/readme/example2-10.png)   |
+| `ON/EXIT` `UpArrow`   | ![](docs/images/readme/example2-11.png)   |
+| `OCT`                 | ![](docs/images/readme/example2-12.png)   |
+| `BIN`                 | ![](docs/images/readme/example2-13.png)   |
+| `DownArrow`           | ![](docs/images/readme/example2-14.png)   |
+| `ROTS`                | ![](docs/images/readme/example2-15.png)   |
+| `SR` `SR` `SR` (3X)   | ![](docs/images/readme/example2-16.png)   |
+| `ON/EXIT` `UpArrow`   | ![](docs/images/readme/example2-17.png)   |
+| `DEC`                 | ![](docs/images/readme/example2-18.png)   |
 
 Here is the animated GIF that shows this calculation:
 
