@@ -226,19 +226,20 @@ a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
 system, but I tend to start with the more complex, inner expression and work
 outwards. Enter the following keystrokes:
 
-- Press `2` button
-- Press `.` button
-- Press `1` button
-- Press `X^2` button
-- Press `2ND` `ANS` button (invokes the `LASTX` functionality)
-- Press `*` button (`r^3` is now in the `X` register)
-- Press `2ND` `PI` button (above the `^` button)
-- Press `*` button (`pi r^3`)
-- Press `4` button
-- Press `*` button (`4 pi r^3`)
-- Press `3` button
-- Press `/` button (`4 pi r^3 / 3`)
-- the `X` register should show `38.79238609`
+| **Keys**          | **Display**                            |
+| ----------------  | ---------------------                  |
+| `2.1`             | ![](docs/images/readme/example1-01.png) |
+| `X^2`             | ![](docs/images/readme/example1-02.png) |
+| `2ND ANS`         | ![](docs/images/readme/example1-03.png) |
+| `*`               | ![](docs/images/readme/example1-04.png) |
+| `2ND PI`          | ![](docs/images/readme/example1-05.png) |
+| `*`               | ![](docs/images/readme/example1-06.png) |
+| `4`               | ![](docs/images/readme/example1-07.png) |
+| `*`               | ![](docs/images/readme/example1-08.png) |
+| `3`               | ![](docs/images/readme/example1-09.png) |
+| `/`               | ![](docs/images/readme/example1-10.png) |
+
+The `X` register should show `38.79238609`.
 
 Here is an animated GIF that shows this calculation:
 
