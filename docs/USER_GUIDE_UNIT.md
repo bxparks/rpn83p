@@ -13,10 +13,10 @@ It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
 - [UNIT Menu](#unit-menu)
 - [UNIT Entry and Conversions](#unit-entry-and-conversions)
-- [UNIT Arithmetic](#unit-arthimetic)
+- [UNIT Arithmetic](#unit-arithmetic)
 - [UNIT Misc Functions (UFCN)](#unit-misc-functions-ufcn)
 - [UNIT and NUM Functions](#unit-and-num-functions)
-- [Supported Units](#supported-units)
+- [Catalog of Supported Units](#catalog-of-supported-units)
 
 ## UNIT Menu
 
@@ -38,10 +38,7 @@ It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
     - `SPD` - Speed units
     - `FUEL` - Fuel consumption units
 
-There are 169 units organized into 12 unit types. A unit can
-be converted to any other unit within the same unit type.
-
-## UNIT Entry and Conversion
+## UNIT Entry and Conversions
 
 The user interface follows the technique used by the
 [HP-19BII](https://en.wikipedia.org/wiki/HP-19B) and the
@@ -170,10 +167,10 @@ For example, let's calculate the percent change from 2 kWh to 2000 kcalories
 
 | **Keys**          | **Display**                      |
 | ----------------  | ---------------------            |
-| `2` `kWh`         | ![](images/unit/unit-percentch-1.png) |
-| `2000` `kcal`     | ![](images/unit/unit-percentch-2.png) |
-| `MATH` `NUM`      | ![](images/unit/unit-percentch-3.png) |
-| `%CH`             | ![](images/unit/unit-percentch-4.png) |
+| `2` `kWh`         | ![](images/unit/unit-num-percentch-1.png) |
+| `2000` `kcal`     | ![](images/unit/unit-num-percentch-2.png) |
+| `MATH` `NUM`      | ![](images/unit/unit-num-percentch-3.png) |
+| `%CH`             | ![](images/unit/unit-num-percentch-4.png) |
 
 Some `NUM` functions are not valid for units of 2 unitTypes:
 
@@ -184,17 +181,21 @@ Some `NUM` functions are not valid for units of 2 unitTypes:
     - Allowed: `IP`, `FP`, `FLR`, `CEIL`, `NEAR`, `RNDF`, `RNDN`, `RNDG`
     - Disallowed: `%`, `%CH`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
 
-## Supported Units
+## Catalog of Supported Units
 
-The following is the complete list of supported units in RPN83P. It includes
-*all* units from both the HP-19BII and the TI-85 calculators. The columns mean
-the following:
+
+The following is the complete list of supported units in RPN83P. There are 169
+units organized into 12 unit types. All units from both the HP-19BII and the
+TI-85 calculators are included. A unit can be converted to any other unit within
+the same unit type.
+
+The columns in the table mean the following:
 
 - **Display Name**: the display name of the unit (up to 10 characters)
 - **Menu**: the short name on the soft menu (3-4 characters)
 - **HP**: the unit is found on the HP-19BII
 - **TI**: the unit is found on the TI-85
-- **Comment**: definitions of the less common units, and other comments
+- **Comment**: definitions of the units and other clarifications
 
 ### Length (LENG)
 
