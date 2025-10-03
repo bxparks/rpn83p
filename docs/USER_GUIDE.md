@@ -127,7 +127,7 @@ Missing features (partial list):
 
 - [Chapter 1: Why?](USER_GUIDE_WHY.md)
 - [Chapter 2: Installation](USER_GUIDE_INSTALLATION.md)
-- [Chapter 3: Basic Usage](USER_GUIDE_BASIC.md)
+- [Chapter 3: Basic Concepts](USER_GUIDE_BASIC.md)
 - [Chapter 4: Catalog of Functions](USER_GUIDE_FUNCTIONS.md)
 - [Chapter 5: Storage Registers and Variables](USER_GUIDE_STORAGE.md)
 - [Chapter 6: MODE Functions](USER_GUIDE_MODE.md)
