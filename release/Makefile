@@ -316,9 +316,10 @@ docs/images/%.gif: ../docs/images/%.gif
 # Copy the MD files to ./docs from ../docs.
 #-----------------------------------------------------------------------------
 
+# Remove redudant TOC from the temporary MD file, pandoc generates its own.
 docs/USER_GUIDE.md: ../docs/USER_GUIDE.md
 	@mkdir -p docs
-	cp -f $< $@
+	sed -e '/## Chapters/,$$d' < $< > $@
 
 docs/USER_GUIDE_WHY.md: ../docs/USER_GUIDE_WHY.md
 	@mkdir -p docs
