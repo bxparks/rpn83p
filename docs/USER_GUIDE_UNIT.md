@@ -86,6 +86,7 @@ Basic arithmetic operations are supported on Denominate objects:
 | {float} * {Denominate}        | {Denominate}  |
 | {Denominate} * {float}        | {Denominate}  |
 | {Denominate} / {float}        | {Denominate}  |
+| {Denominate} / {Denominate}   | {float}       |
 
 Let's enter "6 feet 2 inches", divide that by 3, then convert that to inches:
 
