@@ -140,4 +140,4 @@ Missing features (partial list):
 - [Chapter 13: DATE Functions](USER_GUIDE_DATE.md)
 - [Chapter 14: TI-OS Interaction](USER_GUIDE_TIOS.md)
 - [Chapter 15: Troubleshooting](USER_GUIDE_TROUBLESHOOTING.md)
-- [Chapter 16: Future](FUTURE.md)
+- [Chapter 16: Future Enhancements](USER_GUIDE_FUTURE.md)

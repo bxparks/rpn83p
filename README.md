@@ -369,7 +369,7 @@ Press:
 - [RPN83P User Guide](docs/USER_GUIDE.md)
 - [Developer Notes](docs/DEVELOPER.md)
     - [TVM Algorithms](docs/DEVELOPER_TVM.md)
-- [Future Enhancements](docs/FUTURE.md)
+- [Future Enhancements](docs/USER_GUIDE_FUTURE.md)
 
 ## Compiling from Source
 
@@ -460,8 +460,8 @@ Calculators](https://www.hpmuseum.org/). That's another option for feedback and
 support.
 
 For feature requests, I recommend scanning through the [Future
-Enhancements](docs/FUTURE.md) document and verifying that your feature is not
-already there.
+Enhancements](docs/USER_GUIDE_FUTURE.md) document and verifying that your
+feature is not already there.
 
 Please refrain from emailing me directly unless the content is sensitive. The
 problem with email is that I cannot reference the email conversation when other

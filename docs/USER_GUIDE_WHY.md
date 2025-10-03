@@ -231,5 +231,5 @@ I don't think that it would be useful for me to duplicate those efforts.
 
 Probably just a result of what features were interesting to me, what features
 were easy to implement, and what features seemed too difficult or time consuming
-to implement for now. See [FUTURE.md](FUTURE.md) for a list of features that
-may be implemented in the future.
+to implement for now. See [USER_GUIDE_FUTURE.md](USER_GUIDE_FUTURE.md) for a
+list of features that may be implemented in the future.
