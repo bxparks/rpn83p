@@ -166,7 +166,7 @@ USER_GUIDE_TVM.pdf: ../docs/USER_GUIDE_TVM.md Makefile $(RESIZED_IMAGES)
 		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 
 # Convert markdown to PDF.
-TVM.pdf: ../docs/TVM.md Makefile $(RESIZED_IMAGES)
+TVM.pdf: ../docs/DEVELOPER_TVM.md Makefile $(RESIZED_IMAGES)
 	sed -e 's:(images:(resized/:g' < $< \
 		| (cd ../docs; pandoc $(PANDOC_FLAGS)) > $@
 

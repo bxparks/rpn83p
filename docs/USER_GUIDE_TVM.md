@@ -151,7 +151,8 @@ a small dot appears in the menu label to warn the user that its value has
 changed.
 
 The exact mathematical relationship among `P/YR`, `C/YR`, `I%YR`, and the
-internal interest rate per period `i` is given in [TVM.md](TVM.md).
+internal interest rate per period `i` is given in
+[DEVELOPER_TVM.md](DEVELOPER_TVM.md).
 
 ## TVM BEG and END
 
@@ -174,8 +175,8 @@ using analytical equations. However, there is no closed-form solution for the
 `I%YR` quantity, so it must be solved using iterative methods. The TVM Solver is
 the submodule that implements the iterative method to solve for `I%YR`.
 
-It can be mathematically deduced (see [TVM.md](TVM.md)) that the root-solving
-equation for `I%YR` can fall into 3 categories:
+It can be mathematically deduced (see [DEVELOPER_TVM.md](DEVELOPER_TVM.md)) that
+the root-solving equation for `I%YR` can fall into 3 categories:
 
 - 0 solution, or
 - 1 unique solution, or
@@ -208,9 +209,9 @@ observed.
 
 The RPN83P uses the [Newton-Secant
 method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR` (see
-[TVM.md](TVM.md) for details). For the purpose of debugging and to allow extra
-control for advanced users, three parameters that affect the progression and
-termination of the algorithm are exposed:
+[DEVELOPER_TVM.md](DEVELOPER_TVM.md) for details). For the purpose of debugging
+and to allow extra control for advanced users, three parameters that affect the
+progression and termination of the algorithm are exposed:
 
 - `IYR1`: first guess percent per year (default: -50%; allowed: `IYR1 >
   -PYR*100`)

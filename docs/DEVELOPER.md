@@ -214,7 +214,7 @@ factoring algorithm:
 
 ## TVM Algorithms
 
-See [TVM Algorithms](TVM.md).
+See [TVM Algorithms](DEVELOPER_TVM.md).
 
 ## Complex Numbers
 
