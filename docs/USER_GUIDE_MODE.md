@@ -219,8 +219,8 @@ looks like this:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `2` `2ND SQRT`        | ![](images/show-mode-floating-1.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/show-mode-floating-2.png) |
+| `2` `2ND SQRT`        | ![](images/mode/show-mode-floating-1.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/mode/show-mode-floating-2.png) |
 
 If the `X` value is an exact integer internally, then the value is printed in
 integer form instead of scientific notation. For example `2^46` is an exact
@@ -229,8 +229,8 @@ like this:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `2` `46` `^`          | ![](images/show-mode-integer-1.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/show-mode-integer-2.png) |
+| `2` `46` `^`          | ![](images/mode/show-mode-integer-1.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/mode/show-mode-integer-2.png) |
 
 The SHOW mode has a slight variation in `BASE` mode. For `DEC`, `HEX`, and `OCT`
 modes, the `SHOW` function behaves as before, showing the internal floating
@@ -244,11 +244,11 @@ displayed like this:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `MATH` `DOWN` `BASE`  | ![](images/show-mode-base-1.png) |
-| `HEX`                 | ![](images/show-mode-base-2.png) |
-| `01D62BB7`            | ![](images/show-mode-base-3.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/show-mode-base-4.png) |
-| `BIN`                 | ![](images/show-mode-base-5.png) |
-| `2ND ENTRY` (SHOW)    | ![](images/show-mode-base-6.png) |
+| `MATH` `DOWN` `BASE`  | ![](images/mode/show-mode-base-1.png) |
+| `HEX`                 | ![](images/mode/show-mode-base-2.png) |
+| `01D62BB7`            | ![](images/mode/show-mode-base-3.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/mode/show-mode-base-4.png) |
+| `BIN`                 | ![](images/mode/show-mode-base-5.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/mode/show-mode-base-6.png) |
 
 

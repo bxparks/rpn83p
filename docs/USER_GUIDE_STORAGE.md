@@ -22,7 +22,7 @@ Similar to the HP-42S, the RPN83P initially provides **25** storage registers,
 but can be increased to up to **100** registers using the `RSIZ` command. The
 registers are labeled `R00` to `R99`.
 
-![Storage Registers Diagram](images/storage-registers-diagram.png)
+![Storage Registers Diagram](images/storage/storage-registers-diagram.png)
 
 The registers are accessed using the `STO` and `2ND` `RCL` keys. To store a
 number into register `R00`, press:
@@ -117,11 +117,11 @@ To recall from variable `A`, press:
 
 | **Keys**          | **Display** |
 | ----------------  | --------------------- |
-| `42`              | ![](images/storage-variable-1.png) |
-| `STO ALPHA A`     | ![](images/storage-variable-2.png) |
-| `ENTER`           | ![](images/storage-variable-3.png) |
-| `2ND RCL ALPHA A` | ![](images/storage-variable-4.png) |
-| `ENTER`           | ![](images/storage-variable-5.png) |
+| `42`              | ![](images/storage/storage-variable-1.png) |
+| `STO ALPHA A`     | ![](images/storage/storage-variable-2.png) |
+| `ENTER`           | ![](images/storage/storage-variable-3.png) |
+| `2ND RCL ALPHA A` | ![](images/storage/storage-variable-4.png) |
+| `ENTER`           | ![](images/storage/storage-variable-5.png) |
 
 The `ENTER` key is required because both `STO` and `RCL` expect 2 character
 arguments (corresponding to the 2-digit storage registers). The TI-OS supports
@@ -149,12 +149,12 @@ Similarly:
 
 | **Keys**                      | **Display** |
 | ----------------              | --------------------- |
-| `3`                           | ![](images/storage-variable-arith-1.png) |
-| `STO ALPHA A` `ENTER`         | ![](images/storage-variable-arith-2.png) |
-| `2`                           | ![](images/storage-variable-arith-3.png) |
-| `2ND RCL * ALPHA A` `ENTER`   | ![](images/storage-variable-arith-4.png) |
-| `STO + ALPHA A` `ENTER`       | ![](images/storage-variable-arith-5.png) |
-| `2ND RCL ALPHA A` `ENTER`     | ![](images/storage-variable-arith-6.png) |
+| `3`                           | ![](images/storage/storage-variable-arith-1.png) |
+| `STO ALPHA A` `ENTER`         | ![](images/storage/storage-variable-arith-2.png) |
+| `2`                           | ![](images/storage/storage-variable-arith-3.png) |
+| `2ND RCL * ALPHA A` `ENTER`   | ![](images/storage/storage-variable-arith-4.png) |
+| `STO + ALPHA A` `ENTER`       | ![](images/storage/storage-variable-arith-5.png) |
+| `2ND RCL ALPHA A` `ENTER`     | ![](images/storage/storage-variable-arith-6.png) |
 
 Storage variables are implemented through the underlying TI-OS. These variables
 are preserved and accessible to TI-BASIC programs after quitting the RPN83P

@@ -54,7 +54,7 @@ Manual](https://literature.hpcalc.org/items/929).
 
 Here are the various UI elements on the LCD screen used by the RPN83P app:
 
-![RPN83P screen areas](images/screen-areas-annotated.png)
+![RPN83P screen areas](images/basic/screen-areas-annotated.png)
 
 The LCD screen is 96 pixels (width) by 64 pixels (height). That is large enough
 to display 8 rows of numbers and letters. They are divided into the following:
@@ -89,7 +89,7 @@ consult about some edge cases.
 
 The following buttons are used to enter and edit a number in the input buffer:
 
-![Input and Edit Buttons](images/fullshot-inputedit-buttons.png)
+![Input and Edit Buttons](images/fullshot/fullshot-inputedit-buttons.png)
 
 - digit entry
     - `0`-`9`: inserts the digit
@@ -138,10 +138,10 @@ This is similar to the HP-48/49/50 series of calculators.
 
 | **Keys**              | **Display**|
 | --------------------- | ---------- |
-| `1.234`               | ![Input Cursor](images/input-cursor-1.png) |
-| `LEFT`                | ![Input Cursor Left](images/input-cursor-2.png) |
-| `LEFT`                | ![Input Cursor Left](images/input-cursor-3.png) |
-| `RIGHT`               | ![Input Cursor Right](images/input-cursor-4.png) |
+| `1.234`               | ![Input Cursor](images/basic/input-cursor-1.png) |
+| `LEFT`                | ![Input Cursor Left](images/basic/input-cursor-2.png) |
+| `LEFT`                | ![Input Cursor Left](images/basic/input-cursor-3.png) |
+| `RIGHT`               | ![Input Cursor Right](images/basic/input-cursor-4.png) |
 
 When the number of digits exceeds the display limit, the left-most or right-most
 character is replaced with an ellipsis character (three dots) to indicate that
@@ -153,10 +153,10 @@ over a long sequence of input characters.
 
 | **Keys**              | **Display**|
 | --------------------- | ---------- |
-| `1.2345678901234E-12` | ![Input Cursor](images/input-cursor-long-1.png) |
-| `2ND LEFT`            | ![Input Cursor](images/input-cursor-long-2.png) |
-| `RIGHT` (10 times)    | ![Input Cursor](images/input-cursor-long-3.png) |
-| `2ND RIGHT`           | ![Input Cursor](images/input-cursor-long-4.png) |
+| `1.2345678901234E-12` | ![Input Cursor](images/basic/input-cursor-long-1.png) |
+| `2ND LEFT`            | ![Input Cursor](images/basic/input-cursor-long-2.png) |
+| `RIGHT` (10 times)    | ![Input Cursor](images/basic/input-cursor-long-3.png) |
+| `2ND RIGHT`           | ![Input Cursor](images/basic/input-cursor-long-4.png) |
 
 ### Input Length Limits
 
@@ -214,15 +214,15 @@ clearly:
 
 | **Keys**                              | **Display**   |
 | ---------------------                 | ----------    |
-| `1` `ENTER` `2` `ENTER` `3` `ENTER`   | ![Input Clear](images/input-clear-1.png) |
-| `CLEAR` (invokes `CLX`)               | ![Input Clear](images/input-clear-2.png) |
-| `4.5678`                              | ![Input Clear](images/input-clear-3.png) |
-| `CLEAR` (clears entire line)          | ![Input Clear](images/input-clear-4.png) |
-| `4.5678` `LEFT` `LEFT` `LEFT`         | ![Input Clear](images/input-clear-5.png) |
-| `CLEAR` (clears to end of line)       | ![Input Clear](images/input-clear-6.png) |
-| `CLEAR` (clears entire line)          | ![Input Clear](images/input-clear-7.png) |
-| `CLEAR` (requests `CLST`)             | ![Input Clear](images/input-clear-8.png) |
-| `CLEAR` (invokes `CLST`)              | ![Input Clear](images/input-clear-9.png) |
+| `1` `ENTER` `2` `ENTER` `3` `ENTER`   | ![Input Clear](images/basic/input-clear-1.png) |
+| `CLEAR` (invokes `CLX`)               | ![Input Clear](images/basic/input-clear-2.png) |
+| `4.5678`                              | ![Input Clear](images/basic/input-clear-3.png) |
+| `CLEAR` (clears entire line)          | ![Input Clear](images/basic/input-clear-4.png) |
+| `4.5678` `LEFT` `LEFT` `LEFT`         | ![Input Clear](images/basic/input-clear-5.png) |
+| `CLEAR` (clears to end of line)       | ![Input Clear](images/basic/input-clear-6.png) |
+| `CLEAR` (clears entire line)          | ![Input Clear](images/basic/input-clear-7.png) |
+| `CLEAR` (requests `CLST`)             | ![Input Clear](images/basic/input-clear-8.png) |
+| `CLEAR` (invokes `CLST`)              | ![Input Clear](images/basic/input-clear-9.png) |
 
 In most cases, pressing `CLEAR` 3 times will invoke the `CLST` function.
 This is often far more convenient than navigating to the `CLST` menu function
@@ -297,8 +297,8 @@ of the record:
 
 | **Keys**              | **Display**|
 | --------------------- | ---------- |
-| `DT{2024,5,21,`       | ![Input Record](images/input-record-1.png) |
-| `LEFT` `LEFT` `LEFT`  | ![Input Record](images/input-record-2.png) |
+| `DT{2024,5,21,`       | ![Input Record](images/basic/input-record-1.png) |
+| `LEFT` `LEFT` `LEFT`  | ![Input Record](images/basic/input-record-2.png) |
 
 ### Complex Number Input
 
@@ -323,12 +323,12 @@ Here is an example of how the delimiters override or toggle each other:
 
 | **Keys**              | **Display**|
 | --------------------- | ---------- |
-| `1.23E2`              | ![Input Complex](images/input-complex-1.png) |
-| `2ND i`               | ![Input Complex](images/input-complex-2.png) |
-| `98.7` `(-)`          | ![Input Complex](images/input-complex-3.png) |
-| `2ND ANGLE`           | ![Input Complex](images/input-complex-4.png) |
-| `2ND ANGLE`           | ![Input Complex](images/input-complex-5.png) |
-| `2ND i`               | ![Input Complex](images/input-complex-6.png) |
+| `1.23E2`              | ![Input Complex](images/basic/input-complex-1.png) |
+| `2ND i`               | ![Input Complex](images/basic/input-complex-2.png) |
+| `98.7` `(-)`          | ![Input Complex](images/basic/input-complex-3.png) |
+| `2ND ANGLE`           | ![Input Complex](images/basic/input-complex-4.png) |
+| `2ND ANGLE`           | ![Input Complex](images/basic/input-complex-5.png) |
+| `2ND i`               | ![Input Complex](images/basic/input-complex-6.png) |
 
 ### Other Edge Cases
 
@@ -407,7 +407,7 @@ may find idiosyncratic. In addition, RPN83P supports larger RPN stack sizes
 through the `SSIZ` command. The minimum stack size is 4, but it can be increased
 to be as large as 8.
 
-![RPN Stack Diagram](images/rpn-stack-diagram.png)
+![RPN Stack Diagram](images/basic/rpn-stack-diagram.png)
 
 The bottom 4 slots in the RPN stack are named `X`, `Y`, `Z`, and `T` following
 the convention used by modern HP RPN calculators. As the stack size increases
@@ -423,7 +423,7 @@ register is shown.)
 
 These are the buttons which manipulate the RPN stack:
 
-![Input and Edit Buttons](images/fullshot-rpn-buttons.png)
+![Input and Edit Buttons](images/fullshot/fullshot-rpn-buttons.png)
 
 - `(`: rolls RPN stack down (known as `R(downarrow)` on HP calculators)
 - `)`: exchanges `X` and `Y` registers
@@ -516,7 +516,7 @@ sets of 5 items corresponding to those buttons.
 The menu system forms a singly-rooted tree of menu items and groups, which look
 like this conceptually:
 
-![Menu Structure](images/menu-structure.png)
+![Menu Structure](images/basic/menu-structure.png)
 
 There are 4 components:
 
@@ -533,7 +533,7 @@ There are 4 components:
 The LCD screen always shows a `MenuRow` of 5 `MenuItems`. Here are the buttons
 which are used to navigate the menu hierarchy:
 
-![Menu Buttons](images/fullshot-menu-buttons.png)
+![Menu Buttons](images/fullshot/fullshot-menu-buttons.png)
 
 - `F1`- `F5`: invokes the function shown by the respective menu
 - `UP_ARROW`: goes to previous `MenuRow` of 5 `MenuItems`, within the current
@@ -592,10 +592,10 @@ The `DOWN` and `UP` arrows move from one menu row to another, like this:
 
 | **Keys**          | **Display**|
 | ----------------- | ---------- |
-| `HOME`            | ![Menu Arrows 1](images/menu-arrows-1.png) |
-| `DOWN`            | ![Menu Arrows 2](images/menu-arrows-2.png) |
-| `DOWN`            | ![Menu Arrows 3](images/menu-arrows-3.png) |
-| `UP` `UP`         | ![Menu Arrows 1](images/menu-arrows-1.png) |
+| `HOME`            | ![Menu Arrows 1](images/basic/menu-arrows-1.png) |
+| `DOWN`            | ![Menu Arrows 2](images/basic/menu-arrows-2.png) |
+| `DOWN`            | ![Menu Arrows 3](images/basic/menu-arrows-3.png) |
+| `UP` `UP`         | ![Menu Arrows 1](images/basic/menu-arrows-1.png) |
 
 Instead of pressing `UP` twice, you can press `DOWN` from the last menu row to
 wrap around to the first menu row.
@@ -606,11 +606,11 @@ shown, the `ON/EXIT` key can be used to go back to the parent folder:
 
 | **Keys**          | **Display**|
 | ----------------- | ---------- |
-| `HOME`            | ![Menu Arrows 1](images/menu-arrows-1.png) |
-| `F2/WINDOW`       | ![Menu Arrows NUM 1](images/menu-arrows-num-1.png) |
-| `DOWN`            | ![Menu Arrows NUM 2](images/menu-arrows-num-2.png) |
-| `DOWN` `DOWN`     | ![Menu Arrows NUM 3](images/menu-arrows-num-3.png) |
-| `ON/EXIT`         | ![Menu Arrows 1](images/menu-arrows-1.png) |
+| `HOME`            | ![Menu Arrows 1](images/basic/menu-arrows-1.png) |
+| `F2/WINDOW`       | ![Menu Arrows NUM 1](images/basic/menu-arrows-num-1.png) |
+| `DOWN`            | ![Menu Arrows NUM 2](images/basic/menu-arrows-num-2.png) |
+| `DOWN` `DOWN`     | ![Menu Arrows NUM 3](images/basic/menu-arrows-num-3.png) |
+| `ON/EXIT`         | ![Menu Arrows 1](images/basic/menu-arrows-1.png) |
 
 ### Menu Shortcuts
 
@@ -657,9 +657,9 @@ Pressing the `HELP` menu button at the root menu activates the Help pages:
 The contents of these pages are updated frequently so the screenshots below may
 not be identical to the current version:
 
-![Help Page 1](images/help-page-1.png)
-![Help Page 2](images/help-page-2.png)
-![Help Page Last](images/help-page-last.png)
+![Help Page 1](images/basic/help-page-1.png)
+![Help Page 2](images/basic/help-page-2.png)
+![Help Page Last](images/basic/help-page-last.png)
 
 The Help pages are intended to capture some of the more obscure tidbits about
 the RPN83P app which may be hard to remember. Hopefully it reduces the number of
@@ -708,13 +708,13 @@ a few of them as described below:
 These are shown in the Error Code line on the screen. For example, if we try to
 divide `1 / 0`, a division by 0 error is shown:
 
-![Err: Division By 0](images/errorcode-division-by-0.png)
+![Err: Division By 0](images/basic/errorcode-division-by-0.png)
 
 If a TI-OS function returns an internal error code outside of the ones
 documented in the SDK, RPN83P will print an error message in the form of `Err:
 UNKNOWN (##)` like this:
 
-![Err: UNKNOWN](images/errorcode-unknown.png)
+![Err: UNKNOWN](images/basic/errorcode-unknown.png)
 
 The number in parenthesis is the internal numerical value of the error code. If
 the error is reproducible, please file a [bug

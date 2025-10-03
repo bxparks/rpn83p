@@ -66,12 +66,12 @@ After installing `rpn83p.8xk` file, go to the calculator:
 - Scroll down to the `RPN83P` entry
 - Press the `ENTER` key
 
-![TIOS APPS](images/tios-apps.png)
+![TIOS APPS](images/installation/tios-apps.png)
 
 The RPN83P starts directly into the calculator mode, no fancy splash screen. You
 should see a screen that looks like:
 
-![RPN83P screenshot 1](images/rpn83p-initial.png)
+![RPN83P screenshot 1](images/installation/rpn83p-initial.png)
 
 ## Quitting
 
@@ -104,7 +104,7 @@ you turn on the calculator.
 
 The LCD screen should look like this before hitting `FINISH`:
 
-![Start-up app screenshot](images/start-up-app-screenshot.png)
+![Start-up app screenshot](images/installation/start-up-app-screenshot.png)
 
 Turn off the calculator and turn it back on. It should directly go into the
 RPN83P application.

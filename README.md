@@ -15,7 +15,7 @@ power of RPN calculators.
 
 Your calculator will look like this when using RPN83P:
 
-![RPN83P Teaser](docs/images/fullshot-teaser.png)
+![RPN83P Teaser](docs/images/fullshot/fullshot-teaser.png)
 
 RPN83P is a flash application written in Z80 assembly language that consumes 3
 pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
@@ -169,7 +169,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
 
 The RPN83P app starts directly into the calculator mode, like this:
 
-![RPN83P Initial Start Screen](docs/images/rpn83p-initial.png)
+![RPN83P Initial Start Screen](docs/images/installation/rpn83p-initial.png)
 
 ### Supported Hardware
 
