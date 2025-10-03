@@ -4,7 +4,7 @@ This document describes the interactions between RPN83P and the underlying
 TI-OS of the calculator.
 
 **Version**: 1.0.0 (2024-07-19)\
-**Project Home**: https://github.com/bxparks/rpn83p\
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
 The RPN83P app interacts with the underlying TI-OS in the following ways.

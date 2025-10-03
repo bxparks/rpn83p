@@ -4,7 +4,7 @@ This chapter contains a catalog of all functions implemented by the RPN83P app,
 accessed directly through buttons or through the menu system.
 
 **Version**: 1.0.0 (2024-07-19)\
-**Project Home**: https://github.com/bxparks/rpn83p\
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
 ## Direct Functions

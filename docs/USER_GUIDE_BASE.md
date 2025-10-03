@@ -6,7 +6,7 @@ BIN), and they support various arithmetic and bitwise operations similar to the
 HP-16C.
 
 **Version**: 1.0.0 (2024-07-19)\
-**Project Home**: https://github.com/bxparks/rpn83p\
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
 ## Table of Contents

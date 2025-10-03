@@ -3,7 +3,7 @@
 This document explains the motivations for creating RPN83P.
 
 **Version**: 1.0.0 (2024-07-19)\
-**Project Home**: https://github.com/bxparks/rpn83p\
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
 ## Table of Contents
