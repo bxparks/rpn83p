@@ -1,4 +1,4 @@
-# RPN83P User Guide: List of Functions
+# RPN83P User Guide: Catalog of Functions
 
 This section contains a description of all functions implemented by the RPN83P
 app, accessed directly through buttons or through the menu system.
