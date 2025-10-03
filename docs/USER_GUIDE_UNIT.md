@@ -52,7 +52,8 @@ The user interface follows the technique used by the
 **Terminology**: A Denominate object is composed of a value (a floating point
 number) and its unit.
 
-Let's convert 68 degrees F to Celsius, then to Kelvin:
+Let's convert 68 degrees Fahrenheit to Celsius, then to Kelvin using the menu
+functions of `UNIT > TEMP` folder:
 
 | **Keys**          | **Display**                      |
 | ----------------  | ---------------------            |
@@ -60,6 +61,10 @@ Let's convert 68 degrees F to Celsius, then to Kelvin:
 | `°F`              | ![](images/unit/unit-temp-2.png) |
 | `°C`              | ![](images/unit/unit-temp-3.png) |
 | `°K`              | ![](images/unit/unit-temp-4.png) |
+
+**Note**: The official SI symbol for Kelvin is a K without a degree symbol.
+However for UI consistency, it looked better to keep the degree symbol for a
+`TEMP` unit.
 
 The Denominate object can only be converted within the units of the same
 unitType. For example, we cannot convert a meter of `LENG` type to a kilogram of
