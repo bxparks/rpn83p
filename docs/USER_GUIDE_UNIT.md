@@ -97,8 +97,8 @@ Let's enter "6 feet 2 inches", divide that by 3, then convert that to inches:
 For the `+` and `-` operations, the result uses the unit of the Denominate
 object in the `Y` register (not the `X`). This seemed to be the more convenient
 behavior because I was often accumulating multiple measurements or items into
-the `Y` register, for example, adding 3 wooden pieces of '3ft 3in', '2ft 1in',
-and '1ft 8in', and I wanted to retain the larger unit.
+the `Y` register, for example, adding 3 wooden pieces of "3ft 3in", "2ft 1in",
+and "1ft 8in", and I wanted to retain the larger unit.
 
 ## UNIT FCN
 
