@@ -104,8 +104,10 @@ and '1ft 8in', and I wanted to retain the larger unit.
 
 Two miscellaneous functions are available under the `UFCN` menu folder:
 
-- `UVAL`: extract the unit value
-- `UBAS`: convert to the baseUnit of its UnitType
+- ![ROOT > UNIT > UFCN](images/menu/root-unit-ufcn.png)
+    - ![ROOT > UNIT > UFCN > Row1](images/menu/root-unit-ufcn-1.png)
+    - `UVAL`: extract the unit value
+    - `UBAS`: convert to the baseUnit of its UnitType
 
 The `UVAL` function extracts the display value of the  Denominate object in `X`,
 removing the unit portion.
@@ -123,13 +125,13 @@ Every unitType (e.g. `LENG`) has a baseUnit (e.g. `meter`). Every Denominate
 object is stored with its value converted in terms of its baseUnit. The `UBAS`
 function exposes the internal baseUnit and its baseValue.
 
-The `UBAS` function does not have a keyboard shortcut, because it is not
-expected to be needed as often as the `UVAL` function.
-
 | **Keys**          | **Display**                      |
 | ----------------  | ---------------------            |
 | `6` `ft`          | ![](images/unit/unit-ubas-1.png) |
 | `UBAS`            | ![](images/unit/unit-ubas-2.png) |
+
+The `UBAS` function does not have a keyboard shortcut, because it is not
+expected to be needed as often as the `UVAL` function.
 
 ## Supported Units
 
