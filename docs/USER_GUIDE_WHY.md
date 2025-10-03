@@ -1,6 +1,6 @@
 # RPN83P User Guide: Why?
 
-This document describes some troubleshooting techniques.
+This document explains the motivations for creating RPN83P.
 
 **Version**: 1.0.0 (2024-07-19)
 

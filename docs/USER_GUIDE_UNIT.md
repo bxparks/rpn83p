@@ -1,7 +1,6 @@
 # RPN83P User Guide: UNIT Functions
 
 This document describes the menu functions under the `UNIT` menu in RPN83P.
-It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
 **Version**: 1.1.0 (2025-09-30)
 

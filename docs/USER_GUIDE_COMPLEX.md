@@ -1,7 +1,6 @@
 # RPN83P User Guide: Complex Numbers
 
 This document describes the Complex Number features of the RPN83P application.
-It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
 Complex numbers can be entered in rectangular form `a+bi`, polar radian form `r
 e^(i theta)`, or polar degree form (`theta` in degrees). They can be also be

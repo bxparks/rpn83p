@@ -1,9 +1,8 @@
 # RPN83P User Guide: DATE Functions
 
-This document describes the `DATE` features of the RPN83P application. It has
-been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length. The `DATE`
-features are available under the `ROOT > DATE` menu folder in the 3rd row. Press
-`HOME` (i.e. `MATH`), `DOWN`, then `DOWN` again to get to:
+This document describes the `DATE` features of the RPN83P application. The
+`DATE` features are available under the `ROOT > DATE` menu folder in the 3rd
+row. Press `HOME` (i.e. `MATH`), `DOWN`, then `DOWN` again to get to:
 
 ![ROOT > DATE menu](images/menu/root-date.png)
 

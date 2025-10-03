@@ -1,7 +1,6 @@
 # RPN83P User Guide: Numerical functions
 
 This document describes the menu functions under the `NUM` menu in RPN83P.
-It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
 **Version**: 1.0.0 (2024-07-19)
 
