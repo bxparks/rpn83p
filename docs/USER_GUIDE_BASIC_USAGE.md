@@ -49,6 +49,7 @@ Manual](https://literature.hpcalc.org/items/929).
     - [Menu Shortcut Jump Back](#menu-shortcut-jump-back)
 - [Built In Help](#built-in-help)
 - [Error Codes](#error-codes)
+- [SHOW Mode](#show-mode)
 
 ## Screen Areas
 
@@ -721,3 +722,75 @@ the error is reproducible, please file a [bug
 report](https://github.com/bxparks/rpn83p/issues) containing the numerical error
 code and the steps needed to reproduce it so that I can add it to the list of
 error messages supported by RPN83P.
+
+## SHOW Mode
+
+Many HP RPN calculators have a display mode that shows all significant digits
+that are stored internally. On the HP-42S and HP-16C, the button that activates
+this is labeled `SHOW`. On the HP-12C and HP-15C, the button is labeled
+`Prefix`.
+
+The RPN83P app uses the `2ND` `ENTRY` key sequence (just above the `ENTER`
+button). This key was selected because `ENTRY` is unused in our RPN system, and
+because it is located close to the `ENTER` key.
+
+The SHOW mode reverts back to the normal display mode in the following ways:
+
+- `OFF` and `QUIT`: Exit the app. Upon restart, the app goes back to normal
+  display mode.
+- `DEL`, `CLEAR`, `ENTER`, `ON/EXIT`: Exit SHOW mode to normal mode, but do not
+  process the key in normal mode.
+- Any other key: Exit SHOW mode, then *continue* processing the key in normal
+  mode.
+
+Prior to v1.1, any key press in SHOW mode was used to exit to normal mode, and
+eaten. A second press of the same key was required in normal mode to process it.
+This was found to be too cumbersome. It was more intuitive allow a new number to
+be entered directly from SHOW mode, without having to press the digit key twice.
+If a digit key is entered (0-9), then we go into edit mode and the digit goes
+into the input buffer. If a function key is pressed, the function acts upon the
+value in the `X` register displayed by `SHOW`.
+
+Unlike the HP-42S which automatically reverts back to the normal mode after a
+2-3 second delay, the TI calculator must wait for a keyboard event from the
+user.
+
+Floating point numbers are normally shown with 10 significant digits, but
+internally the TI-OS stores floating point numbers using 14 digits. The SHOW
+mode displays all 14 digits of the `X` register in scientific notation. For
+example, `sqrt(2)` is normally displayed as `1.414213562`, but in SHOW mode it
+looks like this:
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `2` `2ND SQRT`        | ![](images/basic/show-mode-floating-1.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/basic/show-mode-floating-2.png) |
+
+If the `X` value is an exact integer internally, then the value is printed in
+integer form instead of scientific notation. For example `2^46` is an exact
+integer that will normally appear as `7.036874418E13`, but in SHOW mode looks
+like this:
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `2` `46` `^`          | ![](images/basic/show-mode-integer-1.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/basic/show-mode-integer-2.png) |
+
+The SHOW mode has a slight variation in `BASE` mode. For `DEC`, `HEX`, and `OCT`
+modes, the `SHOW` function behaves as before, showing the internal floating
+point number in scientific or integer notation. However, in `BIN` mode, the
+`SHOW` function displays the `X` value in *binary* notation, allowing all digits
+of the binary number to be shown. This behavior is consistent with the `SHOW`
+function on the HP-42S. For example, the hex number `01D62BB7` in normal `BIN`
+mode looks like `<010 1011 1011 0111` because only 16 digits can be displayed on
+a single line. But in SHOW mode, all 32 digits (assuming `WSIZ` was 32) will be
+displayed like this:
+
+| **Keys**              | **Display** |
+| ----------------      | --------------------- |
+| `MATH` `DOWN` `BASE`  | ![](images/basic/show-mode-base-1.png) |
+| `HEX`                 | ![](images/basic/show-mode-base-2.png) |
+| `01D62BB7`            | ![](images/basic/show-mode-base-3.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/basic/show-mode-base-4.png) |
+| `BIN`                 | ![](images/basic/show-mode-base-5.png) |
+| `2ND ENTRY` (SHOW)    | ![](images/basic/show-mode-base-6.png) |
