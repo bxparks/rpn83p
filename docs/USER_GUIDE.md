@@ -42,7 +42,6 @@ RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
     - [Error Codes](#error-codes)
 - [Functions](#functions)
 - [Advanced Usage](#advanced-usage)
-    - [Auto-start](#auto-start)
     - [Modes](#modes)
         - [Floating Point Display Modes](#floating-point-display-modes)
         - [Trigonometric Modes](#trigonometric-modes)
@@ -1109,27 +1108,6 @@ The direct and menu functions supported by RPN83P are listed for reference in
 [USER_GUIDE_FUNCTIONS.md](USER_GUIDE_FUNCTIONS.md).
 
 ## Advanced Usage
-
-### Auto-start
-
-For convenience, you may choose to auto-start the RPN83P application as soon as
-you turn on the calculator.
-
-- Download the
-  [Start-Up](https://education.ti.com/en/software/details/en/77ec7de5d3694f4595c262fdfc2acc4b/83startupcustomization) application from TI
-- Press `APPS`, then scroll down to `Start-up`
-- Configure:
-    - Display: `ON`
-    - Type: `APP`
-    - Name: `RPN83P` (hit `ENTER` and scroll down to select this)
-- Select `FINISH` and hit `ENTER`
-
-The LCD screen should look like this before hitting `FINISH`:
-
-![Start-up app screenshot](images/start-up-app-screenshot.png)
-
-Turn off the calculator and turn it back on. It should directly go into the
-RPN83P application.
 
 ### Modes
 

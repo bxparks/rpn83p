@@ -14,6 +14,7 @@ This document describes how to install and run the RPN83P application.
 - [Uploading](#uploading)
 - [Starting](#starting)
 - [Quitting](#quitting)
+- [Auto-start](#auto-start)
 - [Supported Hardware](#supported-hardware)
 - [Recommended Hardware](#recommended-hardware)
 
@@ -86,6 +87,27 @@ where it left off, including the exact cursor position of any pending input.
 When restarted, if the `RPN83SAV` variable does not pass validation (e.g. does
 not exist; was archived; is wrong size; contains an incompatible schema version;
 does not pass a CRC checksum) then the application starts from a clean slate.
+
+## Auto-start
+
+For convenience, you may choose to auto-start the RPN83P application as soon as
+you turn on the calculator.
+
+- Download the
+  [Start-Up](https://education.ti.com/en/software/details/en/77ec7de5d3694f4595c262fdfc2acc4b/83startupcustomization) application from TI
+- Press `APPS`, then scroll down to `Start-up`
+- Configure:
+    - Display: `ON`
+    - Type: `APP`
+    - Name: `RPN83P` (hit `ENTER` and scroll down to select this)
+- Select `FINISH` and hit `ENTER`
+
+The LCD screen should look like this before hitting `FINISH`:
+
+![Start-up app screenshot](images/start-up-app-screenshot.png)
+
+Turn off the calculator and turn it back on. It should directly go into the
+RPN83P application.
 
 ## Supported Hardware
 
