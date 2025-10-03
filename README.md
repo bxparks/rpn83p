@@ -297,28 +297,22 @@ In this example:
 
 Here are the steps:
 
-- Press the `MATH` button to reset the menu to the home row.
-- Navigate the menu with the `DownArrow` to get to
-  ![ROOT MenuRow 2](docs/images/menu/root-2.png)
-- Press the `TVM` menu to get to
-  ![TVM MenuRow 1](docs/images/menu/root-tvm-1.png)
-- Press the `DownArrow` to get to
-  ![TVM MenuRow 2](docs/images/menu/root-tvm-2.png)
-- Press the `CLTV` button to clear the TVM variables.
-- Press the `UpArrow` to get back to
-  ![TVM MenuRow 1](docs/images/menu/root-tvm-1.png)
-- Press `360` `N` (30 years * 12 months = 360 payments)
-- Press `8` `I%YR` (interest percent per year)
-- Press `500000` `PV` (present value)
-- Press `0` `FV` (future value)
-- Press `PMT` (payments)
-    - You should see `-3668.822869` ($3668.82)
-- Press `7` `I%YR`
-- Press `PMT`
-    - You should see `-3326.512476` ($3326.51)
-- Press `-3000` `PMT`
-- Press `I%YR`
-    - After a slight delay, you should see 6.006990008 (6%).
+| **Keys**              | **Display**                               |
+| ---------             | ----------                                |
+| `MATH` `DownArrow`    | ![](docs/images/readme/example3-01.png)   |
+| `TVM`                 | ![](docs/images/readme/example3-02.png)   |
+| `DownArrow`           | ![](docs/images/readme/example3-03.png)   |
+| `CLTV`                | ![](docs/images/readme/example3-04.png)   |
+| `UpArrow`             | ![](docs/images/readme/example3-05.png)   |
+| `360` `N`             | ![](docs/images/readme/example3-06.png)   |
+| `8` `I%YR`            | ![](docs/images/readme/example3-07.png)   |
+| `500000` `PV`         | ![](docs/images/readme/example3-08.png)   |
+| `0` `FV`              | ![](docs/images/readme/example3-09.png)   |
+| `PMT`                 | ![](docs/images/readme/example3-10.png)   |
+| `7` `I%YR`            | ![](docs/images/readme/example3-11.png)   |
+| `PMT`                 | ![](docs/images/readme/example3-12.png)   |
+| `-3000` `PMT`         | ![](docs/images/readme/example3-13.png)   |
+| `I%YR`                | ![](docs/images/readme/example3-14.png)   |
 
 Here is the animated GIF that shows this calculation:
 
