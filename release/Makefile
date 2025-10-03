@@ -90,8 +90,7 @@ USER_GUIDE_CHAPTERS_FILES := $(subst ../docs/,docs/,$(USER_GUIDE_SRCS))
 # only solution that I could find was to reduc the PNG sizes by 33%, before
 # converting the MD files into PDF.
 ORIG_IMAGES := \
-$(wildcard ../docs/images/*.png) \
-$(wildcard ../docs/images/*.gif) \
+$(wildcard ../docs/images/readme/*.gif) \
 $(wildcard ../docs/images/base/*.png) \
 $(wildcard ../docs/images/basic/*.png) \
 $(wildcard ../docs/images/complex/*.png) \
@@ -179,7 +178,8 @@ rpn83p.zip: $(TARGETS)
 # Build the PDF files using pandoc.
 #-----------------------------------------------------------------------------
 
-# Convert markdown to PDF.
+# Convert the top-level README.md to markdown to PDF. (Not to be confused with
+# the release/README.md file in this directory.)
 README.pdf: ../README.md Makefile $(RESIZED_IMAGES)
 	pandoc ../README.md $(PANDOC_FLAGS) > $@
 
@@ -308,8 +308,8 @@ docs/images/unit/%.png: ../docs/images/unit/%.png
 # Just copy the GIF files, no resizing. They take too much CPU time to resize.
 # They are only used in the README.md, with only one per line, so even if they
 # are 33% too large, it's ok.
-docs/images/%.gif: ../docs/images/%.gif
-	@mkdir -p docs/images
+docs/images/readme/%.gif: ../docs/images/readme/%.gif
+	@mkdir -p docs/images/readme
 	cp -f $< $@
 
 #-----------------------------------------------------------------------------
@@ -440,19 +440,21 @@ rpn83p.8xk: ../src/rpn83p.8xk
 	$(MAKE) -C ../src rpn83p.8xk
 
 #-----------------------------------------------------------------------------
-# Copy the animated GIF as a sample screenshot.
+# Copy the animated GIFs to top level for inclusion in the ZIP file. Used
+# during archiving to cemetech.net, so I include them in the ZIP file for
+# completeness.
 #-----------------------------------------------------------------------------
 
-rpn83p-example1.gif: ../docs/images/rpn83p-example1.gif
+rpn83p-example1.gif: ../docs/images/readme/rpn83p-example1.gif
 	cp -f $< $@
 
-rpn83p-example2.gif: ../docs/images/rpn83p-example2.gif
+rpn83p-example2.gif: ../docs/images/readme/rpn83p-example2.gif
 	cp -f $< $@
 
-rpn83p-example3.gif: ../docs/images/rpn83p-example3.gif
+rpn83p-example3.gif: ../docs/images/readme/rpn83p-example3.gif
 	cp -f $< $@
 
-rpn83p-example4.gif: ../docs/images/rpn83p-example4.gif
+rpn83p-example4.gif: ../docs/images/readme/rpn83p-example4.gif
 	cp -f $< $@
 
 #-----------------------------------------------------------------------------

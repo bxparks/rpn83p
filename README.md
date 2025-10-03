@@ -242,7 +242,7 @@ outwards. Enter the following keystrokes:
 
 Here is an animated GIF that shows this calculation:
 
-![RPN83P Example 1 GIF](docs/images/rpn83p-example1.gif)
+![RPN83P Example 1 GIF](docs/images/readme/rpn83p-example1.gif)
 
 (Note that the RPN83P provides a `X^3` menu function that could have been used
 for this formula, but I used the `LASTX` feature to demonstrate its use.)
@@ -280,7 +280,7 @@ view the final result as a decimal number:
 
 Here is the animated GIF that shows this calculation:
 
-![RPN83P Example 2 GIF](docs/images/rpn83p-example2.gif)
+![RPN83P Example 2 GIF](docs/images/readme/rpn83p-example2.gif)
 
 ### Example 3
 
@@ -321,7 +321,7 @@ Here are the steps:
 
 Here is the animated GIF that shows this calculation:
 
-![RPN83P Example 3 GIF](docs/images/rpn83p-example3.gif)
+![RPN83P Example 3 GIF](docs/images/readme/rpn83p-example3.gif)
 
 ### Example 4
 
@@ -353,7 +353,7 @@ The keystrokes are:
   ![CPLX MenuRow 1](docs/images/menu/root-cplx-1.png)
 - Press `CABS` (X: 174.30)
 
-![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
+![RPN83P Example 4 GIF](docs/images/readme/rpn83p-example4.gif)
 
 ### Exiting the Menu
 
