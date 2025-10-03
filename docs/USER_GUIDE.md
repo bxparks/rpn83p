@@ -2,8 +2,7 @@
 
 RPN calculator app for the TI-83 Plus and TI-84 Plus inspired by the HP-42S.
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.0.0 (2024-07-19)\
 **Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
