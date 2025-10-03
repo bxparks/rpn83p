@@ -1,12 +1,10 @@
-# RPN83P User Guide: Numerical functions
+# RPN83P User Guide: Numerical Functions
 
 This document describes the menu functions under the `NUM` menu in RPN83P.
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.0.0 (2024-07-19)\
+**Project Home**: https://github.com/bxparks/rpn83p\
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 

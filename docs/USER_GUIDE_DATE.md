@@ -1,40 +1,14 @@
 # RPN83P User Guide: DATE Functions
 
-This document describes the `DATE` features of the RPN83P application. The
-`DATE` features are available under the `ROOT > DATE` menu folder in the 3rd
-row. Press `HOME` (i.e. `MATH`), `DOWN`, then `DOWN` again to get to:
+This document describes the `DATE` features of the RPN83P application.
 
-![ROOT > DATE menu](images/menu/root-date.png)
-
-Here is a quick summary of the features:
-
-- supports the proleptic Gregorian calendar from year 0001 to 9999
-- 7 new data types (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
-  Duration)
-- determine if a given year is a leap year
-- calculate day of week (Monday-Sunday) from Date-like objects
-- add or subtract Dates, Times, DateTimes, ZonedDateTimes
-- convert ZonedDateTime to different (fixed) timezones
-- convert between ZonedDateTime to Epoch seconds relative to an Epoch date
-- support alternative Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
-- set and retrieve datetime from the hardware clock (84+/84+SE only)
-- display time and date objects in RFC 3339 (ISO 8601) format
-
-These features were inspired by various datetime libraries:
-
-- Java JDK 11
-  [java.time](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/package-summary.html) package
-- C# [Noda Time](https://nodatime.org) library
-- Python [datetime](https://docs.python.org/3/library/datetime.html) library
-
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.0.0 (2024-07-19)\
+**Project Home**: https://github.com/bxparks/rpn83p\
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 
+- [DATE Feature Summary](#date-feature-summary)
 - [Calendar, Time, and Timezones](#calendar-time-and-timezones)
     - [Gregorian Calendar](#gregorian-calendar)
     - [POSIX time](#posix-time)
@@ -110,6 +84,33 @@ These features were inspired by various datetime libraries:
         - [Get Current DateTime Now](#get-current-datetime-now)
         - [TI-OS Clock](#ti-os-clock)
 - [Storage Registers](#storage-registers)
+
+## DATE Feature Summary
+
+The `DATE` menu is on the third row at the top level of the menu hierarchy:
+
+![ROOT > DATE menu](images/menu/root-date.png)
+
+Here is a quick summary of the features:
+
+- supports the proleptic Gregorian calendar from year 0001 to 9999
+- 7 new data types (Date, Time, DateTime, TimeZone, ZonedDateTime, DayOfWeek,
+  Duration)
+- determine if a given year is a leap year
+- calculate day of week (Monday-Sunday) from Date-like objects
+- add or subtract Dates, Times, DateTimes, ZonedDateTimes
+- convert ZonedDateTime to different (fixed) timezones
+- convert between ZonedDateTime to Epoch seconds relative to an Epoch date
+- support alternative Epoch dates (Unix, NTP, GPS, TIOS, Y2K, custom)
+- set and retrieve datetime from the hardware clock (84+/84+SE only)
+- display time and date objects in RFC 3339 (ISO 8601) format
+
+These features were inspired by various datetime libraries:
+
+- Java JDK 11
+  [java.time](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/package-summary.html) package
+- C# [Noda Time](https://nodatime.org) library
+- Python [datetime](https://docs.python.org/3/library/datetime.html) library
 
 ## Calendar, Time, and Timezones
 

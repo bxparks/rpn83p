@@ -2,11 +2,9 @@
 
 This document describes how to install and run the RPN83P application.
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.0.0 (2024-07-19)\
+**Project Home**: https://github.com/bxparks/rpn83p\
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 

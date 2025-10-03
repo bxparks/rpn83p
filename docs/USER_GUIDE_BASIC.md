@@ -15,11 +15,9 @@ emulator for the HP-42S (available for Android, iOS, Windows, MacOS, and Linux)
 and then download the [HP-42S Owner's
 Manual](https://literature.hpcalc.org/items/929).
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.0.0 (2024-07-19)\
+**Project Home**: https://github.com/bxparks/rpn83p\
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 

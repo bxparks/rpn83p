@@ -2,11 +2,9 @@
 
 This document describes the menu functions under the `UNIT` menu in RPN83P.
 
-**Version**: 1.1.0 (2025-09-30)
-
+**Version**: 1.1.0 (2025-09-30)\
+**Project Home**: https://github.com/bxparks/rpn83p\
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 
