@@ -1799,6 +1799,7 @@ _SanitizeMenuLabel:
 _SanitizeMenu equ _SanitizeMenuLabel-branchTableBase
     .dw SanitizeMenu
     .db 3
+;
 _ClearJumpBackLabel:
 _ClearJumpBack equ _ClearJumpBackLabel-branchTableBase
     .dw ClearJumpBack
@@ -1824,9 +1825,13 @@ _GetCurrentMenuGroupNumRows equ _GetCurrentMenuGroupNumRowsLabel-branchTableBase
     .dw GetCurrentMenuGroupNumRows
     .db 3
 ;
-_ExtractMenuNamesLabel:
-_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
-    .dw ExtractMenuNames
+_IsEqualToOrChildOfMenuGroupLabel:
+_IsEqualToOrChildOfMenuGroup equ _IsEqualToOrChildOfMenuGroupLabel-branchTableBase
+    .dw IsEqualToOrChildOfMenuGroup
+    .db 3
+_GetMenuNodeRowBeginIdLabel:
+_GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
+    .dw GetMenuNodeRowBeginId
     .db 3
 _GetMenuNodeHandlerLabel:
 _GetMenuNodeHandler equ _GetMenuNodeHandlerLabel-branchTableBase
@@ -1836,7 +1841,7 @@ _GetMenuNodeParentLabel:
 _GetMenuNodeParent equ _GetMenuNodeParentLabel-branchTableBase
     .dw GetMenuNodeParent
     .db 3
-_GetMenuNodeRowBeginIdLabel:
-_GetMenuNodeRowBeginId equ _GetMenuNodeRowBeginIdLabel-branchTableBase
-    .dw GetMenuNodeRowBeginId
+_ExtractMenuNamesLabel:
+_ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
+    .dw ExtractMenuNames
     .db 3

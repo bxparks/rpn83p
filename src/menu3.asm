@@ -193,8 +193,51 @@ GetCurrentMenuGroupNumRows:
     ret
 
 ;-----------------------------------------------------------------------------
-; Low-level routines for traversing and searching the mMenuTable. These do
-; *not* depend on (currentMenuGroupId) or (currentMenuRowIndex).
+; Routines for traversing and searching the mMenuTable. These do *not* depend
+; on (currentMenuGroupId) or (currentMenuRowIndex).
+;-----------------------------------------------------------------------------
+
+; Description: Determine if child(HL) is equal to the parent(DE) menuGroup or
+; is one of its children.
+; Input:
+;   - HL:u16=childMenuNodeId
+;   - DE:u16=parentMenuGroupId
+; Output:
+;   - CF=1 if true, 0 otherwise
+; Destroys: A, HL
+; Preserves: BC, DE
+IsEqualToOrChildOfMenuGroup:
+    call cpHLDEPageThree ; ZF=1 if equal
+    jr z, isChildOfMenuGroupTrue
+    ; [[fallthrough]]
+
+; Description: Determine if child(HL) is a child of parent(DE). Usually the
+; child(HL) is expected to be a MenuGroup, but this subroutine will also work
+; if the child is a MenuItem.
+; Input:
+;   - HL:u16=childMenuNodeId
+;   - DE:u16=parentMenuGroupId
+; Output:
+;   - CF=1 if true, 0 otherwise
+; Destroys: A, HL
+; Preserves: BC, DE
+isChildOfMenuGroup:
+    ; Recursively traverse up the menu tree, checking if each candidateParentId
+    ; is equal to the provided parentMenuGroupId.
+isChildOfMenuGroupLoop:
+    push de ; stack=[parentMenuGroupId]
+    call GetMenuNodeParent ; DE=candidateParentId
+    ex de, hl ; HL=candidateParentId
+    pop de ; stack=[]; DE=parentMenuGroupId
+    ld a, h
+    or l
+    ret z ; reached ROOT of tree, return with CF=0
+    call cpHLDEPageThree ; ZF=1 if equal
+    jr nz, isChildOfMenuGroupLoop
+isChildOfMenuGroupTrue:
+    scf ; parentMenuGroupId found, so set CF=1 and return
+    ret
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Return the first menuNodeId for menuGroupId (HL) at rowIndex (A).
