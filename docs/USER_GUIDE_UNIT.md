@@ -148,6 +148,7 @@ Most of the numerical functions under the `ROOT > NUM` menu folder have been
 updated to support Denominate objects from `UNIT` (the exceptions are `GCD`,
 `LCM`, and `PRIM`):
 
+- ![ROOT > NUM](images/menu/root-num.png)
 - `%`: `X` percent of `Y`, leaving `Y` unchanged
 - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
 - `IP`: integer part of `X`, truncating towards 0, preserving sign
@@ -168,12 +169,12 @@ updated to support Denominate objects from `UNIT` (the exceptions are `GCD`,
 For example, let's calculate the percent change from 2 kWh to 2000 kcalories
 (~2.32 kWh):
 
-| **Keys**          | **Display**                      |
-| ----------------  | ---------------------            |
-| `2` `kWh`         | ![](images/unit/unit-num-percentch-1.png) |
-| `2000` `kcal`     | ![](images/unit/unit-num-percentch-2.png) |
-| `MATH` `NUM`      | ![](images/unit/unit-num-percentch-3.png) |
-| `%CH`             | ![](images/unit/unit-num-percentch-4.png) |
+| **Keys**              | **Display**                               |
+| ----------------      | ---------------------                     |
+| `2` `kWh`             | ![](images/unit/unit-num-percentch-1.png) |
+| `2000` `kcal`         | ![](images/unit/unit-num-percentch-2.png) |
+| `MATH` (HOME) `NUM`   | ![](images/unit/unit-num-percentch-3.png) |
+| `%CH`                 | ![](images/unit/unit-num-percentch-4.png) |
 
 Some `NUM` functions are not valid for units of 2 unitTypes:
 
