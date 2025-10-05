@@ -5,7 +5,10 @@
 ; BASE menu handlers.
 ;
 ; Every handler is given the following input parameters:
-;   - HL:u16=menuId
+;   - DE:(void*):address of handler
+;   - HL:u16=newMenuId
+; If the handler is a MenuGroup, then it also gets the following:
+;   - BC:u16=oldMenuId
 ;   - CF:bool
 ;       - 0 indicates 'onEnter' event into group
 ;       - 1 indicates 'onExit' event from group
@@ -13,13 +16,17 @@
 
 ; Description: Group handler for BASE menu group and its subgroups.
 ;
-; OnEnter, it enables the 'rpnFlagsBaseModeEnabled' flag so that the display
+; - OnEnter, it enables the 'rpnFlagsBaseModeEnabled' flag so that the display
 ; is rendered in the appropriate DEC, BIN, OCT, or HEX modes.
-;
-; OnExit, it disables the 'rpnFlagsBaseModeEnabled' so that the display is
+; - OnExit, it disables the 'rpnFlagsBaseModeEnabled' so that the display is
 ; rendered normally.
+; - In either case, the input buffer is terminated ONLY if a transition occurs
+; from a BASE to a non-BASE menu group. For example, if the user goes from a
+; 'BASE' to 'BASE > ROTS', then the input buf should remain open.
 ;
 ; Input:
+;   - BC=prevMenuGroupId
+;   - HL=targetMenuGroupId
 ;   - CF=1: handle onExit() event
 ;   - CF=0: handle onEnter() event
 mBaseHandler:

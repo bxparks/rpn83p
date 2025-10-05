@@ -154,7 +154,8 @@ getCurrentMenuArrowStatusCheckUp:
 ;   - (currentMenuRowIndex)
 ; Output:
 ;   - HL=u16=menuId
-; Destroys: A, BC, DE, HL, IX
+; Destroys: A, DE, HL, IX
+; Preserves: BC
 GetMenuIdOfButton:
     ld e, a
     ld d, 0
@@ -173,7 +174,8 @@ GetMenuIdOfButton:
 ; Output:
 ;   - DE=rowBeginId=menuId of first item of row 0
 ;   - HL=rowMenuId=menuId of the first item of row 'rowIndex'
-; Destroys: A, BC, DE, HL, IX
+; Destroys: A, DE, HL, IX
+; Preserves: BC
 GetCurrentMenuRowBeginId:
     ld hl, (currentMenuGroupId)
     ld a, (currentMenuRowIndex)
@@ -202,9 +204,10 @@ GetCurrentMenuGroupNumRows:
 ; Output:
 ;   - DE=rowBeginId=menuId of first item of row 0
 ;   - HL=rowMenuId=menuId of the first item of row 'rowIndex'
-; Destroys: A, BC, DE, HL, IX
+; Destroys: A, DE, HL, IX
+; Preserves: BC
 getMenuRowBeginId:
-    call findMenuNodeIX ; IX=menuNode
+    call findMenuNodeIX ; IX=menuNode; preserves BC
     ld e, (ix + menuNodeFieldRowBeginId)
     ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=menuNode.rowBeginId
     ; Calc the rowMenuId at given rowIndex: rowMenuId=rowBeginId+5*rowIndex
@@ -225,9 +228,10 @@ getMenuRowBeginId:
 ;   - A=numRows
 ;   - DE=rowBeginId
 ;   - IX=menuNode
-; Destroys: A, BC, DE, HL, IX
+; Destroys: A, DE, HL, IX
+; Preserves: BC
 GetMenuNodeRowBeginId:
-    call findMenuNodeIX ; IX=menuNode
+    call findMenuNodeIX ; IX=menuNode; preserves BC
     ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld e, (ix + menuNodeFieldRowBeginId)
     ld d, (ix + menuNodeFieldRowBeginId + 1) ; DE=rowBeginId
@@ -246,7 +250,7 @@ GetMenuNodeRowBeginId:
 ; Preserves: HL
 GetMenuNodeHandler:
     push hl
-    call findMenuNodeIX ; IX:(MenuNode*)=menuNode
+    call findMenuNodeIX ; IX:(MenuNode*)=menuNode; preserves BC
     ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld e, (ix + menuNodeFieldHandler)
     ld d, (ix + menuNodeFieldHandler + 1) ; DE=handler
@@ -262,9 +266,10 @@ GetMenuNodeHandler:
 ;   - A=numRows (0 indicates MenuItem; >0 indicates MenuGroup)
 ;   - DE=parentId
 ;   - IX=menuNode
-; Destroys: A, BC, DE, HL, IX
+; Destroys: A, DE, HL, IX
+; Preserves: BC
 GetMenuNodeParent:
-    call findMenuNodeIX ; IX:(MenuNode*)=menuNode
+    call findMenuNodeIX ; IX:(MenuNode*)=menuNode; preserves BC
     ld a, (ix + menuNodeFieldNumRows) ; A=numRows
     ld e, (ix + menuNodeFieldParentId)
     ld d, (ix + menuNodeFieldParentId + 1) ; DE=parentId
@@ -278,10 +283,10 @@ GetMenuNodeParent:
 ;   - HL=menuId
 ; Output:
 ;   - IX:(MenuNode*)=menuNode
-; Destroys: BC, DE, HL, IX
-; Preserves: A
+; Destroys: DE, HL, IX
+; Preserves: A, BC
 findMenuNodeIX:
-    call calcMenuNodeOffset ; HL=offset
+    call calcMenuNodeOffset ; HL=offset; preserves BC
     ex de, hl ; DE=offset
     ld ix, mMenuTable
     add ix, de ; IX=menuNode

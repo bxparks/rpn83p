@@ -3,12 +3,6 @@
 ; Copyright (c) 2024-2025 Brian T. Park
 ;
 ; Generic DATE functions for shrinking, extending, cutting, and linking.
-;
-; Every handler is given the following input parameters:
-;   - HL:u16=menuId
-;   - CF:bool
-;       - 0 indicates 'onEnter' event into group
-;       - 1 indicates 'onExit' event from group
 ;-----------------------------------------------------------------------------
 
 ; Description: Determine if the year or Date-like object is a leap year.

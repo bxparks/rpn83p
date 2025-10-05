@@ -101,20 +101,9 @@ getMenuNameFind:
 ;-----------------------------------------------------------------------------
 
 ; Description: Dispatch to the handler for the menu node in register A.
-;
-; There are 2 cases:
-;
-; 1) If the target node is a MenuItem, then the 'onEnter' event is sent to the
-; item by invoking its handler.
-; 2) If the target node is a MenuGroup, a 'chdir' operation is implemented in 3
-; steps:
-;   a) The handler of the previous MenuGroup is sent an 'onExit' event,
-;   signaled by calling its handlers with the carry flag CF=1.
-;   b) The (currentMenuGroupId) and (currentMenuRowIndex) are updated with the
-;   target menu group.
-;   c) The handler of the traget MenuGroup is sent an 'onEnter' event, signaled
-;   by calling its handlers with the carry flag CF=0.
-;
+; 1) If the target node is a MenuItem, find its handler and invoke it.
+; 2) If the target node is a MenuGroup, perform a 'chdir' operation using
+; changeMenuGroup().
 ; Input:
 ;    - HL=targetNodeId
 ; Output:
@@ -261,9 +250,15 @@ deduceRowIndexEnd:
 ;-----------------------------------------------------------------------------
 
 ; Description: Change the current menu group to the target menuGroup and
-; rowIndex. Sends an onExit() event to the previous menuGroupHandler by setting
-; at CF=1. Then sends an onEnter() event to the new menuGroupHandler by setting
-; CF=0.
+; rowIndex using the following steps:
+;   1) Populate BC=oldMenuGroupId and HL=newMenuGroupId.
+;   2) Send an 'onExit' event to the oldMenuGroupHandler by setting the carry
+;   flag CF=1.
+;   3) Update the  (currentMenuGroupId) with the newMenuGroupId, and set
+;   (currentMenuRowIndex) to 0 (first row).
+;   4) Send an 'onEnter' event to the newMenuGroupHandler by setting the carry
+;   flag CF=0.
+;
 ; Input:
 ;   - A=targetRowIndex
 ;   - HL=targetMenuGroupId
@@ -271,19 +266,32 @@ deduceRowIndexEnd:
 ;   - (currentMenuGroupId)=target nodeId
 ;   - (currentMenuRowIndex)=target rowIndex
 ;   - dirtyFlagsMenu set
-; Destroys: A, DE, HL, IX
+; Destroys: A, BC, DE, HL, IX
 changeMenuGroup:
     push af ; stack=[targetRowIndex]
     push hl ; stack=[targetRowIndex,targetMenuGroupId]
-    ; 1) Invoke the onExit() handler of the previous MenuGroup by setting CF=1.
+    ; 1) Invoke the onExit() handler of the previous MenuGroup:
+    ;   - CF=1 (onExit())
+    ;   - BC=prevMenuGroupId
+    ;   - HL=targetMenuGroupId
+    ;   - DE=prevMenuGroupHandler
     ld hl, (currentMenuGroupId)
     bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
+    ld b, h
+    ld c, l ; BC=prevMenuGroupId
+    pop hl ; HL=targetMenuGroupId
+    push hl
     scf ; CF=1 means "onExit()" event
     call jumpDE
-    ; 2) Invoke the onEnter() handler of the target MenuGroup by setting CF=0.
+    ; 2) Invoke the onEnter() handler of the target MenuGroup:
+    ;   - CF=0 (onEnter())
+    ;   - BC=prevMenuGroupId
+    ;   - HL=targetMenuGroupId
+    ;   - DE=targetMenuGroupHandler
     pop hl ; stack=[targetRowIndex]; HL=targeMenuGroupId
     pop af ; stack=[]; A=targetRowIndex
     ld (currentMenuRowIndex), a
+    ld bc, (currentMenuGroupId) ; BC=prevMenuGroupId
     ld (currentMenuGroupId), hl
     bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
     or a ; set CF=0
