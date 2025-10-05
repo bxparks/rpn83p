@@ -13,6 +13,7 @@ This document describes the menu functions under the `UNIT` menu in RPN83P.
 - [UNIT Arithmetic](#unit-arithmetic)
 - [UNIT Misc Functions (UFCN)](#unit-misc-functions-ufcn)
 - [UNIT and NUM Functions](#unit-and-num-functions)
+- [UNIT and Storage Registers](#unit-and-storage-registers)
 - [Catalog of Supported Units](#catalog-of-supported-units)
 
 ## UNIT Menu
@@ -46,7 +47,7 @@ The user interface follows the technique used by the
 - press the target UNIT menu of the target unit to convert the Denominate object
   into the target unit
 
-**Terminology**: A Denominate object is composed of a value (a floating point
+**Terminology**: A _Denominate_ object is composed of a value (a floating point
 number) and its unit.
 
 Let's convert 68 degrees Fahrenheit to Celsius, then to Kelvin using the menu
@@ -185,6 +186,31 @@ operate on these units:
 - `FUEL`:
     - Allowed: `IP`, `FP`, `FLR`, `CEIL`, `NEAR`, `RNDF`, `RNDN`, `RNDG`
     - Disallowed: `%`, `%CH`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
+
+## UNIT and Storage Registers
+
+Denominate objects are compatible with Storage Registers (R00-R99). However,
+they cannot be stored in Storage Variables (A-Z,Theta) because those are owned
+by the TI-OS, and Denominate objects cannot be stored outside of RPN83P.
+
+| **Keys**              | **Display**                         |
+| ----------------      | ---------------------               |
+| `UNIT` `VOL`          | ![](images/unit/unit-storage-1.png) |
+| `2` `cm³`             | ![](images/unit/unit-storage-2.png) |
+| `STO 00`              | ![](images/unit/unit-storage-3.png) |
+| `CLEAR`               | ![](images/unit/unit-storage-4.png) |
+| `2ND RCL 00`          | ![](images/unit/unit-storage-5.png) |
+
+The usual storage register arithmetic operations are supported: `RCL+ nn`,
+`STO+ nn`, etc.
+
+| **Keys**              | **Display**                               |
+| ----------------      | ---------------------                     |
+| `UNIT` `VOL`          | ![](images/unit/unit-storage-arith-1.png) |
+| `2` `cm³`             | ![](images/unit/unit-storage-arith-2.png) |
+| `STO 00`              | ![](images/unit/unit-storage-arith-3.png) |
+| `2.5` `mtsp`          | ![](images/unit/unit-storage-arith-4.png) |
+| `2ND RCL + 00`        | ![](images/unit/unit-storage-arith-5.png) |
 
 ## Catalog of Supported Units
 
