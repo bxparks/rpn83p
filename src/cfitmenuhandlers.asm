@@ -2,10 +2,13 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; CFIT menu handlers.
+; CFIT (curve fit) menu handlers.
 ;
 ; Every handler is given the following input parameters:
-;   - HL:u16=menuId
+;   - DE:(void*):address of handler
+;   - HL:u16=newMenuId
+; If the handler is a MenuGroup, then it also gets the following:
+;   - BC:u16=oldMenuId
 ;   - CF:bool
 ;       - 0 indicates 'onEnter' event into group
 ;       - 1 indicates 'onExit' event from group

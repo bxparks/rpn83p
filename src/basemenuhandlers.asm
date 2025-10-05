@@ -5,7 +5,10 @@
 ; BASE menu handlers.
 ;
 ; Every handler is given the following input parameters:
-;   - HL:u16=menuId
+;   - DE:(void*):address of handler
+;   - HL:u16=newMenuId
+; If the handler is a MenuGroup, then it also gets the following:
+;   - BC:u16=oldMenuId
 ;   - CF:bool
 ;       - 0 indicates 'onEnter' event into group
 ;       - 1 indicates 'onExit' event from group
@@ -13,13 +16,17 @@
 
 ; Description: Group handler for BASE menu group and its subgroups.
 ;
-; OnEnter, it enables the 'rpnFlagsBaseModeEnabled' flag so that the display
+; - OnEnter, it enables the 'rpnFlagsBaseModeEnabled' flag so that the display
 ; is rendered in the appropriate DEC, BIN, OCT, or HEX modes.
-;
-; OnExit, it disables the 'rpnFlagsBaseModeEnabled' so that the display is
+; - OnExit, it disables the 'rpnFlagsBaseModeEnabled' so that the display is
 ; rendered normally.
+; - In either case, the input buffer is terminated ONLY if a transition occurs
+; from a BASE to a non-BASE menu group. For example, if the user goes from a
+; 'BASE' to 'BASE > ROTS', then the input buf should remain open.
 ;
 ; Input:
+;   - BC=oldMenuGroupId
+;   - HL=newMenuGroupId
 ;   - CF=1: handle onExit() event
 ;   - CF=0: handle onEnter() event
 mBaseHandler:
@@ -28,21 +35,63 @@ mBaseRotateHandler:
 mBaseBitsHandler:
 mBaseFunctionsHandler:
 mBaseConfigsHandler: ; BCFS could also mean "Base Carry Flag and Word Size"
-    push af ; preserve the C flag
-    ; must call closeInputXxx() before modifying rpnFlagsBaseModeEnabled
-    call closeInputAndRecallNone
-    pop af
     jr c, mBaseHandlerOnExit
-    ; handle onEnter()
+mBaseHandlerOnEnter:
+    call enterOrExitBase
+    ; rpnFlagsBaseModeEnabled must be set AFTER closeInputAndRecallNone()
     set rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-    jr mBaseHandlerEnd
+    ret
 mBaseHandlerOnExit:
-    ; handle onExit()
+    call enterOrExitBase
+    ; rpnFlagsBaseModeEnabled must be set AFTER closeInputAndRecallNone()
     res rpnFlagsBaseModeEnabled, (iy + rpnFlags)
-mBaseHandlerEnd:
+    ret
+
+; Description: Perform closeInputAndRecallNone() and update flags as necessary
+; if we are entering or exiting BASE.
+; Input:
+;   - BC=oldMenuGroupId
+;   - HL=newMenuGroupId
+; Output:
+;   - closeInputAndRecallNone() called if necessary
+;   - dirtyFlagsStatus updated if necessary
+;   - dirtyFlagsStack updated if necessary
+enterOrExitBase:
+    call isEnteringOrExitingBase ; CF=1 if transitioning into/outof BASE
+    ret nc
+    call closeInputAndRecallNone
     set dirtyFlagsStatus, (iy + dirtyFlags)
     set dirtyFlagsStack, (iy + dirtyFlags)
     ret
+
+; Description: Determine if a changeMenuGroup() is either entering a BASE menu
+; from a non-BASE, or exiting a BASE menu to a non-BASE.
+; Input:
+;   - BC:u16=oldMenuId
+;   - HL:u16=newMenuId
+; Output:
+;   - CF=1 if (BASE->nonBase or nonBASE->BASE) transition
+isEnteringOrExitingBase:
+    ; check if newMenuId is a BASE-related group
+    ld de, mBaseId
+    bcall(_IsEqualToOrChildOfMenuGroup) ; CF=1 if newMenuId is child of BASE
+    ld l, c
+    ld h, b ; HL=oldMenuId
+    rl c ; shift CF into bit0 of C
+    ; check if oldMenuId is a BASE-related group
+    ld de, mBaseId
+    bcall(_IsEqualToOrChildOfMenuGroup) ; CF=1 if newMenuId is child of BASE
+    rla ; shift CF into bit0 of A
+    ; Perform an XOR of bit0. If bit0==1, then we have transition of
+    ; BASE->nonBASE or nonBASE->BASE. This is the efficient bit-twiddling
+    ; equivalent of calculating the boolean expression:
+    ;   (oldMenu==BASE and newMenu!=BASE) || (oldMenu!=BASE and newMenu==BASE)
+    xor c
+    ; Shift the result into CF
+    rra
+    ret
+
+;-----------------------------------------------------------------------------
 
 mHexHandler:
     call closeInputAndRecallNone
