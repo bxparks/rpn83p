@@ -33,6 +33,7 @@ Manual](https://literature.hpcalc.org/items/929).
     - [Change Sign Key](#change-sign-key)
     - [Record Object Input](#record-object-input)
     - [Complex Number Input](#complex-number-input)
+    - [Input Termination](#input-termination)
     - [Other Edge Cases](#other-edge-cases)
     - [Input Limitations](#input-limitations)
 - [RPN Stack](#rpn-stack)
@@ -329,6 +330,65 @@ Here is an example of how the delimiters override or toggle each other:
 | `2ND ANGLE`           | ![Input Complex](images/basic/input-complex-5.png) |
 | `2ND i`               | ![Input Complex](images/basic/input-complex-6.png) |
 
+### Input Termination
+
+On the HP-42S, input termination is aggressive. For example:
+
+- The activation of any menu (e.g. `MODES` or `CONVERT`) terminates
+  the input.
+- Moving to a different menu row using the UpArrow or DownArrow, within the same
+  menu, terminates the input.
+- Deactivation of a menu using `ON/EXIT` button also terminates the input.
+- Selecting `STO` or `RCL`, then canceling the command argument prompt using
+  `ON/EXIT` will terminate the input.
+
+On RPN83P, input termination is delayed for as long as it makes sense. I think
+this makes the user-interface easier and more friendly. For example:
+
+- Menu navigation (with the exception of `BASE`, see below) does *not* cause
+  termination.
+    - This allows the user to start entering a number, then navigate to a
+      different menu folder, then continue entering the number.
+- The `ON/EXIT` button to navigate up the menu hierarchy does not cause input
+  termination.
+- Selecting the `MODE` keyboard button shortcut does *not* cause input
+  termination.
+- Invoking changes inside the `MODE` button does *not* cause input termination.
+  For example:
+    - Changing the `FIX`, `SCI`, or `ENG` value does not cause termination
+    - Changing the complex number display mode `RECT`, `PRAD`, `PDEG` does not
+      cause termination. This allow the user to start entering a complex number
+      through the `2ND LINK` process, then change their mind whether to link the
+      2 numbers in rectangular form `a+bi` or in a polar form (`r∠θ`).
+- Canceling a command argument prompt (e.g. `STO`, `RCL`, `RNDN`, `FIX`, etc),
+  before the completion of the parameter, does *not* cause input termination.
+- Even seemingly drastic configuration changes such as `RSIZ` (register size)
+  and `SSIZ` (stack size) will *not* cause input termination.
+    - They can make the internal configuration changes without depending on the
+      value of the `X` register, the input does not need to be terminated.
+
+The `BASE` menu folder and its children folders (`LOGI`, `ROTS`, `BITS`, `BFCN`,
+`BCFS`) are exceptions because the `BASE` mode affects how the digits in the
+input buffer are parsed and interpreted.
+
+- Changing the BASE modes (`DEC`, `HEX`, `OCT`, `BIN`) will cause input
+  termination.
+    - If we switch to another BASE mode, the input must be terminated so that
+      the pending digits can be parsed correctly.
+- Any menu navigation into or out of a BASE menu (i.e. from non-BASE into BASE,
+  or from BASE to a non-BASE) will cause input termination.
+    - Similar reason as above, the digits in the input buffer are affected by
+      the BASE mode.
+- Menu navigation *within* the BASE menu folder hierarchy will *not* cause input
+  termination.
+    - For example, navigating from `BASE > ROTS` to `BASE > LOGI` will not
+      terminate the input.
+- Pressing the `MODE` keyboard button from inside a `BASE` menu folder *does*
+  cause input termination.
+    - Internally, the `MODE` button causes menu navigation to `ROOT > MODE`
+      which is in a different menu hierarchy from `ROOT > BASE`, so we have
+      transitioned to be outside of the `BASE` hierarchy.
+
 ### Other Edge Cases
 
 The input system of the HP-42S has idiosyncrasies which are sometimes
@@ -360,23 +420,6 @@ others were not.
       is pushed into the `X` register.
     - This is the one case where an empty string in the input buffer is not the
       same as a `0`.
-- On the HP-42S, the `ON/EXIT` button always terminates the input and places the
-  input value into the `X` register. This seems to be a side-effect of the
-  `ON/EXIT` causing the exit of the current menu bar.
-    - On RPN83P, I decided that menu navigation should *not* cause input
-      termination whenever possible. This allows the user to start entering a
-      number, then navigate to a different menu folder, then continue entering
-      the number.
-    - Since the `ON/EXIT` button is used to navigate the menu hierarchy, it
-      cannot cause input termination, unlike the HP-42S.
-    - The only exceptions are menus which change the rendering of the values on
-      the RPN stack, for example:
-        - `BASE` menu folder, which interprets the values on the RPN stack as
-          integers not floating point numbers
-        - `FIX`, `SCI`, `ENG`, which render floating point numbers with
-          different number of significant digits
-        - `RECT`, `PRAD`, `PDEG`, which render complex numbers in different
-          formats
 
 ### Input Limitations
 
