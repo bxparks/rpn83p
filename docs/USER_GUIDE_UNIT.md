@@ -176,7 +176,8 @@ For example, let's calculate the percent change from 2 kWh to 2000 kcalories
 | `MATH` (HOME) `NUM`   | ![](images/unit/unit-num-percentch-3.png) |
 | `%CH`                 | ![](images/unit/unit-num-percentch-4.png) |
 
-Some `NUM` functions are not valid for units of 2 unitTypes:
+The units of `TEMP` and `FUEL` are special, and many `NUM` functions cannot
+operate on these units:
 
 - `TEMP`:
     - Allowed: `IP`, `FP`, `FLR`, `CEIL`, `NEAR`, `RNDF`, `RNDN`, `RNDG`
@@ -186,7 +187,6 @@ Some `NUM` functions are not valid for units of 2 unitTypes:
     - Disallowed: `%`, `%CH`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`
 
 ## Catalog of Supported Units
-
 
 The following is the complete list of supported units in RPN83P. There are 169
 units organized into 12 unit types. All units from both the HP-19BII and the
