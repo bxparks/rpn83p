@@ -133,6 +133,7 @@ Missing features (partial list):
 - [Chapter 6: MODE Functions](USER_GUIDE_MODE.md)
 - [Chapter 7: MATH Functions](USER_GUIDE_MATH.md)
 - [Chapter 7: NUM Functions](USER_GUIDE_NUM.md)
+- [Chapter 7: PROB Functions](USER_GUIDE_PROB.md)
 - [Chapter 8: BASE Functions](USER_GUIDE_BASE.md)
 - [Chapter 9: STAT Functions](USER_GUIDE_STAT.md)
 - [Chapter 10: TVM Functions](USER_GUIDE_TVM.md)
