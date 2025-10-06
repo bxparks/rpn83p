@@ -141,6 +141,7 @@ Missing features (partial list):
 - [Chapter 11: Complex Numbers](USER_GUIDE_COMPLEX.md)
 - [Chapter 12: UNIT Functions](SER_GUIDE_UNIT.md)
 - [Chapter 13: DATE Functions](USER_GUIDE_DATE.md)
+- [Chapter ??: CLR Functions](USER_GUIDE_CLR.md)
 - [Chapter 14: TI-OS Interaction](USER_GUIDE_TIOS.md)
 - [Chapter 15: Troubleshooting](USER_GUIDE_TROUBLESHOOTING.md)
 - [Chapter 16: Future Enhancements](USER_GUIDE_FUTURE.md)
