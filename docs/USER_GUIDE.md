@@ -131,6 +131,7 @@ Missing features (partial list):
 - [Chapter 4: Catalog of Functions](USER_GUIDE_FUNCTIONS.md)
 - [Chapter 5: Storage Registers and Variables](USER_GUIDE_STORAGE.md)
 - [Chapter 6: MODE Functions](USER_GUIDE_MODE.md)
+- [Chapter 7: MATH Functions](USER_GUIDE_MATH.md)
 - [Chapter 7: NUM Functions](USER_GUIDE_NUM.md)
 - [Chapter 8: BASE Functions](USER_GUIDE_BASE.md)
 - [Chapter 9: STAT Functions](USER_GUIDE_STAT.md)
