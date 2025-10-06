@@ -78,8 +78,8 @@ mStatLinearModeNameSelector:
     scf
     ret
 
+; Description: Clear the STAT registers. No need to terminate input.
 mStatClearHandler:
-    call closeInputAndRecallNone
     bcall(_ClearStatRegs)
     ld a, errorCodeStatCleared
     ld (handlerCode), a
