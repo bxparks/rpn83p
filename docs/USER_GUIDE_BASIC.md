@@ -473,9 +473,9 @@ These are the buttons which manipulate the RPN stack:
 - `ENTER`: saves the input buffer to the `X` register
 - `2ND` `ANS`: recalls the last `X`
 
-This mapping of the `(` and `)` to these stack functions is identical to mapping
-used by other HP calculators that support both Algebraic and RPN modes (e.g. the
-[HP-17BII and 17bII+](https://en.wikipedia.org/wiki/HP-17B) and the
+This mapping of the `(` and `)` to these stack functions is identical to the
+mapping used by other HP calculators that support both Algebraic and RPN modes
+(e.g. the [HP-17BII and 17bII+](https://en.wikipedia.org/wiki/HP-17B) and the
 [HP-30b](https://en.wikipedia.org/wiki/HP_30b)).
 
 When a new number is entered (using the `0`-`9` digit keys), the press of the
