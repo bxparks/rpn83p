@@ -362,10 +362,10 @@ We can add them like this:
 In this contrived example, we compute an expression involving all three
 representations of complex numbers:
 
-```
-# ignore the following comment line, comments are not supported by MarkDown
+<!--
+The following comment line should be ignored:
 \[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \]
-```
+-->
 
 ![RPN83P Complex Example2 Equation](images/complex/example2-equation.png)
 
