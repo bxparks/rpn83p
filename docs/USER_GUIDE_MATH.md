@@ -10,7 +10,7 @@ This document describes the menu functions under the `MATH` menu in RPN83P.
 
 - [MATH Menus](#math-menus)
 - [Cube, Cube-Root, XROOTY](#cube-cube-root-xrooty)
-- [atan2](#atan2)
+- [Atan2](#atan2)
 - [Power and Log of Base 2](#power-and-log-of-base-2)
 - [Log Base B](#log-base-b)
 - [Exp Minus One and Log One Plus](#exp-minus-one-and-log-one-plus)
@@ -28,8 +28,8 @@ TI-83+/84+ do not have labels for them.
 The functions are:
 
 - `X^3`: cube of `X`
-- `3ROOTX`: cube root of `X`
-- `XROOTY`: `X` root of `Y`
+- `³√X`: cube root of `X`
+- `X√Y`: `X` root of `Y`
 - `ATN2`: `atan2(X, Y)` in degrees or radians, depending on current mode
     - `Y`: y-component, entered first
     - `X`: x-component, entered second
@@ -45,16 +45,16 @@ details about them.
 
 ## Cube, Cube-Root, XROOTY
 
-The `X^3`, `3ROOTX`, and `XROOTY` can be calculated manually using additional
-stack manipulations:
+The `X^3` (cube), `³√X` (cube-root), and `X√Y` (x root of y) functions can be
+calculated manually using the following operations:
 
 - `X^3`: `ENTER` `X^2` `*`
-- `3ROOTY`: `3` `1/X` `^`
-- `XROOTY`: `1/X` `^`
+- `³√X`: `3` `1/X` `^`
+- `X√Y`: `1/X` `^`
 
-But these menu functions have the following advantages:
+But these menu functions have some advantages:
 
-- they consume one-fewer slot on the RPN stack
+- they don't consume additional slots on the RPN stack
 - they update the LASTX value correctly, instead of saving an intermediate
   result
 
@@ -63,12 +63,12 @@ numbers in most situations:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `8` `(-)` `3ROOTY`    | ![](images/math/cube-1.png) |
+| `8` `(-)` `³√X`       | ![](images/math/cube-1.png) |
 | `X^3`                 | ![](images/math/cube-2.png) |
 | `3`                   | ![](images/math/cube-3.png) |
-| `XROOTY`              | ![](images/math/cube-4.png) |
+| `X√Y`                 | ![](images/math/cube-4.png) |
 
-## atan2
+## Atan2
 
 The `ATN2` function performs the same operation as the `TAN^1` arctan function
 on the keyboard, except that `ATN2` handles all four quadrants in the X-Y plane
@@ -77,16 +77,19 @@ instead of just 2 quadrants for `TAN^1`.
 The range of the `ATN2` function is (-180, 180] in degrees. If the `Y` value is
 negative, the angle will be returned as negative.
 
-For example, let's calculate the angle to the point `(-1, -sqrt(3))` on the X-Y
-plane:
+Similar to the polar-rectangular conversion function s`>POL` and `>REC` in the
+`CONV` menu, the `Y` value is entered first, then the `X` value.
+
+For example, let's calculate the angle in degrees to the point `(-1, -sqrt(3))`
+on the X-Y plane:
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `3` `SQRT` `(-)`      | ![](images/math/atn2-1.png) |
-| `1` `(-)` `ENTER`     | ![](images/math/atn2-2.png) |
-| `ATN2`                | ![](images/math/atn2-3.png) |
-
-The answer is -120 (`DEG` mode) or -2.094395102 (`RAD` mode).
+| `MODE` `DEG`          | ![](images/math/atn2-1.png) |
+| `ON/EXIT`             | ![](images/math/atn2-2.png) |
+| `3` `SQRT` `(-)`      | ![](images/math/atn2-3.png) |
+| `1` `(-)`             | ![](images/math/atn2-4.png) |
+| `ATN2`                | ![](images/math/atn2-5.png) |
 
 ## Power and Log of Base 2
 
@@ -110,11 +113,11 @@ quite simple:
 ```
 LOG_X(Y) = LOG(Y) / LOG(X)
 ```
-Let's take the base 3 log of 16384:
+Let's take the log base 3 of 59049 (which happens to be 3^10):
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `16384` `ENTER`       | ![](images/math/logb-1.png) |
+| `59049` `ENTER`       | ![](images/math/logb-1.png) |
 | `3`                   | ![](images/math/logb-2.png) |
 | `LOGB`                | ![](images/math/logb-3.png) |
 
@@ -131,25 +134,45 @@ LN1+(x) = log(1+x)
 E^X-(x) = e^x-1
 ```
 
+But special numerical methods are required to avoid cancellation and
+roundoff errors for small `x`.
+
 The normal `LN` and `e^x` functions are inverses of each other. Similarly, we
 see from their definitions that the `E^X-` and `LN1+` functions are also
 inverses of each other.
 
-Here is a demonstration of numerical accuracy of `LN1+` function compared to its
-equivalent manual calculations for `x=1e-13`:
+Here is a demonstration numerical accuracy of the `E^X-` compared to its and its
+manual equivalent calculation:
 
 | **Keys**                          | **Display**           |
 | ----------------                  | --------------------- |
-| `1e-13` `LN1+`                    | ![](images/math/lnplus-1.png) |
+| `1.001e-12` `E^X-`                | ![](images/math/expminus-1.png) |
+| `2ND` `ENTRY` (SHOW)              | ![](images/math/expminus-2.png) |
+| `2ND ANS` (LASTX) `e^x` `1` `-`   | ![](images/math/expminus-3.png) |
+| `2ND` `ENTRY` (SHOW)              | ![](images/math/expminus-4.png) |
+
+- The actual answer from wolframalpha.com is
+  `1.0010000000005010005000001671671668333751669168333833750834167097389... ×
+  10^-12`.
+- The `E^X-` function returns `1.0010000000005e-12`, which is correct to all 14
+  internal digits of the TI-OS floating point format.
+- The brute-force calculation returns `1e-12` which is incorrect at the 4th
+  significant digit.
+
+Here is a similar demonstration of the `LN1+` function compared to its
+equivalent manual calculations:
+
+| **Keys**                          | **Display**           |
+| ----------------                  | --------------------- |
+| `1.001e-12` `LN1+`                    | ![](images/math/lnplus-1.png) |
 | `2ND` `ENTRY` (SHOW)              | ![](images/math/lnplus-2.png) |
 | `2ND ANS` (LASTX) `1` `+` `LN`    | ![](images/math/lnplus-3.png) |
 | `2ND` `ENTRY` (SHOW)              | ![](images/math/lnplus-4.png) |
 
-Here is a similar demonstration between `E^X-` and its manual equivalent:
-
-| **Keys**                          | **Display**           |
-| ----------------                  | --------------------- |
-| `1e-13` `E^X-`                    | ![](images/math/expminus-1.png) |
-| `2ND` `ENTRY` (SHOW)              | ![](images/math/expminus-2.png) |
-| `2ND ANS` (LASTX) `e^x` `1` `-`   | ![](images/math/expminus-3.png) |
-| `2ND` `ENTRY` (SHOW)              | ![](images/math/expminus-4.png) |
+- The actual answer from wolframalpha.com is
+  `1.0009999999994989995000003343343336664156651656666176686686674991974... ×
+  10^-12`.
+- The `LN1+` function returns `1.0009999999995e-12`, which is correct to all
+  14 internal digits of the TI-OS floating point format.
+- The brute-force calculation returns `9.999999999995e-13`, which is incorrect
+  at the 4th significant digit.
