@@ -98,9 +98,9 @@ Summary of features:
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
 - unit conversions, inspired by HP-19BII and TI-85
-    - 169 units across 12 unit types (LENG, AREA, VOL, TEMP, MASS, FORC, PRES,
+    - ~170 units across 12 unit types (LENG, AREA, VOL, TEMP, MASS, FORC, PRES,
       ENER, PWR, TIME, SPD, FUEL)
-    - all units of the HP-19BII and TI-85 are supported
+    - includes all 63 units on the HP-19BII and all 90 units on the TI-85
 - date functions
     - date, time, datetime, timezone, and hardware clock
     - proleptic Gregorian calendar from year 0001 to 9999

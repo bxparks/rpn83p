@@ -215,9 +215,9 @@ The usual storage register arithmetic operations are supported: `RCL+ nn`,
 ## Catalog of Supported Units
 
 The following is the complete list of supported units in RPN83P. There are 169
-units organized into 12 unit types. All units from both the HP-19BII and the
-TI-85 calculators are included. A unit can be converted to any other unit within
-the same unit type.
+units organized into 12 unit types. All 63 units on the HP-19BII and 90 units on
+the TI-85 calculators are included. A unit can be converted to any other unit
+within the same unit type.
 
 The columns in the table mean the following:
 
