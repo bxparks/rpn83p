@@ -21,6 +21,7 @@ This document describes the `DATE` features of the RPN83P application.
     - [ALPHA Entry](#alpha-entry)
     - [Menu Assisted Entry](#menu-assisted-entry)
     - [Type Inferred Entry](#type-inferred-entry)
+    - [Optional Right Curly Brace](#optional-right-curly-brace)
 - [Modes](#modes)
     - [Comma-EE Modes](#comma-ee-modes)
     - [Formatting Modes](#formatting-modes)
@@ -357,10 +358,10 @@ and `x^2` buttons act normally on Real and Complex objects but are bound to the
 To allow these Record types to be entered using the calculator buttons, the
 following keys have been activated:
 
-- `2ND {` (left brace)
-- `2ND }` (right brace)
 - `ALPHA A` to `ALPHA Z`
+- `2ND {` (left brace)
 - `,` (comma)
+- `2ND }` (right brace)
 
 The date objects can be entered using the `ALPHA` key to enter the object name
 tag, the left brace `{` and right brace `}` keys to delimit the components of
@@ -385,8 +386,8 @@ that into the RFC 3339 format `2024-03-14`, which corresponds to the Date object
 
 The key sequence `ALPHA D 2ND {` is cumbersome to type on the TI-83+/84+
 keyboard because the letters are arranged alphabetically instead of a QWERTY
-layout. Also, the color of the ALPHA letters can be difficult to read on some of
-the TI-83+/84+ models under low light conditions.
+layout. Also, the color of the ALPHA letters can be difficult to read on some
+TI-83+/84+ models under low light conditions.
 
 The Menu Assisted Entry method allows entry of DATE objects without using the
 `ALPHA` key at all. Under each DATE object menu folder, the first menu key
@@ -399,8 +400,8 @@ sequence `ALPHA D 2ND {`:
 
 | **Keys**          | **Display**                               |
 | ----------------  | ---------------------                     |
-| `DATE` `D`        | ![](images/date/d/date-menu-entry-1.png) |
-| `D{}`             | ![](images/date/d/date-menu-entry-2.png) |
+| `DATE` `D`        | ![](images/date/d/date-menu-entry-1.png)  |
+| `D{}`             | ![](images/date/d/date-menu-entry-2.png)  |
 | `2024`            | ![](images/date/d/date-alpha-entry-3.png) |
 | `,`               | ![](images/date/d/date-alpha-entry-4.png) |
 | `3`               | ![](images/date/d/date-alpha-entry-5.png) |
@@ -426,8 +427,7 @@ But one disadvantage of that entry method is that we have to navigate to the
 appropriate menu folder under the `DATE` menu.
 
 To allow `DATE` objects to be entered from any context, RPN83P supports **type
-inference** using the **arity** of **naked records** whose right-curly-brace
-terminator is **optional**. Let's unpack that:
+inference** using the **arity** of **naked records**. Let's unpack that:
 
 - **naked record**: A record object with just curly braces `{` and `}` without a
   type tag (e.g. `D` or `DT`).
@@ -443,10 +443,6 @@ terminator is **optional**. Let's unpack that:
     - DayOfWeek: not supported, arity of 1 is reserved for future use
     - Time: not supported because arity of 3 conflicts with Date which has the
       same arity
-- **optional right brace**: The right curly brace `}` always appears at the end
-  of a record so we can make it optional. An `ENTER` key, a function key (e.g.
-  `+`, `-`), or a menu function can be pressed without the terminating curly
-  brace.
 
 In other words, instead of requiring the object name prefix (e.g. `D` or `DZ`),
 only the left curly brace `{` is required, and the right curly brace `}` can be
@@ -460,6 +456,7 @@ omitted. For example, the Date object `D{2024,3,14}` can be entered as:
 | `3`               | ![](images/date/d/date-inferred-entry-4.png) |
 | `,`               | ![](images/date/d/date-inferred-entry-5.png) |
 | `14`              | ![](images/date/d/date-inferred-entry-6.png) |
+| `2ND }`           | ![](images/date/d/date-inferred-entry-7.png) |
 
 Only 5 of the 7 DATE objects support type-inferred entry:
 - The DayOfWeek object contains only a single parameter, and would interfere
@@ -469,15 +466,23 @@ Only 5 of the 7 DATE objects support type-inferred entry:
 
 Here are examples of this entry method for each supported DATE object type:
 
-| **Type**      | **Full Record Entry**         | **Type Inferred Entry**   |
-| --------------| ----------                    | ----------                |
-| DayOfWeek     | `DW{1}`                       | (not supported, reserved) |
-| TimeZone      | `TZ{5,30}`                    | `{5,30`                   |
-| Date          | `D{2024,3,14}`                | `{2024,3,14`              |
-| Time          | `T{15,36,1}`                  | (conflicts with Date)     |
-| Duration      | `DR{1,2,3,4}`                 | `{1,2,3,4`                |
-| DateTime      | `DT{2024,3,14,15,36,1}`       | `{2024,3,14,15,36,1`      |
-| ZonedDateTime | `DT{2024,3,14,15,36,1,-7,0}`  | `{2024,3,14,15,36,1,-7,0` |
+| **Type**      | **Full Record Entry**         | **Type Inferred Entry**    |
+| --------------| ----------                    | ----------                 |
+| DayOfWeek     | `DW{1}`                       | (not supported, reserved)  |
+| TimeZone      | `TZ{5,30}`                    | `{5,30`}                   |
+| Date          | `D{2024,3,14}`                | `{2024,3,14`}              |
+| Time          | `T{15,36,1}`                  | (conflicts with Date)      |
+| Duration      | `DR{1,2,3,4}`                 | `{1,2,3,4`}                |
+| DateTime      | `DT{2024,3,14,15,36,1}`       | `{2024,3,14,15,36,1`}      |
+| ZonedDateTime | `DT{2024,3,14,15,36,1,-7,0}`  | `{2024,3,14,15,36,1,-7,0`} |
+
+### Optional Right Curly Brace
+
+For *all* entry methods (ALPHA, Menu Assisted, Type Inferred), the
+right-curly-brace terminator is **optional**. This saves one extra keystroke.
+
+An `ENTER` key, a function key (e.g. `+`, `-`), or a menu function can be
+pressed without the terminating curly brace.
 
 ## Modes
 
