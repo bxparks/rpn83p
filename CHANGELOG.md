@@ -1,6 +1,7 @@
 # Changelog
 
 - Unreleased
+- 1.1.0 (2025-10-07)
     - DATE (**Major UI Change**)
         - Support additional method of entry of Duration objects:
             - compact string form, `{dd}D{hh}H{mm}M{ss}S`, e.g. `1D30M2S` for
