@@ -444,9 +444,12 @@ inference** using the **arity** of **naked records**. Let's unpack that:
     - Time: not supported because arity of 3 conflicts with Date which has the
       same arity
 
-In other words, instead of requiring the object name prefix (e.g. `D` or `DZ`),
-only the left curly brace `{` is required, and the right curly brace `}` can be
-omitted. For example, the Date object `D{2024,3,14}` can be entered as:
+In other words, the object name prefix (e.g. `D` or `DZ`) is not required, we
+just start with the left curly brace `{`. This can save a lot of tedious `ALPHA`
+keystrokes. (In fact, as explained in the next section, even the right curly
+brace `}` can be omitted.)
+
+For example, the Date object `D{2024,3,14}` can be entered as:
 
 | **Keys**          | **Display**                               |
 | ----------------  | ---------------------                     |
@@ -459,6 +462,7 @@ omitted. For example, the Date object `D{2024,3,14}` can be entered as:
 | `2ND }`           | ![](images/date/d/date-inferred-entry-7.png) |
 
 Only 5 of the 7 DATE objects support type-inferred entry:
+
 - The DayOfWeek object contains only a single parameter, and would interfere
   with other single-component objects in the future.
 - The Time object has 3 parameters which unfortunately interferes with the
@@ -479,10 +483,23 @@ Here are examples of this entry method for each supported DATE object type:
 ### Optional Right Curly Brace
 
 For *all* entry methods (ALPHA, Menu Assisted, Type Inferred), the
-right-curly-brace terminator is **optional**. This saves one extra keystroke.
+right-curly-brace terminator is **optional**. An `ENTER` key, a function key
+(e.g. `+`, `-`), or a menu function can be pressed without the terminating curly
+brace.
 
-An `ENTER` key, a function key (e.g. `+`, `-`), or a menu function can be
-pressed without the terminating curly brace.
+This means that for most Date objects (except Time and DayOfWeek), only the `2ND
+{` and the `,` (comma) keys are required to enter them.
+
+The Date object `D{2024,3,14}` can be entered minimally like this:
+
+| **Keys**          | **Display**                               |
+| ----------------  | ---------------------                     |
+| `2ND {`           | ![](images/date/d/date-inferred-entry-1.png) |
+| `2024`            | ![](images/date/d/date-inferred-entry-2.png) |
+| `,`               | ![](images/date/d/date-inferred-entry-3.png) |
+| `3`               | ![](images/date/d/date-inferred-entry-4.png) |
+| `,`               | ![](images/date/d/date-inferred-entry-5.png) |
+| `14`              | ![](images/date/d/date-inferred-entry-6.png) |
 
 ## Modes
 
