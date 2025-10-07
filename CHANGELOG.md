@@ -1,7 +1,7 @@
 # Changelog
 
 - Unreleased
-    - DATE
+    - DATE (**Major UI Change**)
         - Support additional method of entry of Duration objects:
             - compact string form, `{dd}D{hh}H{mm}M{ss}S`, e.g. `1D30M2S` for
               `DR{1,0,30,2}`.
@@ -23,13 +23,13 @@
         - Assume that `DT` (DateTime) is always in UTC timezone whenever its
           timezone is needed in a calculation
     - HMS functions
-        - Add `HMS+` and `HMS-` menu functions.
+        - **New** Add `HMS+` and `HMS-` menu functions under `CONV` menu folder.
         - **Bug Fix**: Add normalization to `>HMS` conversion function to
           prevent bug that caused `[1.32] [1.32] [HMS+]` to return `3.0360`
           instead of `3.04`.
         - Validate `mm` and `ss` fields of `hh.mmss` and throw `Err:Invalid` if
           greater than than 60.
-    - UNIT menu
+    - UNIT menu (**Complete Reimplementation**)
         - Reimplement the underlying architecture using a workflow similar to
           the UNITS menu of the HP-19BII and TI-85
             - Pressing a UNIT menu converts a Real number to a Denominate number
@@ -48,38 +48,36 @@
         - Support most NUM operations on units: `%`, `%CH`, `IP`, `FP`,
           `FLR`,`CEIL`, `NEAR`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`, `RNDF`,
           `RNDN`, `RNDG` (i.e. all NUM functions except GCD, LCM, and PRIM)
-    - BASE
+        - Support Storage Register arithmetics with UNIT objects.
+    - BASE (**UI Reorganization**)
         - move most menu functions under 5 new subfolders: LOGI, ROTS, BITS,
           BFCN, BCFS ("Configs" or "Carry Flag and Word Size")
         - rename (B+ B- B* B/) to (BAS+ BAS- BAS* BAS/) for better
           self-documentation
         - no functional change
-    - RPN Stack
+    - RPN Stack (**Bug Fixes**)
         - **Bug Fix**: Fix incorrect stack lift behavior for functions that
           produce a value without consuming the X register (e.g. PI, E, MEAN).
           Previously, these functions would ignore the 'disable stack lift'
           setting. Now, they will correctly interpret that flag and overwrite
           the existing X register.
-        - Handle an empty string input buffer correctly for all commands
-          including the 'disable stack lift' behavior.
-        - Avoid terminating the input buffer when a command with argument is
-          canceled using `ON/EXIT`: `RCL`, `STO`, `FIX`, `SCI`, `ENG`, `SSIZ`,
-          `RSIZ`, `WSIZ`, `RNDN`. The user can continue to edit the input buffer
-          after canceling.
-        - Avoid terminating the input buffer for commands which do not
-          consume the `X` register, but simply cause an internal state change:
-          all menu navigation commands (Up, Down, Home, menu folders), DEG, RAD,
-          RRES, CRES, FIX, SCI, ENG, SSIZ, RSIZ, WSIZ, CCF, SCF.
+        - **Bug Fix**: Preserve `LASTX` during `CLST` (Clear Stack), consistent
+          with HP-42S.
+        - **Bug Fix**: Handle an empty string input buffer correctly for all
+          commands including the 'disable stack lift' behavior.
         - Handle edge case of `STO` which consumes `X` but spits back the same
           value. Input termination must occur and stack lift must be enabled.
         - Terminate input buffer and correctly enable stack lift for stack
           manipulation commands: `DUP`, `Rollup`, `Rolldown`, `DROP`, `X<>Y`.
-        - **Bug Fix**: Preserve `LASTX` during `CLST` (Clear Stack), consistent
-          with HP-42S.
-    - Key bindings
+    - Input Termination (**Consistency**)
+        - Update all functions and menu navigation to avoid input termination
+          for as long as it makes sense. See the new [Input
+          Termination](docs/USER_GUIDE_BASIC.md#input-termination) section for
+          full details.
+    - Key bindings (**New**)
         - Add `2ND v` as a shortcut to `UVAL` menu function under `UNIT`. Allows
           quick extraction of the value part of a Denominate object.
-    - SHOW
+    - SHOW (**Workflow**)
         - Pass along most button keys to the main command processor so that
           their normal function are directly invoked from SHOW mode. Previously,
           all button presses were consumed by the SHOW mode. So to enter a new

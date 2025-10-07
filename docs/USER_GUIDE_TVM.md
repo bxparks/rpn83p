@@ -1,14 +1,11 @@
-# RPN83P User Guide: TVM Functions
+# RPN83P User Guide: Chapter 15: TVM Functions
 
 This document describes the `TVM` functions of the RPN83P application which
-solves the Time Value of Money equation. It has been extracted from
-[USER_GUIDE.md](USER_GUIDE.md) due to its length.
+solves the Time Value of Money equation.
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.1.0 (2025-10-07)\
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 
@@ -34,10 +31,10 @@ The Time Value of Money (TVM) functionality is inspired by RPN financial
 calculators such as the HP-12C, HP-17B, HP-17bii+, and the HP-30b. They are
 available through the `ROOT > TVM` menu:
 
-- ![ROOT > TVM](images/menu-root-tvm.png)
-    - ![ROOT > TVM > Row1](images/menu-root-tvm-1.png)
-    - ![ROOT > TVM > Row2](images/menu-root-tvm-2.png)
-    - ![ROOT > TVM > Row3](images/menu-root-tvm-3.png)
+- ![ROOT > TVM](images/menu/root-tvm.png)
+    - ![ROOT > TVM > Row1](images/menu/root-tvm-1.png)
+    - ![ROOT > TVM > Row2](images/menu/root-tvm-2.png)
+    - ![ROOT > TVM > Row3](images/menu/root-tvm-3.png)
 
 This User Guide assumes that you are already know the theory of the Time Value
 of Money, and that you are familiar with TVM functions of RPN financial
@@ -151,7 +148,8 @@ a small dot appears in the menu label to warn the user that its value has
 changed.
 
 The exact mathematical relationship among `P/YR`, `C/YR`, `I%YR`, and the
-internal interest rate per period `i` is given in [TVM.md](TVM.md).
+internal interest rate per period `i` is given in
+[DEVELOPER_TVM.md](DEVELOPER_TVM.md).
 
 ## TVM BEG and END
 
@@ -174,8 +172,8 @@ using analytical equations. However, there is no closed-form solution for the
 `I%YR` quantity, so it must be solved using iterative methods. The TVM Solver is
 the submodule that implements the iterative method to solve for `I%YR`.
 
-It can be mathematically deduced (see [TVM.md](TVM.md)) that the root-solving
-equation for `I%YR` can fall into 3 categories:
+It can be mathematically deduced (see [DEVELOPER_TVM.md](DEVELOPER_TVM.md)) that
+the root-solving equation for `I%YR` can fall into 3 categories:
 
 - 0 solution, or
 - 1 unique solution, or
@@ -208,9 +206,9 @@ observed.
 
 The RPN83P uses the [Newton-Secant
 method](https://en.wikipedia.org/wiki/Secant_method) to solve for `I%YR` (see
-[TVM.md](TVM.md) for details). For the purpose of debugging and to allow extra
-control for advanced users, three parameters that affect the progression and
-termination of the algorithm are exposed:
+[DEVELOPER_TVM.md](DEVELOPER_TVM.md) for details). For the purpose of debugging
+and to allow extra control for advanced users, three parameters that affect the
+progression and termination of the algorithm are exposed:
 
 - `IYR1`: first guess percent per year (default: -50%; allowed: `IYR1 >
   -PYR*100`)
@@ -224,7 +222,7 @@ values by entering a value and pressing the appropriate menu button. A small dot
 will be appended to the menu name to indicate that the default value has been
 overridden:
 
-![TVM Solver Overridden](images/menu-root-tvm-solver.png)
+![TVM Solver Overridden](images/menu/root-tvm-solver.png)
 
 We might choose to override `IYR1` and `IYR2` when 2 solutions are known to
 exist, but the TVM Solver is unable to find either of them due to the default

@@ -1,16 +1,13 @@
-# RPN83P User Guide: BASE Functions
+# RPN83P User Guide: Chapter 12: BASE Functions
 
 This document describes the `BASE` functions of the RPN83P application. They
 allow numbers to be converted between 4 different bases (DEC, HEX, OCT, and
 BIN), and they support various arithmetic and bitwise operations similar to the
-HP-16C. The document has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due
-to its length.
+HP-16C.
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.1.0 (2025-10-07)\
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 
@@ -27,20 +24,26 @@ to its length.
 - [Base Word Size](#base-word-size)
 - [Base Input Digit Limit](#base-input-digit-limit)
 - [Base Mode Retention](#base-mode-retention)
+- [Input Termination](#input-termination)
 
 ## BASE Overview
 
 The `BASE` functions are available through the `ROOT > BASE` hierarchy:
 
-- ![ROOT > BASE](images/menu-root-base.png)
-    - ![BASE > Row1](images/menu-root-base-1.png)
-    - ![BASE > Row2](images/menu-root-base-2.png)
-    - ![BASE > Row3](images/menu-root-base-3.png)
-    - ![BASE > Row4](images/menu-root-base-4.png)
-    - ![BASE > Row5](images/menu-root-base-5.png)
-    - ![BASE > Row6](images/menu-root-base-6.png)
-    - ![BASE > Row7](images/menu-root-base-7.png)
-    - ![BASE > Row8](images/menu-root-base-8.png)
+- ![ROOT > BASE](images/menu/root-base.png)
+    - ![ROOT > BASE > Row1](images/menu/root-base-1.png)
+    - ![ROOT > BASE > LOGI](images/menu/root-base-logi.png)
+        - ![ROOT > BASE > LOGI > Row1](images/menu/root-base-logi-1.png)
+    - ![ROOT > BASE > ROTS](images/menu/root-base-rots.png)
+        - ![ROOT > BASE > ROTS > Row1](images/menu/root-base-rots-1.png)
+        - ![ROOT > BASE > ROTS > Row2](images/menu/root-base-rots-2.png)
+        - ![ROOT > BASE > ROTS > Row3](images/menu/root-base-rots-3.png)
+    - ![ROOT > BASE > Row2](images/menu/root-base-bits.png)
+        - ![ROOT > BASE > BITS > BITS](images/menu/root-base-bits-1.png)
+    - ![ROOT > BASE > BFCN](images/menu/root-base-bfcn.png)
+        - ![ROOT > BASE > BFCN > Row1](images/menu/root-base-bfcn-1.png)
+    - ![ROOT > BASE > BCFS](images/menu/root-base-bcfs.png)
+        - ![ROOT > BASE > BCFS > Row1](images/menu/root-base-bcfs-1.png)
 
 These functions allow conversion of integers into different bases (10, 16, 8,
 2), as well as performing bitwise functions on those integers (bit-and, bit-or,
@@ -239,12 +242,12 @@ to the meaning that I would have expected.
 
 Similar to the HP-42S, activating the `BASE` menu folder changes the
 behavior of keyboard arithmetic functions. Specifically, the buttons `+`, `-`,
-`*`, `/` are re-bound to their integer counterparts `B+`, `B-`, `B*`, `B/` which
-perform 32-bit unsigned arithmetic operations instead of floating point
-operations. The numbers in the `X` and `Y` registers are converted into 32-bit
-unsigned integers before the integer subroutines are called.
+`*`, `/` are re-bound to their integer counterparts `BAS+`, `BAS-`, `BAS*`,
+`BAS/` which perform 32-bit unsigned arithmetic operations instead of floating
+point operations. The numbers in the `X` and `Y` registers are converted into
+32-bit unsigned integers before the integer subroutines are called.
 
-The `BDIV` menu function performs the same integer division operation as `B/`
+The `BDIV` menu function performs the same integer division operation as `BAS/`
 but returns both the quotient (in `X`) and the remainder (in `Y`). With the
 quotient in `X`, it becomes easy to recover the original `X` value by using the
 `LASTX` function (`2ND` `ANS`), then pressing the `*` button, then the `+`
@@ -260,18 +263,18 @@ point results when performing an arithmetic operation such as `/`. The RPN83P
 follows the lead of the HP-42S so that the arithmetic keyboard buttons trigger
 the integer operations instead of floating point operations.
 
-For example, let's start with the following numbers in the RPN stack *before*
-entering the `BASE` menu, and then perform an arithmetic `+` operation:
+For example, let's enter the following numbers in the RPN stack *before*
+entering the `BASE` menu, then perform an arithmetic `+` operation:
 
-| **Keys**  | **Display**|
-| --------- | ---------- |
-|           | ![Base Arithmetic Part 1](images/base/arithmetic-1-float.png) |
-| `BASE`    | ![Base Arithmetic Part 2](images/base/arithmetic-2-dec.png)   |
-| `HEX`     | ![Base Arithmetic Part 3](images/base/arithmetic-3-hex.png)   |
-| `+`       | ![Base Arithmetic Part 4](images/base/arithmetic-4-plus.png)  |
-| `DEC`     | ![Base Arithmetic Part 5](images/base/arithmetic-5-dec.png)   |
+| **Keys**                                          | **Display**|
+| ---------                                         | ---------- |
+| `55` `ENTER` `3003` `ENTER` `17.8` `ENTER` `12`   | ![Base Arithmetic Part 1](images/base/arithmetic-1-float.png) |
+| `BASE`                                            | ![Base Arithmetic Part 2](images/base/arithmetic-2-dec.png)   |
+| `HEX`                                             | ![Base Arithmetic Part 3](images/base/arithmetic-3-hex.png)   |
+| `+`                                               | ![Base Arithmetic Part 4](images/base/arithmetic-4-plus.png)  |
+| `DEC`                                             | ![Base Arithmetic Part 5](images/base/arithmetic-5-dec.png)   |
 
-We can see that the `+` key activated the `B+` function in `BASE` mode, which
+We can see that the `+` key activated the `BAS+` function in `BASE` mode, which
 truncated the fraction part of the operands, performed an unsigned integer
 addition, then produced an integer result.
 
@@ -311,10 +314,10 @@ affect the CF:
 
 All integer arithmetic functions affect the CF:
 
-- `B+`: CF set on overflow
-- `B-`: CF set on borrow
-- `B*`: CF set on overflow
-- `B/`: CF always set to 0
+- `BAS+`: CF set on overflow
+- `BAS-`: CF set on borrow
+- `BAS*`: CF set on overflow
+- `BAS/`: CF always set to 0
 - `BDIV`: CF always set to 0
 
 On most microprocessors, the bitwise operations clear the Carry Flag to zero.
@@ -473,10 +476,23 @@ The longest binary number that can be displayed on a single line in edit mode is
 number in `BIN` can exceed this limit and entering more digits will cause the
 left digits to scroll off the screen.
 
-## Base Number Retention
+## Base Mode Retention
 
 The `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
 hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
 the RPN stack revert back to using floating points. This is similar to the
-HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
+HP-42S.
+
+However, unlike the HP-42S, the RPN83P remembers the most recent base
 number and restores its setting if the `BASE` menu hierarchy is selected again.
+
+## Input Termination
+
+Whenever RPN83P goes into the `BASE` hierarchy or goes out of the `BASE`
+hierarchy, the input must be terminated. This is because the parsing of the
+digits in the input buffer is affected by the `BASE` mode, so they need to be
+processed when we transition to and from the `BASE` menu.
+
+Menu navigation *within* the `BASE` hierarchy does not cause input termination.
+For example, if we go from `BASE > LOGI` to `BASE > ROTS`, the input buffer
+remains open.

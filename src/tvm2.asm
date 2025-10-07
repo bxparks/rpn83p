@@ -605,7 +605,7 @@ inverseCompoundingFactorZero:
 ; It is roughly the total nominal amount of money that was paid out (positive
 ; sign), if the discount-equivalent of PV and FV had been spread out across N
 ; payments at the given interest rate i. I guess we could also call this the
-; "Net Payment", and I think I used that term in the TVM.md document.
+; "Net Payment", and I think I used that term in the DEVELOPER_TVM.md document.
 ;
 ; Input: OP1: i (interest per period)
 ; Output: OP1=NPMT(i)

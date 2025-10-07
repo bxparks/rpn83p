@@ -14,7 +14,8 @@
 ;       - 1 indicates 'onExit' event from group
 ;
 ; The equations and algorithms to calculate N, i, PV, PMT, and FV as a function
-; of the other 4 variables are described in detail in the TVM.md document.
+; of the other 4 variables are described in detail in the DEVELOPER_TVM.md
+; document.
 ;
 ; The handling of rpnFlagsTvmCalculate is a bit tricky so let's write it down
 ; for posterity:

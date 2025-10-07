@@ -1,7 +1,6 @@
-# RPN83P User Guide: Complex Numbers
+# RPN83P User Guide: Chapter 11: Complex Numbers
 
 This document describes the Complex Number features of the RPN83P application.
-It has been extracted from [USER_GUIDE.md](USER_GUIDE.md) due to its length.
 
 Complex numbers can be entered in rectangular form `a+bi`, polar radian form `r
 e^(i theta)`, or polar degree form (`theta` in degrees). They can be also be
@@ -10,11 +9,9 @@ independent of each other. For example, a complex number can be entered in
 rectangular form, even if the current display mode is polar form. Internally,
 complex numbers are *always* stored in rectangular format.
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.1.0 (2025-10-07)\
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 
@@ -194,8 +191,8 @@ that complex numbers can be displayed. The complex display modes are: `RECT`,
 `ROOT > MODE`, but the fastest way to reach this menu row is to use the `MODE`
 button shortcut on keyboard:
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > ComplexDisplayModes](images/menu/root-mode-complexdisplaymodes.png)
 
 When a complex number is on the stack, the `RECT`, `PRAD`, and `PDEG` menu
 buttons will display the number in different forms, and the status line
@@ -311,8 +308,8 @@ the underlying TI-OS functions do not support them.
 Additional functions specific to complex numbers are under the `ROOT > CPLX`
 menu:
 
-- ![ROOT > CPLX](images/menu-root-cplx.png)
-    - ![ROOT > CPLX > Row1](images/menu-root-cplx-1.png)
+- ![ROOT > CPLX](images/menu/root-cplx.png)
+    - ![ROOT > CPLX > Row1](images/menu/root-cplx-1.png)
 
 They are:
 
@@ -365,10 +362,10 @@ We can add them like this:
 In this contrived example, we compute an expression involving all three
 representations of complex numbers:
 
-```
-# ignore the following comment line, comments are not supported by MarkDown
+<!--
+The following comment line should be ignored:
 \[ \sqrt{(1+i)^{(3 \angle 45^{\circ})} + (1 \angle 2)} \]
-```
+-->
 
 ![RPN83P Complex Example2 Equation](images/complex/example2-equation.png)
 
@@ -425,8 +422,8 @@ functions are real:
 These are available on row 2 of the `MODE` menu group, under `ROOT > MODE`, but
 the fastest way to reach this menu row is to use the `MODE` button shortcut:
 
-- ![ROOT > MODE](images/menu-root-mode.png)
-    - ![ROOT > MODE > ComplexResultModes](images/menu-root-mode-complexresultmodes.png)
+- ![ROOT > MODE](images/menu/root-mode.png)
+    - ![ROOT > MODE > ComplexResultModes](images/menu/root-mode-complexresultmodes.png)
 
 Note that these settings do not affect how functions evaluate *complex*
 arguments. If the argument is complex, all functions that support complex
@@ -467,12 +464,12 @@ The trigonometric modes (`RAD`, `DEG`) affect the computation of trigonometric
 functions. They determine the unit of the angles consumed or returned by
 trigonometric functions. Complex functions (with the sole exception of `CANG`,
 see above) are not affected by the trigonometric modes: ![ROOT > MODE >
-TrigModes](images/menu-root-mode-trigmodes.png)
+TrigModes](images/menu/root-mode-trigmodes.png)
 
 The complex display modes (`RECT`, `PRAD`, `PDEG`) control how complex numbers
 are rendered on the screen. These modes do not affect the behavior of any
 complex functions (with the sole exception of `2ND LINK`, see above): ![ROOT >
-MODE > ComplexDisplayModes](images/menu-root-mode-complexdisplaymodes.png)
+MODE > ComplexDisplayModes](images/menu/root-mode-complexdisplaymodes.png)
 
 ## Complex Numbers in Storage Registers
 
