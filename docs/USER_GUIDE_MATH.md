@@ -151,7 +151,7 @@ manual equivalent calculation:
 | `2ND ANS` (LASTX) `e^x` `1` `-`   | ![](images/math/expminus-3.png) |
 | `2ND` `ENTRY` (SHOW)              | ![](images/math/expminus-4.png) |
 
-- The actual answer from wolframalpha.com is
+- The actual answer from wolframalpha.com is \
   `1.0010000000005010005000001671671668333751669168333833750834167097389... ×
   10^-12`.
 - The `E^X-` function returns `1.0010000000005e-12`, which is correct to all 14
@@ -169,7 +169,7 @@ equivalent manual calculations:
 | `2ND ANS` (LASTX) `1` `+` `LN`    | ![](images/math/lnplus-3.png) |
 | `2ND` `ENTRY` (SHOW)              | ![](images/math/lnplus-4.png) |
 
-- The actual answer from wolframalpha.com is
+- The actual answer from wolframalpha.com is \
   `1.0009999999994989995000003343343336664156651656666176686686674991974... ×
   10^-12`.
 - The `LN1+` function returns `1.0009999999995e-12`, which is correct to all
