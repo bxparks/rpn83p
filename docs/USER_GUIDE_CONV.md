@@ -30,10 +30,10 @@ The functions are:
 - `>RAD`: convert degrees to radians
 - `>REC`: polar to rectangular
     - input: `Y`=y, `X`=x
-    - output: `Y`=theta, `X`=r
+    - output: `Y`=θ, `X`=r
     - (consistent with HP-42S)
 - `>POL`: rectangular to polar
-    - input: `Y`=theta, `X`=r
+    - input: `Y`=θ, `X`=r
     - output: `Y`=y, `X`=x
     - (consistent with HP-42S)
 - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
@@ -42,9 +42,9 @@ The functions are:
 - `HMS-`: subtract `X` from `Y` assuming HMS format
 
 The `HMS` functions are related to angle conversions because a degree unit can
-be subdivided into "minutes" and "seconds", in the same as an hour. On some
-calculators, `HMS` is labeled `DMS` instead. RPM83P follows the convention of
-HP-42S by using `HMS`.
+be subdivided into "minutes" and "seconds" as well. On some calculators, `HMS`
+is labeled `DMS` instead. RPM83P follows the convention of HP-42S by using
+`HMS`.
 
 ## Degree and Radian
 
@@ -66,35 +66,35 @@ registers containing the `x` and `y` coordinates. Therefore, the coordinates
 must be entered in reverse. For example, let's convert (3,4) into polar
 coordinates:
 
-| **Keys**              | **Display** |
-| ----------------      | --------------------- |
-| `MODE` `DEG` `EXIT`   | ![](images/conv/to-pol-1.png) |
-| `4` `ENTER`           | ![](images/conv/to-pol-2.png) |
-| `3` `>POL`            | ![](images/conv/to-pol-3.png) |
+| **Keys**                  | **Display** |
+| ----------------          | --------------------- |
+| `MODE` `DEG`              | ![](images/conv/to-pol-1.png) |
+| `ON/EXIT` `4` `ENTER` `3` | ![](images/conv/to-pol-2.png) |
+| `>POL`                    | ![](images/conv/to-pol-3.png) |
 
-The `X` and `Y` registers are replaced with the polar (r,θ) values, in reverse
-order,: `Y=θ` and `X=r`. The value of the angle θ depends on the TRIG mode. In
-`DEG` mode, the angle will be 53.13010235. In `RAD` mode, the angle will be
+The `X` and `Y` registers are replaced with the polar (r,θ) values so that `Y=θ`
+and `X=r`. The value of the angle θ depends on the TRIG mode. Since we are in
+`DEG` mode, θ=53.13010235° and r=5. In `RAD` mode, the angle would be
 0.927295218.
 
 The `>REC` function converts from polar to rectangular, with `X=r` and `Y=θ`.
 Therefore, the coordinates must be entered in opposite order of their usual
-written form (r,θ). For example, let's convert (1,30 deg) into rectangular
+written form (r,θ). For example, let's convert (1, 30°) into rectangular
 coordinates:
 
-| **Keys**              | **Display** |
-| ----------------      | --------------------- |
-| `MODE` `DEG` `EXIT`   | ![](images/conv/to-rec-1.png) |
-| `30` `ENTER`          | ![](images/conv/to-rec-2.png) |
-| `1` `>REC`            | ![](images/conv/to-rec-3.png) |
+| **Keys**                  | **Display** |
+| ----------------          | --------------------- |
+| `MODE` `DEG`              | ![](images/conv/to-rec-1.png) |
+| `ON/EXIT` `30` `ENTER` `1`| ![](images/conv/to-rec-2.png) |
+| `>REC`                    | ![](images/conv/to-rec-3.png) |
 
 ## Hours Minutes Seconds (HMS)
 
 One hour is divided into 60 minutes, and one minute is divided into 60 seconds.
 Similarly for one degree angle.
 
-The `>HR` function converts an HMS value in the form of `hh.mmss` to decimal
-hours in the form of `hh.nnnn`. For example, to convert 1h14m20s to decimal
+The `>HR` function converts an HMS value in the form of `HH.MMSS` to decimal
+hours in the form of `HH.hhhh`. For example, to convert 1h14m20s to decimal
 hours:
 
 | **Keys**              | **Display** |
@@ -134,6 +134,8 @@ subtract the following HMS numbers:
 | `5.0314` `ENTER`      | ![](images/conv/hms-add-sub-1.png) |
 | `2.39`  `HMS+`        | ![](images/conv/hms-add-sub-2.png) |
 | `1.0058` `HMS-`       | ![](images/conv/hms-add-sub-3.png) |
+
+The final result is 6h41m16s.
 
 ## Alternative to HMS
 
