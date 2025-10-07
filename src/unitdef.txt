@@ -361,19 +361,28 @@ Units [
 
   # https://en.wikipedia.org/wiki/Electronvolt
   Unit ElectronVolt eV Energy 1.602176634e-19 # by defn
+  Unit KiloElectronVolt keV Energy 1.602176634e-16 # by defn
+  Unit MegaElectronVolt MeV Energy 1.602176634e-13 # by defn
+  Unit GigaElectronVolt GeV Energy 1.602176634e-10 # by defn
 
   # https://en.wikipedia.org/wiki/Erg
   Unit Erg erg Energy 1e-7
 
+  # Base unit.
   Unit Joule joule Energy 1
 
-  Unit WattHour watt<SdotIcon>h Energy 3.6e3
+  # Metric alternative to kilocalorie for food.
+  Unit KiloJoule kilojoule Energy 1000
 
   # https://en.wikipedia.org/wiki/Kilowatt-hour
+  # The kWh is commonly used to measure household electricity usage.
+  Unit WattHour watt<SdotIcon>h Energy 3.6e3
   Unit KiloWattHour kwatt<SdotIcon>h Energy 3.6e6
 
   # https://en.wikipedia.org/wiki/Calorie
   Unit Calorie calorie Energy 4.184 # by defn
+
+  # Still used for food in the US.
   Unit KiloCalorie kcalorie Energy 4.184e3
 
   # https://en.wikipedia.org/wiki/Foot-pound_(energy)

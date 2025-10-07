@@ -625,17 +625,18 @@ MenuGroup root mRoot [
             MenuItem eV mUnitElectronVolt
             MenuItem erg mUnitErg
             MenuItem J mUnitJoule
+            MenuItem kJ mUnitKiloJoule
+            MenuItem ftlb mUnitFootPoundEnergy
+          ]
+          MenuRow [
             MenuItem Wh mUnitWattHour
             MenuItem kWh mUnitKiloWattHour
-          ]
-          MenuRow [
             MenuItem cal mUnitCalorie
             MenuItem kcal mUnitKiloCalorie
-            MenuItem ftlb mUnitFootPoundEnergy
             MenuItem Btu mUnitBritishThermalUnit
-            MenuItem tTNT mUnitTonTNT # metric ton
           ]
           MenuRow [
+            MenuItem tTNT mUnitTonTNT # metric ton
             MenuItem Latm mUnitLiterAtmosphere
           ]
         ]

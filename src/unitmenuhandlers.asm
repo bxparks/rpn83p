@@ -837,6 +837,18 @@ mUnitJouleHandler:
     ld a, unitJouleId
     jp commonUnitHandler
 
+mUnitKiloJouleHandler:
+    ld a, unitKiloJouleId
+    jp commonUnitHandler
+
+mUnitFootPoundEnergyHandler:
+    ld a, unitFootPoundEnergyId
+    jp commonUnitHandler
+
+;-----------------------------------------------------------------------------
+; UNIT > ENER > Row 2
+;-----------------------------------------------------------------------------
+
 mUnitWattHourHandler:
     ld a, unitWattHourId
     jp commonUnitHandler
@@ -844,10 +856,6 @@ mUnitWattHourHandler:
 mUnitKiloWattHourHandler:
     ld a, unitKiloWattHourId
     jp commonUnitHandler
-
-;-----------------------------------------------------------------------------
-; UNIT > ENER > Row 2
-;-----------------------------------------------------------------------------
 
 mUnitCalorieHandler:
     ld a, unitCalorieId
@@ -857,21 +865,17 @@ mUnitKiloCalorieHandler:
     ld a, unitKiloCalorieId
     jp commonUnitHandler
 
-mUnitFootPoundEnergyHandler:
-    ld a, unitFootPoundEnergyId
-    jp commonUnitHandler
-
 mUnitBritishThermalUnitHandler:
     ld a, unitBritishThermalUnitId
-    jp commonUnitHandler
-
-mUnitTonTNTHandler:
-    ld a, unitTonTNTId
     jp commonUnitHandler
 
 ;-----------------------------------------------------------------------------
 ; UNIT > ENER > Row 3
 ;-----------------------------------------------------------------------------
+
+mUnitTonTNTHandler:
+    ld a, unitTonTNTId
+    jp commonUnitHandler
 
 mUnitLiterAtmosphereHandler:
     ld a, unitLiterAtmosphereId

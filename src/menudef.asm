@@ -3892,8 +3892,27 @@ mUnitJouleId equ 414
     .dw 0 ; rowBeginId or altName
     .dw mUnitJouleHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+mUnitKiloJoule:
+mUnitKiloJouleId equ 415
+    .dw mUnitKiloJouleId ; id
+    .dw mUnitEnergyId ; parentId
+    .dw mUnitKiloJouleName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitKiloJouleHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+mUnitFootPoundEnergy:
+mUnitFootPoundEnergyId equ 416
+    .dw mUnitFootPoundEnergyId ; id
+    .dw mUnitEnergyId ; parentId
+    .dw mUnitFootPoundEnergyName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitFootPoundEnergyHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
+; MenuGroup ENER: children: row 1
 mUnitWattHour:
-mUnitWattHourId equ 415
+mUnitWattHourId equ 417
     .dw mUnitWattHourId ; id
     .dw mUnitEnergyId ; parentId
     .dw mUnitWattHourName ; name
@@ -3902,7 +3921,7 @@ mUnitWattHourId equ 415
     .dw mUnitWattHourHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitKiloWattHour:
-mUnitKiloWattHourId equ 416
+mUnitKiloWattHourId equ 418
     .dw mUnitKiloWattHourId ; id
     .dw mUnitEnergyId ; parentId
     .dw mUnitKiloWattHourName ; name
@@ -3910,9 +3929,8 @@ mUnitKiloWattHourId equ 416
     .dw 0 ; rowBeginId or altName
     .dw mUnitKiloWattHourHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup ENER: children: row 1
 mUnitCalorie:
-mUnitCalorieId equ 417
+mUnitCalorieId equ 419
     .dw mUnitCalorieId ; id
     .dw mUnitEnergyId ; parentId
     .dw mUnitCalorieName ; name
@@ -3921,7 +3939,7 @@ mUnitCalorieId equ 417
     .dw mUnitCalorieHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
 mUnitKiloCalorie:
-mUnitKiloCalorieId equ 418
+mUnitKiloCalorieId equ 420
     .dw mUnitKiloCalorieId ; id
     .dw mUnitEnergyId ; parentId
     .dw mUnitKiloCalorieName ; name
@@ -3929,17 +3947,8 @@ mUnitKiloCalorieId equ 418
     .dw 0 ; rowBeginId or altName
     .dw mUnitKiloCalorieHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-mUnitFootPoundEnergy:
-mUnitFootPoundEnergyId equ 419
-    .dw mUnitFootPoundEnergyId ; id
-    .dw mUnitEnergyId ; parentId
-    .dw mUnitFootPoundEnergyName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mUnitFootPoundEnergyHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
 mUnitBritishThermalUnit:
-mUnitBritishThermalUnitId equ 420
+mUnitBritishThermalUnitId equ 421
     .dw mUnitBritishThermalUnitId ; id
     .dw mUnitEnergyId ; parentId
     .dw mUnitBritishThermalUnitName ; name
@@ -3947,8 +3956,9 @@ mUnitBritishThermalUnitId equ 420
     .dw 0 ; rowBeginId or altName
     .dw mUnitBritishThermalUnitHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+; MenuGroup ENER: children: row 2
 mUnitTonTNT:
-mUnitTonTNTId equ 421
+mUnitTonTNTId equ 422
     .dw mUnitTonTNTId ; id
     .dw mUnitEnergyId ; parentId
     .dw mUnitTonTNTName ; name
@@ -3956,24 +3966,14 @@ mUnitTonTNTId equ 421
     .dw 0 ; rowBeginId or altName
     .dw mUnitTonTNTHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
-; MenuGroup ENER: children: row 2
 mUnitLiterAtmosphere:
-mUnitLiterAtmosphereId equ 422
+mUnitLiterAtmosphereId equ 423
     .dw mUnitLiterAtmosphereId ; id
     .dw mUnitEnergyId ; parentId
     .dw mUnitLiterAtmosphereName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitLiterAtmosphereHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank423:
-mBlank423Id equ 423
-    .dw mBlank423Id ; id
-    .dw mUnitEnergyId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 mBlank424:
 mBlank424Id equ 424
@@ -5401,8 +5401,8 @@ mSetClockId equ 576
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 483 ; number of names and altnames
-mNamesPoolSize equ 2275 ; size of names string pool
+mNamesCount equ 484 ; number of names and altnames
+mNamesPoolSize equ 2278 ; size of names string pool
 
 mNullName:
     .db 0
@@ -6172,6 +6172,10 @@ mUnitErgName:
     .db "erg", 0
 mUnitJouleName:
     .db "J", 0
+mUnitKiloJouleName:
+    .db "kJ", 0
+mUnitFootPoundEnergyName:
+    .db "ftlb", 0
 mUnitWattHourName:
     .db "Wh", 0
 mUnitKiloWattHourName:
@@ -6180,8 +6184,6 @@ mUnitCalorieName:
     .db "cal", 0
 mUnitKiloCalorieName:
     .db "kcal", 0
-mUnitFootPoundEnergyName:
-    .db "ftlb", 0
 mUnitBritishThermalUnitName:
     .db "Btu", 0
 mUnitTonTNTName:
