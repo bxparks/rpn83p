@@ -2,7 +2,7 @@
 
 This document describes the menu functions under the `MATH` menu in RPN83P.
 
-**Version**: 1.1.0 (2025-10-06)\
+**Version**: 1.1.0 (2025-10-07)\
 **Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 

@@ -2,7 +2,7 @@
 
 This document describes the menu functions under the `MODE` menu in RPN83P.
 
-**Version**: 1.0.0 (2024-07-19)\
+**Version**: 1.1.0 (2025-10-07)\
 **Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 
