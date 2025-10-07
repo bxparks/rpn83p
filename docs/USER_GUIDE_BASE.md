@@ -262,16 +262,16 @@ point results when performing an arithmetic operation such as `/`. The RPN83P
 follows the lead of the HP-42S so that the arithmetic keyboard buttons trigger
 the integer operations instead of floating point operations.
 
-For example, let's start with the following numbers in the RPN stack *before*
-entering the `BASE` menu, and then perform an arithmetic `+` operation:
+For example, let's enter the following numbers in the RPN stack *before*
+entering the `BASE` menu, then perform an arithmetic `+` operation:
 
-| **Keys**  | **Display**|
-| --------- | ---------- |
-|           | ![Base Arithmetic Part 1](images/base/arithmetic-1-float.png) |
-| `BASE`    | ![Base Arithmetic Part 2](images/base/arithmetic-2-dec.png)   |
-| `HEX`     | ![Base Arithmetic Part 3](images/base/arithmetic-3-hex.png)   |
-| `+`       | ![Base Arithmetic Part 4](images/base/arithmetic-4-plus.png)  |
-| `DEC`     | ![Base Arithmetic Part 5](images/base/arithmetic-5-dec.png)   |
+| **Keys**                                          | **Display**|
+| ---------                                         | ---------- |
+| `55` `ENTER` `3003` `ENTER` `17.8` `ENTER` `12`   | ![Base Arithmetic Part 1](images/base/arithmetic-1-float.png) |
+| `BASE`                                            | ![Base Arithmetic Part 2](images/base/arithmetic-2-dec.png)   |
+| `HEX`                                             | ![Base Arithmetic Part 3](images/base/arithmetic-3-hex.png)   |
+| `+`                                               | ![Base Arithmetic Part 4](images/base/arithmetic-4-plus.png)  |
+| `DEC`                                             | ![Base Arithmetic Part 5](images/base/arithmetic-5-dec.png)   |
 
 We can see that the `+` key activated the `BAS+` function in `BASE` mode, which
 truncated the fraction part of the operands, performed an unsigned integer
