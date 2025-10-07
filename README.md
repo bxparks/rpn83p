@@ -7,21 +7,23 @@ calculator app for the [TI-83 Plus
 series](https://en.wikipedia.org/wiki/TI-83_series) and the [TI-84 Plus
 series](https://en.wikipedia.org/wiki/TI-84_Plus_series) calculators. The app is
 inspired mostly by the [HP-42S](https://en.wikipedia.org/wiki/HP-42S)
-calculator, with some significant features from the
-[HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-16C](https://en.wikipedia.org/wiki/HP-16C). RPN83P also hopes to be the
-easiest and cheapest gateway app that introduces new users to the beauty and
-power of RPN calculators.
+calculator, with some significant features borrowed from
+the [HP-12C](https://en.wikipedia.org/wiki/HP-12C),
+the [HP-16C](https://en.wikipedia.org/wiki/HP-16C),
+the [HP-19BII](https://en.wikipedia.org/wiki/HP-19B), and
+the [TI-85](https://en.wikipedia.org/wiki/TI-85) calculators.
+RPN83P hopes to be the easiest and cheapest gateway app that introduces new
+users to the beauty and power of RPN calculators.
 
 Your calculator will look like this when using RPN83P:
 
 ![RPN83P Teaser](docs/images/fullshot/fullshot-teaser.png)
 
-RPN83P is a flash application written in Z80 assembly language that consumes 3
-pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
-the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through 4
+RPN83P is a flash application written in Z80 assembly language that consumes 4
+pages (64 kiB) of flash memory. Since it is stored in flash, it is preserved if
+the RAM is cleared. It consumes about 1044 to 2545 bytes of TI-OS RAM through 4
 AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
-bytes), `RPN83SAV` (140 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
+bytes), `RPN83SAV` (152 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 196 bytes).
 
 Summary of features:
@@ -122,13 +124,10 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.1.0 (2025-10-07) \
+**Project Home**: https://github.com/bxparks/rpn83p \
+**User Guide**: [USER_GUIDE.md](docs/USER_GUIDE.md) \
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
-
-**User Guide**: [USER_GUIDE.md](docs/USER_GUIDE.md)
 
 ## Table of Contents
 
