@@ -95,10 +95,10 @@ USER_GUIDE_CHAPTERS_FILES := $(subst ../docs/,docs/,$(USER_GUIDE_SRCS))
 # only solution that I could find was to reduc the PNG sizes by 33%, before
 # converting the MD files into PDF.
 ORIG_IMAGES := \
-$(wildcard ../docs/images/readme/*.png) \
 $(wildcard ../docs/images/base/*.png) \
 $(wildcard ../docs/images/basic/*.png) \
 $(wildcard ../docs/images/complex/*.png) \
+$(wildcard ../docs/images/conv/*.png) \
 $(wildcard ../docs/images/date/*.png) \
 $(wildcard ../docs/images/date/clk/*.png) \
 $(wildcard ../docs/images/date/d/*.png) \
@@ -112,9 +112,13 @@ $(wildcard ../docs/images/date/t/*.png) \
 $(wildcard ../docs/images/date/tz/*.png) \
 $(wildcard ../docs/images/fullshot/*.png) \
 $(wildcard ../docs/images/installation/*.png) \
+$(wildcard ../docs/images/math/*.png) \
 $(wildcard ../docs/images/menu/*.png) \
 $(wildcard ../docs/images/mode/*.png) \
 $(wildcard ../docs/images/num/*.png) \
+$(wildcard ../docs/images/prob/*.png) \
+$(wildcard ../docs/images/readme/*.gif) \
+$(wildcard ../docs/images/readme/*.png) \
 $(wildcard ../docs/images/stat/*.png) \
 $(wildcard ../docs/images/storage/*.png) \
 $(wildcard ../docs/images/tvm/*.png) \
@@ -230,6 +234,10 @@ docs/images/complex/%.png: ../docs/images/complex/%.png
 	@mkdir -p docs/images/complex
 	$(MAGICK) $< -adaptive-resize 75% $@
 
+docs/images/conv/%.png: ../docs/images/conv/%.png
+	@mkdir -p docs/images/conv
+	$(MAGICK) $< -adaptive-resize 75% $@
+
 docs/images/date/%.png: ../docs/images/date/%.png
 	@mkdir -p docs/images/date
 	$(MAGICK) $< -adaptive-resize 75% $@
@@ -282,6 +290,10 @@ docs/images/installation/%.png: ../docs/images/installation/%.png
 	@mkdir -p docs/images/installation
 	$(MAGICK) $< -adaptive-resize 75% $@
 
+docs/images/math/%.png: ../docs/images/math/%.png
+	@mkdir -p docs/images/math
+	$(MAGICK) $< -adaptive-resize 75% $@
+
 docs/images/menu/%.png: ../docs/images/menu/%.png
 	@mkdir -p docs/images/menu
 	$(MAGICK) $< -adaptive-resize 75% $@
@@ -292,6 +304,10 @@ docs/images/mode/%.png: ../docs/images/mode/%.png
 
 docs/images/num/%.png: ../docs/images/num/%.png
 	@mkdir -p docs/images/num
+	$(MAGICK) $< -adaptive-resize 75% $@
+
+docs/images/prob/%.png: ../docs/images/prob/%.png
+	@mkdir -p docs/images/prob
 	$(MAGICK) $< -adaptive-resize 75% $@
 
 docs/images/readme/%.png: ../docs/images/readme/%.png
