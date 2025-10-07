@@ -12,7 +12,9 @@ storage variables implemented by RPN83P.
 - [Storage Registers](#storage-registers)
     - [Storage Register Arithmetics](#storage-register-arithmetics)
     - [Storage Register Size](#storage-register-size)
+    - [Indirect Register Access](#indirect-register-access)
 - [Storage Variables](#storage-variables)
+    - [Storage Variable Arithmetics](#storage-variable-arithmetics)
 
 ## Storage Registers
 
@@ -58,9 +60,11 @@ Similarly:
 - `RCL` `*` `00`: multiply `R00` to `X`
 - `RCL` `/` `00`: divide `R00` into `X`
 
-Indirect storage registers (the `STO` `IND` `nn` and `RCL` `IND` `nn`
-functionality from the HP-42S) are not supported because they are mostly
-relevant in programming, and RPN83P does not yet support programming.
+### Indirect Register Access
+
+Indirect access to storage registers (e.g. `STO` `IND` `nn` and `RCL` `IND`
+`nn`) is not supported because indirection is mostly used in programming, which
+is not yet supported.
 
 ### Storage Register Size
 
@@ -97,8 +101,21 @@ In the terminology of the HP-42S calculator, *registers* are numerical and
 variables with alphanumeric names of up to 7 characters long. For example,
 pressing `STO ABC` stores the `X` value into a variable named `ABC`.
 
-The RPN83P supports only single-letter variables because the underlying TI-OS
-supports only a single-letter. There are 27 variables available:
+The RPN83P supports only single-letter variables because it uses the underlying
+TI-OS variables which support only a single-letter. These variables are
+preserved after quitting the RPN83P application and become accessible to
+TI-BASIC programs.
+
+Storage variables can hold either Real or Complex numbers, but unlike the
+numerical registers (R00-R99), they *cannot* hold the extended objects types
+supported by RPN83P:
+
+- record objects (e.g. Date, Time, DateTime) defined in
+  [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md)
+- Denominate objects (numbers with units) defined in
+  [USER_GUIDE_UNIT.md](USER_GUIDE_UNIT.md).
+
+There are 27 variables available:
 
 - `A`-`Z`, and
 - `Theta` (Greek letter above the `3` button)
@@ -132,6 +149,8 @@ found it too easy to enter the wrong letter with the `ALPHA` key with no
 opportunity to fix the typing error. By always requiring 2 characters, we can
 double-check the letter before hitting the `ENTER` key.)
 
+### Storage Variable Arithmetics
+
 Storage arithmetic operations (`STO+`, `RLC+`, etc) are supported as expected:
 
 - `STO` `+` `A`: add `X` to `A`
@@ -154,11 +173,3 @@ Similarly:
 | `2ND RCL * ALPHA A` `ENTER`   | ![](images/storage/storage-variable-arith-4.png) |
 | `STO + ALPHA A` `ENTER`       | ![](images/storage/storage-variable-arith-5.png) |
 | `2ND RCL ALPHA A` `ENTER`     | ![](images/storage/storage-variable-arith-6.png) |
-
-Storage variables are implemented through the underlying TI-OS. These variables
-are preserved and accessible to TI-BASIC programs after quitting the RPN83P
-application. Storage variables can hold either Real or Complex numbers, but
-unlike the numerical registers (R00-R99), they *cannot* hold the more advanced
-record objects (e.g. Date, Time, DateTime) defined in
-[USER_GUIDE_DATE.md](USER_GUIDE_DATE.md).
-
