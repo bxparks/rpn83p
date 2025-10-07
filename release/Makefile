@@ -79,7 +79,7 @@ USER_GUIDE_SRCS := \
 ../docs/USER_GUIDE_TVM.md \
 ../docs/USER_GUIDE_UNIT.md \
 ../docs/USER_GUIDE_DATE.md \
-../docs/USER_GUIDE_FUNCTIONS.md \
+../docs/USER_GUIDE_CATALOG.md \
 ../docs/USER_GUIDE_TIOS.md \
 ../docs/USER_GUIDE_TROUBLESHOOTING.md \
 ../docs/USER_GUIDE_FUTURE.md
@@ -421,7 +421,7 @@ docs/USER_GUIDE_DATE.md: ../docs/USER_GUIDE_DATE.md Makefile
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
 		< $< > $@
 
-docs/USER_GUIDE_FUNCTIONS.md: ../docs/USER_GUIDE_FUNCTIONS.md Makefile
+docs/USER_GUIDE_CATALOG.md: ../docs/USER_GUIDE_CATALOG.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
 		< $< > $@
