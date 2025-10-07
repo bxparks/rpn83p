@@ -599,16 +599,16 @@ mTvmIterMaxNameSelectorAlt:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Execute CLTV. No need to terminate input.
 mTvmClearHandler:
-    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_TvmClear)
     ld a, errorCodeTvmCleared
     ld (handlerCode), a
     ret
 
+; Description: Execute RSTV. No need to terminate input.
 mTvmSolverResetHandler:
-    call closeInput
     res rpnFlagsTvmCalculate, (iy + rpnFlags)
     bcall(_TvmSolverReset)
     ld a, errorCodeTvmSolverReset
