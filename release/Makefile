@@ -355,106 +355,127 @@ docs/USER_GUIDE.md: ../docs/USER_GUIDE.md Makefile
 docs/USER_GUIDE_WHY.md: ../docs/USER_GUIDE_WHY.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_INSTALLATION.md: ../docs/USER_GUIDE_INSTALLATION.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_BASIC.md: ../docs/USER_GUIDE_BASIC.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_STORAGE.md: ../docs/USER_GUIDE_STORAGE.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_MODE.md: ../docs/USER_GUIDE_MODE.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_CLR.md: ../docs/USER_GUIDE_CLR.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_STK.md: ../docs/USER_GUIDE_STK.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_MATH.md: ../docs/USER_GUIDE_MATH.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_NUM.md: ../docs/USER_GUIDE_NUM.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_PROB.md: ../docs/USER_GUIDE_PROB.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_COMPLEX.md: ../docs/USER_GUIDE_COMPLEX.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_BASE.md: ../docs/USER_GUIDE_BASE.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_STAT.md: ../docs/USER_GUIDE_STAT.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_CONV.md: ../docs/USER_GUIDE_CONV.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_TVM.md: ../docs/USER_GUIDE_TVM.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_UNIT.md: ../docs/USER_GUIDE_UNIT.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_DATE.md: ../docs/USER_GUIDE_DATE.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_CATALOG.md: ../docs/USER_GUIDE_CATALOG.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_TIOS.md: ../docs/USER_GUIDE_TIOS.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_TROUBLESHOOTING.md: ../docs/USER_GUIDE_TROUBLESHOOTING.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 docs/USER_GUIDE_FUTURE.md: ../docs/USER_GUIDE_FUTURE.md Makefile
 	@mkdir -p docs
 	sed -e '/^\*\*Version/,/^\*\*Parent Document/d' \
+		-e '1s/RPN83P User Guide: //' \
 		< $< > $@
 
 # README.md requires some URL rewriting.
