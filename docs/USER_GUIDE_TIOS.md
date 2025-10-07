@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter 14: TI-OS Interactions
+# RPN83P User Guide: Chapter 19: TI-OS Interactions
 
 This document describes the interactions between RPN83P and the underlying
 TI-OS of the calculator.

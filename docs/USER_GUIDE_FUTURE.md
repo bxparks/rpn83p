@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter 16: Future Enhancements
+# RPN83P User Guide: Chapter 21: Future Enhancements
 
 There seems to be almost an endless number of features that could go into a
 calculator app. I have grouped them into the following subsections, assuming

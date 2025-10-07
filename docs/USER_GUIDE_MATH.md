@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter ??: MATH Functions
+# RPN83P User Guide: Chapter 8: MATH Functions
 
 This document describes the menu functions under the `MATH` menu in RPN83P.
 

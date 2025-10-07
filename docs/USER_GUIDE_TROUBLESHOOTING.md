@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter 15: Troubleshooting
+# RPN83P User Guide: Chapter 20: Troubleshooting
 
 This document describes some troubleshooting techniques for the RPN83P app.
 

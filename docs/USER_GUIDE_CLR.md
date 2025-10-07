@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter ??: CLR Functions
+# RPN83P User Guide: Chapter 6: CLR Functions
 
 This document describes the menu functions under the `CLR` menu in RPN83P.
 

@@ -1,6 +1,6 @@
-# RPN83P User Guide: Chapter ??: MATH Functions
+# RPN83P User Guide: Chapter 10: PROB Functions
 
-This document describes the menu functions under the `MATH` menu in RPN83P.
+This document describes the menu functions under the `PROB` menu in RPN83P.
 
 **Version**: 1.1.0 (2025-10-06)\
 **Project Home**: https://github.com/bxparks/rpn83p \

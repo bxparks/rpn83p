@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter 9: STAT Functions
+# RPN83P User Guide: Chapter 13: STAT Functions
 
 This document describes the `STAT` functions of the RPN83P application which
 supports all statistical and curve fitting functionality of the HP-42S.

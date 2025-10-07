@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter ??: CONV Functions
+# RPN83P User Guide: Chapter 14: CONV Functions
 
 This document describes the menu functions under the `CONV` menu in RPN83P.
 

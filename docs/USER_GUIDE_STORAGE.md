@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter 5: Storage Registers and Variables
+# RPN83P User Guide: Chapter 4: Storage Registers and Variables
 
 This document describes the numerical storage registers and the single-letter
 storage variables implemented by RPN83P.

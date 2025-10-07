@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter 10: TVM Functions
+# RPN83P User Guide: Chapter 15: TVM Functions
 
 This document describes the `TVM` functions of the RPN83P application which
 solves the Time Value of Money equation.

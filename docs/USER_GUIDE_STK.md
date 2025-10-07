@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter ??: STK Functions
+# RPN83P User Guide: Chapter 7: STK Functions
 
 This document describes the menu functions under the `STK` menu in RPN83P.
 

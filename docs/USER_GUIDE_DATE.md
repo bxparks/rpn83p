@@ -1,4 +1,4 @@
-# RPN83P User Guide: Chapter 13: DATE Functions
+# RPN83P User Guide: Chapter 17: DATE Functions
 
 This document describes the `DATE` features of the RPN83P application.
 
