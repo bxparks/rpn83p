@@ -24,6 +24,7 @@ HP-16C.
 - [Base Word Size](#base-word-size)
 - [Base Input Digit Limit](#base-input-digit-limit)
 - [Base Mode Retention](#base-mode-retention)
+- [Input Termination](#input-termination)
 
 ## BASE Overview
 
@@ -475,10 +476,23 @@ The longest binary number that can be displayed on a single line in edit mode is
 number in `BIN` can exceed this limit and entering more digits will cause the
 left digits to scroll off the screen.
 
-## Base Number Retention
+## Base Mode Retention
 
 The `DEC`, `HEX`, `OCT` and `BIN` modes are useful only within the `BASE`
 hierarchy of menus. When the menu leaves the `BASE` hierarchy, the numbers on
 the RPN stack revert back to using floating points. This is similar to the
-HP-42S. However, unlike the HP-42S, the RPN83P remembers the most recent base
+HP-42S.
+
+However, unlike the HP-42S, the RPN83P remembers the most recent base
 number and restores its setting if the `BASE` menu hierarchy is selected again.
+
+## Input Termination
+
+Whenever RPN83P goes into the `BASE` hierarchy or goes out of the `BASE`
+hierarchy, the input must be terminated. This is because the parsing of the
+digits in the input buffer is affected by the `BASE` mode, so they need to be
+processed when we transition to and from the `BASE` menu.
+
+Menu navigation *within* the `BASE` hierarchy does not cause input termination.
+For example, if we go from `BASE > LOGI` to `BASE > ROTS`, the input buffer
+remains open.
