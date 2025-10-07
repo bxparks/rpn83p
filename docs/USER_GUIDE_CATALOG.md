@@ -534,11 +534,12 @@ buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
         - `eV`: elctron-volt
         - `erg`: erg
         - `J`: joule
+        - `kJ`: kilojoule
+        - `ftlb`: foot-pound energy
         - `Wh`: watt-hour
         - `kWh`: kilowatt-hour
         - `cal`: calorie
         - `kcal`: kilocalorie
-        - `ftlb`: foot-pound energy
         - `Btu`: British thermal units (1055 joules)
         - `tTNT`: metric ton of TNT (4.184e9 joules)
         - `Latm`: liter-atmosphere

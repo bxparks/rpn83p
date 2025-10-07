@@ -421,11 +421,12 @@ The columns in the table mean the following:
 | `eV`              | `eV`      |       | TI    | electron volt, 1.602176634e-19 J (exact) by defn |
 | `erg`             | `erg`     |       | TI    | 1e-7 J        |
 | `joule`           | `J`       |       | TI    | **base unit**, kg\*m/s^2 |
+| `kilojoule`       | `kJ`      |       | TI    | 1000 J        |
+| `ft·lbf`          | `ftlb`    |       | TI    | 1.3558179483314 J (14 digits) |
 | `watt·h`          | `Wh`      |       |       | 3600 J        |
 | `kwatt·h`         | `kWh`     |       | TI    | 3600e3 J      |
 | `calorie`         | `cal`     |       | TI    | 4.184 J (exact) by defn |
 | `kcalorie`        | `kcal`    |       |       | 4.184 kJ, used for food energy |
-| `ft·lbf`          | `ftlb`    |       | TI    | 1.3558179483314 J (14 digits) |
 | `Btu`             | `Btu`     |       | TI    | British thermal unit, 1055 (approx, various defns) |
 | `tonTNT`          | `tTNT`    |       |       | metric ton of equivalent of TNT, 4.184e9 J (exact) by defn |
 | `liter·atm`       | `Latm`    |       | TI    | liter atmosphere, 101.325 J (exact) by defn |
