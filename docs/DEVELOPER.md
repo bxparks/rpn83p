@@ -3,8 +3,7 @@
 Notes for the developers of the RPN83P app, likely myself in 6 months when I
 cannot remember how the code works.
 
-**Version**: 1.1.0 (2025-10-07)
-
+**Version**: 1.1.0 (2025-10-07) \
 **Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
@@ -293,10 +292,12 @@ MoHPC](https://www.hpmuseum.org/forum/thread-20867-post-187258.html#pid187258):
 
 - There are no dedicated keys on the 83+/84+ related to BASE functions, so I
   have to place all of them under the BASE soft menu.
-- The BASE menu folder has too many functions, 8 rows, which can be hard to
-  navigate.
-    - But a flat hierarchy seemed preferable to nested subfolders which can be
-      even more annoying to navigate.
+- The BASE menu folder has a lot of functions.
+    - Initially, I placed all of them in a flat hierarchy, across 8 rows. Over
+      time, I found that it was hard to navigate a menu folder with more than
+      about 4 rows because it was hard to remember how to get back to Row 1.
+    - I resisted reorganizing them into a nested subfolders structure, but
+      subfolders seemed to offer a better UI experience.
 - The A-F digits for HEX numbers require the use of the ALPHA shift key, because
   there isn't any way to expose them through unshifted keys.
     - The 83+/84+ has only 5 buttons across for the soft menu, so it didn't make
