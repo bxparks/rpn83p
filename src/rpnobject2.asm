@@ -83,6 +83,19 @@ setHLRpnObjectTypePageTwo:
     ret
 
 ;-----------------------------------------------------------------------------
+; Real numbers.
+;-----------------------------------------------------------------------------
+
+; Description: Check that OP3 is a Real number.
+; Input: OP3
+; Output: ZF=1 if real
+; Destroys: A
+checkOp3RealPageTwo:
+    call getOp3RpnObjectTypePageTwo
+    cp rpnObjectTypeReal
+    ret
+
+;-----------------------------------------------------------------------------
 ; Complex numbers.
 ;-----------------------------------------------------------------------------
 
@@ -207,4 +220,39 @@ checkOp1DurationPageTwo:
 checkOp3DurationPageTwo:
     call getOp3RpnObjectTypePageTwo
     cp rpnObjectTypeDuration
+    ret
+
+;-----------------------------------------------------------------------------
+; Denominate numbers
+;-----------------------------------------------------------------------------
+
+checkOp1DenominatePageTwo:
+    call getOp1RpnObjectTypePageTwo
+    cp rpnObjectTypeDenominate
+    ret
+
+checkOp3DenominatePageTwo:
+    call getOp3RpnObjectTypePageTwo
+    cp rpnObjectTypeDenominate
+    ret
+
+; Description: Set the memory in HL to be an RpnDenominate whose unit is given
+; by register A.
+; Input:
+;   - A:u8=displayUnit
+;   - (HL):RpnObject
+; Output:
+;   - (HL).objectType=rpnObjectTypeDenominate
+;   - (HL).displayUnit:u8=A
+;   - HL=HL+rpnObjectTypeSizeOf=denominate
+; Preserves: A, BC, DE
+setHLRpnDenominatePageTwo:
+    push af
+    ld a, rpnObjectTypeDenominate
+    call setHLRpnObjectTypePageTwo
+    pop af ; A=displayUnit
+    ld (hl), a ; denominate.displayUnit=A
+    inc hl
+    ld (hl), 0 ; denominate.reserved=0
+    dec hl ; HL=denominate
     ret

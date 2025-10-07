@@ -60,7 +60,7 @@ EpochSecondsToRpnOffsetDateTime:
     push bc
     call convertOP1ToI40 ; OP1=i40(epochSeconds)
     pop bc
-epochSecondsToRpnOffsetDateTimeAlt:
+epochSecondsToRpnOffsetDateTimeAltEntry:
     push bc ; stack=[targetTimeZone]
     ; reserve RpnObject on FPS
     call reserveRpnObject ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
@@ -122,12 +122,8 @@ epochSecondsToOffsetDateTime:
 ;   - OP1:RpnOffsetDateTime
 ; Destroys: all, OP1-OP6
 EpochSecondsToRpnOffsetDateTimeUTC:
-    call EpochSecondsToRpnDateTime ; OP1=RpnDateTime
-    ; Transform RpnDateTime to RpnOffsetDateTime w/ UTC timezone
-    ld hl, OP1
-    call transformToOffsetDateTime ; HL=(RpnOffsetDateTime*)=utcDateTime
-    call expandOp1ToOp2PageTwo ; handle 2-byte gap between OP1 and OP2
-    ret
+    call EpochSecondsToRpnDateTime ; OP1=rpnDateTime
+    jp ExtendRpnDateTimeToOffsetDateTime ; OP1=rpnOffsetDateTime for UTC
 
 ;-----------------------------------------------------------------------------
 
@@ -383,28 +379,6 @@ MergeRpnDateTimeWithRpnOffset:
 
 ;-----------------------------------------------------------------------------
 
-; Description: Convert RpnDateTime into RpnOffsetDateTime by appending an
-; TimeZone offset of "+00:00", i.e. TZ{0,0}.
-; Input:
-;   - OP1:RpnDateTime
-; Output:
-;   - OP1:RpnOffsetDateTime
-; Destroys: A, DE, HL, OP1
-ExtendRpnDateTimeToOffsetDateTime:
-    ld a, rpnObjectTypeOffsetDateTime
-    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
-    ; clear the Offset fields
-    ld de, rpnObjectTypeDateTimeSizeOf-rpnObjectTypeSizeOf
-    add hl, de ; HL=offsetPointer
-    xor a
-    ld (hl), a
-    inc hl
-    ld (hl), a
-    call expandOp1ToOp2PageTwo
-    ret
-
-;-----------------------------------------------------------------------------
-
 ; Description: Convert RpnOffsetDateTime into RpnDateTime by truncating the
 ; TimeZone offset.
 ; Input:
@@ -415,4 +389,63 @@ ExtendRpnDateTimeToOffsetDateTime:
 TruncateRpnOffsetDateTime:
     ld a, rpnObjectTypeDateTime
     call setOp1RpnObjectTypePageTwo
+    ret
+
+;-----------------------------------------------------------------------------
+; Extractors
+;-----------------------------------------------------------------------------
+
+; Description: Extract RpnDate from RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnDate
+; Destroys: all, OP1
+RpnOffsetDateTimeExtractDate:
+    ld a, rpnObjectTypeDate
+    call setOp1RpnObjectTypePageTwo
+    ret
+
+; Description: Extract RpnDateTime from RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnDateTime
+; Destroys: all, OP1
+RpnOffsetDateTimeExtractDateTime:
+    ld a, rpnObjectTypeDateTime
+    call setOp1RpnObjectTypePageTwo
+    ret
+
+; Description: Extract RpnTime from RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnTime
+; Destroys: all, OP1
+RpnOffsetDateTimeExtractTime:
+    ld a, rpnObjectTypeTime
+    call setOp1RpnObjectTypePageTwo
+    ; move Time components up into OP1
+    ld de, OP1 + rpnObjectTypeSizeOf
+    ld hl, OP1 + rpnObjectTypeDateSizeOf
+    ld bc, rpnObjectTypeTimeSizeOf - rpnObjectTypeSizeOf
+    ldir
+    ret
+
+; Description: Extract RpnOffset from RpnOffsetDateTime.
+; Input:
+;   - OP1:RpnOffsetDateTime
+; Output:
+;   - OP1:RpnOffset
+; Destroys: all, OP1
+RpnOffsetDateTimeExtractOffset:
+    call shrinkOp2ToOp1PageTwo ; remove 2-byte gap between OP1 and OP2
+    ld a, rpnObjectTypeOffset
+    call setOp1RpnObjectTypePageTwo
+    ; move Offset components up into OP1
+    ld de, OP1 + rpnObjectTypeSizeOf
+    ld hl, OP1 + rpnObjectTypeDateTimeSizeOf
+    ld bc, rpnObjectTypeOffsetSizeOf - rpnObjectTypeSizeOf
+    ldir
     ret

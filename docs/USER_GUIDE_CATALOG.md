@@ -1,0 +1,718 @@
+# RPN83P User Guide: Chapter 18: Catalog of Functions
+
+This chapter contains a catalog of all functions implemented by the RPN83P app,
+accessed directly through buttons or through the menu system.
+
+**Version**: 1.1.0 (2025-10-07)\
+**Project Home**: https://github.com/bxparks/rpn83p \
+**Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
+
+## Direct Functions
+
+All mathematical functions that are exposed through physical buttons are
+supported by the RPN83P app.
+
+- arithmetic
+    - `/`, `*`, `-`, `+`
+- algebraic
+    - `X^-1`, `X^2`, `2ND SQRT`, `^` (i.e. `Y^X`)
+- trigonometric
+    - `SIN`, `COS`, `TAN`
+    - `2ND SIN^-1`, `2ND COS^-1`, `2ND TAN^-1`
+- transcendental
+    - `LOG`, `LN`
+    - `2ND 10^X`, `2ND E^X`
+- constants
+    - `PI`, `E`
+
+## Menu Functions
+
+These functions are accessed through the hierarchical menu, using the 5 menu
+buttons just under the LCD screen. Use the `UP`, `DOWN`, `ON` (EXIT/ESC), and
+`MATH` (HOME) keys to navigate the menu hierarchy.
+
+- `ROOT` (implicit)
+    - ![ROOT > Row1](images/menu/root-1.png)
+    - ![ROOT > Row2](images/menu/root-2.png)
+    - ![ROOT > Row3](images/menu/root-3.png)
+- ![ROOT > MATH](images/menu/root-math.png) (ROOT > MATH)
+    - ![ROOT > MATH > Row1](images/menu/root-math-1.png)
+    - ![ROOT > MATH > Row2](images/menu/root-math-2.png)
+    - `X^3`: cube of `X`
+    - `3ROOTX`: cube root of `X`
+    - `XROOTY`: `X` root of `Y`
+    - `ATN2`: `atan2(X, Y)` in degrees or radians, depending on current mode
+        - `Y`: y-component, entered first
+        - `X`: x-component, entered second
+        - (order of `Y` and `X` is the same as the `>POL` conversion function)
+    - `2^X`: `2` to the power of `X`
+    - `LOG2`: log base 2 of `X`
+    - `LOGB`: log base `X` of `Y`
+    - `E^X-`: `e^x-1` accurate for small `x`
+    - `LN1+`: `log(1+x)` accurate for small `x`
+- ![ROOT > NUM](images/menu/root-num.png) (ROOT > NUM)
+    - ![ROOT > NUM > Row1](images/menu/root-num-1.png)
+    - ![ROOT > NUM > Row2](images/menu/root-num-2.png)
+    - ![ROOT > NUM > Row3](images/menu/root-num-3.png)
+    - ![ROOT > NUM > Row4](images/menu/root-num-4.png)
+    - `%`: `X` percent of `Y`, leaving `Y` unchanged
+    - `%CH`: percent change from `Y` to `X`, leaving `Y` unchanged
+    - `GCD`: greatest common divisor of `X` and `Y`
+    - `LCM`: lowest common multiple of `X` and `Y`
+    - `PRIM`: prime factor of `X`
+        - returns 1 if prime
+        - returns the smallest prime factor otherwise
+        - See [USER_GUIDE_NUM.md](USER_GUIDE_NUM.md#prime-factors)
+    - `IP`: integer part of `X`, truncating towards 0, preserving sign
+    - `FP`: fractional part of `X`, preserving sign
+    - `FLR`: the floor of `X`, the largest integer <= `X`
+    - `CEIL`: the ceiling of `X`, the smallest integer >= `X`
+    - `NEAR`: the nearest integer to `X`
+    - `ABS`: absolute value of `X`
+    - `SIGN`: return -1, 0, 1 depending on whether `X` is less than, equal, or
+      greater than 0, respectively
+    - `MOD`: `Y` mod `X` (remainder of `Y` after dividing by `X`)
+    - `MIN`: minimum of `X` and `Y`
+    - `MAX`: maximum of `X` and `Y`
+    - `RNDF`: round to `FIX/SCI/ENG` digits after the decimal point
+    - `RNDN`: round to user-specified `n` digits (0-9) after the decimal point
+    - `RNDG`: round to remove guard digits, leaving 10 mantissa digits
+- ![ROOT > PROB](images/menu/root-prob.png) (ROOT > PROB)
+    - ![ROOT > PROB > Row1](images/menu/root-prob-1.png)
+    - `COMB`: combination `C(n,r)` = `C(Y, X)`
+    - `PERM`: permutation `P(n,r)` = `P(Y, X)`
+    - `N!`: factorial of `X`
+    - `RAND`: random number in the range `[0,1)`
+    - `SEED`: set the random number generator seed to `X`
+- ![ROOT > CPLX](images/menu/root-cplx.png) (ROOT > CPLX)
+    - ![ROOT > CPLX > Row1](images/menu/root-cplx-1.png)
+    - `REAL`: extract the real component of the complex number
+    - `IMAG`: extract the imaginary component of the complex number
+    - `CONJ`: calculate the complex conjugate
+    - `CABS`: calculate the magnitude of the complex number
+    - `CANG`: calculate the angle (i.e. argument) of the complex number
+- ![ROOT > HELP](images/menu/root-help.png) (ROOT > HELP)
+    - display the Help pages
+    - use arrow keys to view each Help page
+- ![ROOT > BASE](images/menu/root-base.png) (ROOT > BASE)
+    - ![ROOT > BASE > Row1](images/menu/root-base-1.png)
+    - ![ROOT > BASE > Row2](images/menu/root-base-2.png)
+    - `DEC`: use decimal base 10
+    - `HEX`: use hexadecimal base 16
+        - display register values as 32-bit unsigned integer
+    - `OCT`: use octal base 8
+        - display register values as 32-bit unsigned integer
+    - `BIN`: use binary base 2
+        - display register values as 32-bit unsigned integer
+    - ![ROOT > BASE > LOGI](images/menu/root-base-logi.png)
+        - ![ROOT > BASE > LOGI > Row1](images/menu/root-base-logi-1.png)
+        - `AND`: `X` `bit-and` `Y`
+        - `OR`: `X` `bit-or` `Y`
+        - `XOR`: `X` `bit-xor` `Y`
+        - `NOT`: one's complement of `X`
+        - `NEG`: two's complement of `X`
+    - ![ROOT > BASE > ROTS](images/menu/root-base-rots.png)
+        - ![ROOT > BASE > ROTS > Row1](images/menu/root-base-rots-1.png)
+        - ![ROOT > BASE > ROTS > Row2](images/menu/root-base-rots-2.png)
+        - ![ROOT > BASE > ROTS > Row3](images/menu/root-base-rots-3.png)
+        - `SL`: shift left logical one bit
+        - `SR`: shift right logical one bit
+        - `ASR`: arithmetic shift right one bit
+        - `SLn`: shift left logical `Y` by `X` bits
+        - `SRn`: shift right logical `Y` by `X` bits
+        - `RL`: rotate left circular one bit
+        - `RR`: rotate right circular one bit
+        - `RLC`: rotate left through carry flag one bit
+        - `RRC`: rotate right through carry flag one bit
+        - `RLn`: rotate left circular `Y` by `X` bits
+        - `RRn`: rotate right circular `Y` by `X` bits
+        - `RLCn`: rotate left through carry flag `Y` by `X` bits
+        - `RRCn`: rotate right through carry flag `Y` by `X` bits
+    - ![ROOT > BASE > BITS](images/menu/root-base-bits.png)
+        - ![ROOT > BASE > BITS > Row1](images/menu/root-base-bits-1.png)
+        - `CB`: clear bit `X` of `Y`
+        - `SB`: set bit `X` of `Y`
+        - `B?`: get bit `X` of `Y` as 0 or 1
+        - `REVB`: reverse bits of `X`
+        - `CNTB`: count number of 1 bits of `X` (same as `#B` on HP-16C)
+    - ![ROOT > BASE > BFCN](images/menu/root-base-bfcn.png)
+        - ![ROOT > BASE > BFCN > Row1](images/menu/root-base-bfcn-1.png)
+        - `BAS+`: add `X` and `Y` using unsigned 32-bit integer math
+        - `BAS-`: subtract `X` from `Y` using unsigned 32-bit integer math
+        - `BAS*`: multiply `X` and `Y` using unsigned 32-bit integer math
+        - `BAS/`: divide `X` into `Y` using unsigned 32-bit integer math
+        - `BDIV`: divide `X` into `Y` with remainder, placing the quotient in
+          `X` and the remainder in `Y`
+    - ![ROOT > BASE > BCFS](images/menu/root-base-bcfs.png)
+        - ![ROOT > BASE > BCFS > Row1](images/menu/root-base-bcfs-1.png)
+        - `CCF`: clear carry flag
+        - `SCF`: set carry flag
+        - `CF?`: return carry flag state as 0 or 1
+        - `WSIZ`: set integer word size (supported values: 8, 16, 24, 32)
+        - `WSZ?`: return current integer word size (default: 32)
+- ![ROOT > HYP](images/menu/root-hyp.png) (ROOT > HYP)
+    - ![ROOT > HYP > Row1](images/menu/root-hyp-1.png)
+    - ![ROOT > HYP > Row2](images/menu/root-hyp-2.png)
+    - `SINH`: hyperbolic `sin()`
+    - `COSH`: hyperbolic `cos()`
+    - `TANH`: hyperbolic `tan()`
+    - `ASNH`: hyperbolic `asin()`
+    - `ACSH`: hyperbolic `acos()`
+    - `ATNH`: hyperbolic `atan()`
+- ![ROOT > STAT](images/menu/root-stat.png) (ROOT > STAT)
+    - ![ROOT > STAT > Row1](images/menu/root-stat-1.png)
+    - ![ROOT > STAT > Row2](images/menu/root-stat-2.png)
+    - ![ROOT > STAT > Row3](images/menu/root-stat-3.png)
+    - `Σ+`: add `Y` and `X` data point to STAT registers
+    - `Σ-`: remove `Y` and `X` data point from STAT registers
+    - `ALLΣ`: collect statistical sums for all curve fit models
+    - `LINΣ`: collect statistical sums for the linear curve fit model
+    - `CLΣ`: clear STAT registers (storage registers `R00`-`R99` are not
+      affected)
+    - `SUM`: return Sum of `Y` and Sum of `X` in the `Y` and `X` registers
+    - `MEAN`: return average `<Y>` and `<X>` in the `Y` and `X` registers
+    - `WMN`: return the weighted mean of `Y` and weighted mean of `X` in the `Y`
+      and `X` registers
+        - `weighted mean Y = Sum(XY)/Sum(X)`
+        - `weighted mean X = Sum(XY)/Sum(Y)`
+    - `N`: return the number of data items entered
+    - `SDEV`: sample standard deviation of `Y` and `X`
+        - `sdev(X) = sqrt(N/(N-1)) pdev(X)`
+        - `sdev(Y) = sqrt(N/(N-1)) pdev(Y)`
+    - `SCOV`: sample covariance
+        - `scov(X,Y) = (N/(N-1)) pcov(X,Y)`
+    - `PDEV`: population standard deviation of `Y` and `X`
+        - `pdev(X) = <X^2> - <X>^2`
+        - `pdev(Y) = <Y^2> - <Y>^2`
+    - `PCOV`: population covariance
+        - `pcov(X,Y) = <XY> - <X><Y>`
+    - ![ROOT > STAT > SIGMA](images/menu/root-stat-sigma.png) (ROOT > STAT > SIGMA)
+        - ![ROOT > STAT > SIGMA > Row1](images/menu/root-stat-sigma-1.png)
+        - ![ROOT > STAT > SIGMA > Row2](images/menu/root-stat-sigma-2.png)
+        - ![ROOT > STAT > SIGMA > Row3](images/menu/root-stat-sigma-3.png)
+        - Recall the given STAT register stored (follows the same convention as
+          the [Plus42](https://thomasokken.com/plus42/) app)
+        - `ΣX` - sum of `X`
+        - `ΣX2` - sum of `X^2`
+        - `ΣY` - sum of `Y`
+        - `ΣY2` - sum of `Y^2`
+        - `ΣXY` - sum of `XY`
+        - `ΣN` - `N` total number of data points (`Σ1` is more mathematically
+          correct, but that looks awkward in the UI)
+        - `ΣLX` - sum of `Ln(X)`
+        - `ΣLX2` - sum of `Ln(X)^2`
+        - `ΣLY` - sum of `Ln(Y)`
+        - `ΣLY2` - sum of `Ln(Y)^2`
+        - `ΣLXL` - sum of `Ln(X) Ln(Y)`
+        - `ΣXLY` - sum of `X Ln(Y)`
+        - `ΣYLX` - sum of `Y Ln(X)`
+    - ![ROOT > STAT > CFIT](images/menu/root-stat-cfit.png) (ROOT > STAT >
+      CFIT)
+        - See Chapter 15 of the _HP-42S User's Manual_
+        - ![ROOT > STAT > CFIT > Row1](images/menu/root-stat-cfit-1.png)
+        - ![ROOT > STAT > CFIT > Row2](images/menu/root-stat-cfit-2.png)
+        - `Y>X`: forecast X from Y
+        - `X>Y`: forecast Y from X
+        - `SLOP`: slope of curve fit model, i.e. `m` parameter
+        - `YINT`: y-intercept of curve fit model, i.e. `b` parameter
+        - `CORR`: correlation coefficient of the least square curve fit
+        - `LINF`: linear fit model, `y = mx + b`
+        - `LOGF`: logarithmic fit model, `y = m ln(x) + b`
+        - `EXPF`: exponential fit model, `y = b e^(mx)`
+        - `PWRF`: power fit model, `y = b x^m`
+        - `BEST`: automatically select the best model, i.e. the one with the
+          largest absolute value of the correlation coefficient. The `CORR`
+          value is returned in the `X` register for reference.
+- ![ROOT > CONV](images/menu/root-conv.png) (ROOT > CONV)
+    - ![ROOT > CONV > Row1](images/menu/root-conv-1.png)
+    - ![ROOT > CONV > Row2](images/menu/root-conv-2.png)
+    - `>DEG`: convert radians to degrees
+    - `>RAD`: convert degrees to radians
+    - `>REC`: polar to rectangular
+        - input: `Y`=y, `X`=x
+        - output: `Y`=theta, `X`=r
+        - (consistent with HP-42S)
+    - `>POL`: rectangular to polar
+        - input: `Y`=theta, `X`=r
+        - output: `Y`=y, `X`=x
+        - (consistent with HP-42S)
+    - `>HR`: convert `HH.MMSSssss` to `HH.hhhh`
+    - `>HMS`: convert `HH.hhhh` to `HH.MMSSssss`
+    - `HMS+`: add `X` and `Y` assuming HMS format
+    - `HMS-`: subtract `X` from `Y` assuming HMS format
+- ![ROOT > TVM](images/menu/root-tvm.png) (ROOT > TVM)
+    - ![ROOT > TVM > Row1](images/menu/root-tvm-1.png)
+    - ![ROOT > TVM > Row2](images/menu/root-tvm-2.png)
+    - ![ROOT > TVM > Row3](images/menu/root-tvm-3.png)
+    - `N`: set or calculate Number of payment periods
+    - `I%YR`: set or calculate Interest Percent per Year
+    - `PV`: set or calculate Present Value
+    - `PMT`: set or calculate Payment per period
+    - `FV`: set or calculate Future Value
+    - `P/YR`: set number of payments per year
+    - `C/YR`: set number of compoundings per year
+    - `BEG`: payment occurs at the Beginning of each period
+    - `END`: payment occurs at the End of each period
+    - `CLTV`: clear TVM variables and parameters
+    - `IYR1`: set `I%YR` guess 1 for TVM Solver
+    - `IYR2`: set `I%YR` guess 2 for TVM Solver
+    - `TMAX`: set iteration max for TVM Solver
+    - `RSTV`: reset TVM Solver parameters to factory defaults
+- ![ROOT > CLR](images/menu/root-clr.png) (ROOT > CLR)
+    - ![ROOT > CLR > Row1](images/menu/root-clr-1.png)
+    - ![ROOT > CLR > Row2](images/menu/root-clr-2.png)
+    - `CLX`: clear `X` stack register (stack lift disabled)
+    - `CLST`: clear all RPN stack registers
+    - `CLRG`: clear all storage registers `R00` to `R99`
+    - `CLΣ`: clear STAT registers (storage registers `R00`-`R99` are not
+      affected)
+    - `CLTV`: clear TVM variables and parameters
+    - `CLD`: clear display and rerender everything
+- ![ROOT > MODE](images/menu/root-mode.png) (ROOT > MODE)
+    - ![ROOT > MODE > Row1](images/menu/root-mode-1.png)
+    - ![ROOT > MODE > Row2](images/menu/root-mode-2.png)
+    - ![ROOT > MODE > Row3](images/menu/root-mode-3.png)
+    - ![ROOT > MODE > Row4](images/menu/root-mode-4.png)
+    - `FIX`: fixed mode with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `FIX{N}`
+    - `SCI`: scientific notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `SCI(N)`
+    - `ENG`: engineering notation with `N` digits after the decimal point
+        - set `N` to `99` for floating number of digits
+        - status line indicator is `ENG(N)`
+    - `RAD`: use radians for trigonometric functions
+    - `DEG`: use degrees for trigonometric functions
+    - `RRES`: real results only from real arguments
+    - `CRES`: complex results allowed from real arguments
+    - `RECT`: display complex number in rectangular form
+    - `PRAD`: display complex number in polar radian form
+    - `PDEG`: display complex number in polar degree form
+    - `RSIZ`: set register size `[25,100]`
+    - `RSZ?`: get register size
+    - `SSIZ`: set stack size `[4,8]`
+    - `SSZ?`: get stack size
+    - `,EE`: set Comma-EE button to normal mode
+    - `EE,`: set Comma-EE button to inverted mode
+    - `{..}`: display record objects in raw format
+      (see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
+    - `".."`: display record objects in string format
+      (see [USER_GUIDE_DATE.md](USER_GUIDE_DATE.md))
+- ![ROOT > STK](images/menu/root-stk.png) (ROOT > STK)
+    - ![ROOT > STK > Row1](images/menu/root-stk-1.png)
+    - `DUP`: duplicate `X` value and lift stack values up
+    - `R↑`: roll stack up, also bound to `2ND u` button
+    - `R↓`: roll stack down, also bound to `(` button
+    - `DROP`: delete the `X` value and drop stack values down
+    - `X<>Y`: exchange `X` and `Y`, also bound to `)` button
+- ![ROOT > UNIT](images/menu/root-unit.png) (ROOT > UNIT)
+    - ![ROOT > UNIT > Row1](images/menu/root-unit-1.png)
+    - ![ROOT > UNIT > Row2](images/menu/root-unit-2.png)
+    - ![ROOT > UNIT > Row3](images/menu/root-unit-3.png)
+    - `UFCN` - UNIT functions
+    - `LENG` - Length units
+    - `AREA` - Area units
+    - `VOL` - Volume units
+    - `TEMP` - Temperature units
+    - `MASS` - Mass units
+    - `FORC` - Force units
+    - `PRES` - Pressure units
+    - `ENER` - Energy units
+    - `PWR` - Power units
+    - `TIME` - Time units
+    - `SPD` - Speed units
+    - `FUEL` - Fuel consumption units
+    - ![ROOT > UNIT > UFCN](images/menu/root-unit-ufcn.png) (ROOT > UNIT > UFCN)
+        - ![ROOT > UNIT > UFCN > Row1](images/menu/root-unit-ufcn-1.png)
+        - `UVAL`: extract unit display value
+        - `UBAS`: extract the equilvaent base unit
+    - ![ROOT > UNIT > LENG](images/menu/root-unit-leng.png) (ROOT > UNIT > LENG)
+        - ![ROOT > UNIT > LENG > Row1](images/menu/root-unit-leng-1.png)
+        - ![ROOT > UNIT > LENG > Row2](images/menu/root-unit-leng-2.png)
+        - ![ROOT > UNIT > LENG > Row3](images/menu/root-unit-leng-3.png)
+        - ![ROOT > UNIT > LENG > Row4](images/menu/root-unit-leng-4.png)
+        - `ferm`: fermi
+        - `angs`: angstrom
+        - `nm`: nanometer
+        - `um`: micrometer
+        - `mm`: millimeter
+        - `cm`: centimeters
+        - `m`: meter
+        - `km`: kilometer
+        - `mil`: mil (1/1000 of inch)
+        - `in`: inch
+        - `ft`: foot
+        - `yd`: yard
+        - `mi`: mile
+        - `TYPO`: Typographical units
+        - `SURV`: Survey units
+        - `NAUT`: Nautical units
+        - `ASTR`: Astronomy units
+        - ![ROOT > UNIT > LENG > TYPO](images/menu/root-unit-leng-typo.png) (ROOT > UNIT > LENG > TYPO)
+            - ![ROOT > UNIT > LENG > TYPO > Row1](images/menu/root-unit-leng-typo-1.png)
+            - `twip`: twip (1/20 point)
+            - `pt`: point (1/72 inch)
+            - `pica`: pica (12 point)
+        - ![ROOT > UNIT > LENG > SURV](images/menu/root-unit-leng-surv.png) (ROOT > UNIT > LENG > SURV)
+            - ![ROOT > UNIT > LENG > SURV > Row1](images/menu/root-unit-leng-surv-1.png)
+            - ![ROOT > UNIT > LENG > SURV > Row2](images/menu/root-unit-leng-surv-2.png)
+            - `svft`: survey foot (pre-2023)
+            - `rod`: rod
+            - `chai`: chain
+            - `frlg`: furlong
+            - `svmi`: survey mile (pre-2023)
+            - `league`: league
+        - ![ROOT > UNIT > LENG > NAUT](images/menu/root-unit-leng-naut.png) (ROOT > UNIT > LENG > NAUT)
+            - ![ROOT > UNIT > LENG > NAUT > Row1](images/menu/root-unit-leng-naut-1.png)
+            - `fath`: fathom
+            - `cabl`: cable
+            - `nmi`: nautical mile
+        - ![ROOT > UNIT > LENG > ASTR](images/menu/root-unit-leng-astr.png) (ROOT > UNIT > LENG > ASTR)
+            - ![ROOT > UNIT > LENG > ASTR > Row1](images/menu/root-unit-leng-astr-1.png)
+            - `lsec`: light second
+            - `AU`: Astronomical Unit
+            - `ly`: light year
+            - `pc`: parsec
+    - ![ROOT > UNIT > AREA](images/menu/root-unit-area.png) (ROOT > UNIT > AREA)
+        - ![ROOT > UNIT > AREA > Row1](images/menu/root-unit-area-1.png)
+        - ![ROOT > UNIT > AREA > Row2](images/menu/root-unit-area-2.png)
+        - ![ROOT > UNIT > AREA > Row3](images/menu/root-unit-area-3.png)
+        - `mm^2`: square millimeter
+        - `cm^2`: square centimeter
+        - `m^2`: square meter
+        - `km^2`: square kilometer
+        - `in^2`: square inch
+        - `ft^2`: square foot
+        - `yd^2`: square yard
+        - `mi^2`: square mile
+        - `nmi^2`: square nautical mile
+        - `acre`: acre
+        - `ha`: hectare
+        - `usfb`: US football field
+        - `cafb`: Canadian football field
+        - `SURV`: Survey units for area
+        - ![ROOT > UNIT > AREA > SURV](images/menu/root-unit-area-surv.png) (ROOT > UNIT > AREA > SURV)
+            - `rod^2`: square rod
+            - `chn^2`: square chain
+            - `fur^2`: square furlong
+    - ![ROOT > UNIT > VOL](images/menu/root-unit-vol.png) (ROOT > UNIT > VOL)
+        - ![ROOT > UNIT > VOL > Row1](images/menu/root-unit-vol-1.png)
+        - ![ROOT > UNIT > VOL > Row2](images/menu/root-unit-vol-2.png)
+        - ![ROOT > UNIT > VOL > Row3](images/menu/root-unit-vol-3.png)
+        - ![ROOT > UNIT > VOL > Row4](images/menu/root-unit-vol-4.png)
+        - `mm^3`: cubic millimeter
+        - `cm^3`: cubic centimeter
+        - `m^3`: cubic meter
+        - `km^3`: cubic kilometer
+        - `in^3`: cubic inch
+        - `ft^3`: cubic foot
+        - `yd^3`: cubic yard
+        - `mi^3`: cubic mile
+        - `nmi^3`: cubic nautical mile
+        - `uL`: microliter
+        - `mL`: milliliter
+        - `L`: liter
+        - `mtsp`: metric teaspoon
+        - `mtbs`: metric tablespoon
+        - `US`: US volume units
+        - `IMP`: Imperial volume units
+        - `DRY`: Dry volume units
+        - `MISC`: Miscellaneous volume units
+        - ![ROOT > UNIT > VOL > US](images/menu/root-unit-vol-us.png) (ROOT > UNIT > VOL > US)
+            - ![ROOT > UNIT > VOL > US > Row1](images/menu/root-unit-vol-us-1.png)
+            - ![ROOT > UNIT > VOL > US > Row2](images/menu/root-unit-vol-us-2.png)
+            - `tsp`: teaspoon
+            - `tbsp`: tablespoon
+            - `floz`: fluid ounce
+            - `gill`: gill
+            - `cpu`: cup
+            - `pint`: pint
+            - `qt`: quart
+            - `gal`: gallon
+        - ![ROOT > UNIT > VOL > IMP](images/menu/root-unit-vol-imp.png) (ROOT > UNIT > VOL > IMP)
+            - ![ROOT > UNIT > VOL > IMP > Row1](images/menu/root-unit-vol-imp-1.png)
+            - ![ROOT > UNIT > VOL > IMP > Row2](images/menu/root-unit-vol-imp-2.png)
+            - `tsp`: imperial teaspoon
+            - `tbsp`: imperial tablespoon
+            - `floz`: imperial fluid ounce
+            - `gill`: imperial gill
+            - `cpu`: imperial cup
+            - `pint`: imperial pint
+            - `qt`: imperial quart
+            - `gal`: imperial gallon
+        - ![ROOT > UNIT > VOL > DRY](images/menu/root-unit-vol-dry.png) (ROOT > UNIT > VOL > DRY)
+            - ![ROOT > UNIT > VOL > DRY > Row1](images/menu/root-unit-vol-dry-1.png)
+            - ![ROOT > UNIT > VOL > DRY > Row2](images/menu/root-unit-vol-dry-2.png)
+            - `drpt`: dry pint
+            - `drqt`: dry quart
+            - `dgal`: dry gallon
+            - `peck`: peck
+            - `bush`: bushel
+            - `dbbl`: dry barrel
+        - ![ROOT > UNIT > VOL > MISC](images/menu/root-unit-vol-misc.png) (ROOT > UNIT > VOL > MISC)
+            - ![ROOT > UNIT > VOL > MISC > Row1](images/menu/root-unit-vol-misc-1.png)
+            - `bdft`: board-foot
+            - `bbl`: oil barrel (42 US gallons)
+            - `olmp`: olympic swimming pool (2m deep)
+            - `acft`: acre-foot
+    - ![ROOT > UNIT > TEMP](images/menu/root-unit-temp.png) (ROOT > UNIT > TEMP)
+        - ![ROOT > UNIT > TEMP > Row1](images/menu/root-unit-temp-1.png)
+        - `°C`: Celsius
+        - `°F`: Fahrenheit
+        - `°R`: Rankine
+        - `°K`: Kelvin (The official SI symbol for Kelvin is just `K` without the degree
+          symbol. RPN83P uses the degree symbol for UI consistency with other
+          temperature units.)
+    - ![ROOT > UNIT > MASS](images/menu/root-unit-mass.png) (ROOT > UNIT > MASS)
+        - ![ROOT > UNIT > MASS > Row1](images/menu/root-unit-mass-1.png)
+        - ![ROOT > UNIT > MASS > Row2](images/menu/root-unit-mass-2.png)
+        - `ug`: microgram
+        - `mg`: milligram
+        - `g`: gram
+        - `kg`: kilogram
+        - `t`: metric ton (1000 kg)
+        - `amu`: atomic mass unit
+        - `US`: US units
+        - `IMP`: Imperial units
+        - `TROY`: Troy units
+        - ![ROOT > UNIT > MASS > US](images/menu/root-unit-mass-us.png) (ROOT > UNIT > MASS > US)
+            - ![ROOT > UNIT > MASS > US > Row1](images/menu/root-unit-mass-us-1.png)
+            - ![ROOT > UNIT > MASS > US > Row2](images/menu/root-unit-mass-us-2.png)
+            - `grai`: grain (1/7000 lbs)
+            - `dram`: dram (1/16 ounce)
+            - `oz`: ounce
+            - `lb`: pound
+            - `slug`: slug
+            - `scwt`: short hundred weight (100 lbs)
+            - `ston`: short ton (20 cwt, 2000 lbs)
+        - ![ROOT > UNIT > MASS > IMP](images/menu/root-unit-mass-imp.png) (ROOT > UNIT > MASS > IMP)
+            - ![ROOT > UNIT > MASS > IMP > Row1](images/menu/root-unit-mass-imp-1.png)
+            - `lb`: pound
+            - `stne`: stone (14 pounds)
+            - `qrtr`: quarter (2 stones)
+            - `lcwt`: long hundred weight (8 stones, 112 lbs)
+            - `lton`: long ton (20 lcwt, 2240 lbs)
+        - ![ROOT > UNIT > MASS > TROY](images/menu/root-unit-mass-troy.png) (ROOT > UNIT > MASS > TROY)
+            - ![ROOT > UNIT > MASS > TROY > Row1](images/menu/root-unit-mass-troy-1.png)
+            - `grai`: grain(1/7000 lbs)
+            - `dwt`: troy pennyweight (24 grains)
+            - `ozt`: troy ounce (20 troy pennyweights)
+            - `lbt`: troy pound (12 troy ounces)
+    - ![ROOT > UNIT > FORC](images/menu/root-unit-forc.png) (ROOT > UNIT > FORC)
+        - ![ROOT > UNIT > FORC > Row1](images/menu/root-unit-forc-1.png)
+        - ![ROOT > UNIT > FORC > Row2](images/menu/root-unit-forc-2.png)
+        - `dyne`: dyne
+        - `N`: newton
+        - `kgf`: kilogram force
+        - `tonf`: metric ton force
+        - `pdl`: poundal
+        - `lbf`: pound force
+        - `stnf`: short ton force
+        - `ltnf`: long ton force
+    - ![ROOT > UNIT > PRES](images/menu/root-unit-pres.png) (ROOT > UNIT > PRES)
+        - ![ROOT > UNIT > PRES > Row1](images/menu/root-unit-pres-1.png)
+        - ![ROOT > UNIT > PRES > Row2](images/menu/root-unit-pres-2.png)
+        - ![ROOT > UNIT > PRES > Row3](images/menu/root-unit-pres-3.png)
+        - `Pa`: pascal
+        - `hPa`: hectopascal
+        - `kPa`: kilopascal
+        - `torr`: torr
+        - `atm`: atmosphere
+        - `mbar`: millibar
+        - `dbar`: decibar
+        - `bar`: bar
+        - `psi`: pounds per square inch
+        - `mmH`: millimeter of mercury
+        - `inHg`: inch of mercury
+        - `mmw`: millimeter of water gauge
+        - `inwg`: inch of water gauge
+    - ![ROOT > UNIT > ENER](images/menu/root-unit-ener.png) (ROOT > UNIT > ENER)
+        - ![ROOT > UNIT > ENER > Row1](images/menu/root-unit-ener-1.png)
+        - ![ROOT > UNIT > ENER > Row2](images/menu/root-unit-ener-2.png)
+        - ![ROOT > UNIT > ENER > Row3](images/menu/root-unit-ener-3.png)
+        - `eV`: elctron-volt
+        - `erg`: erg
+        - `J`: joule
+        - `kJ`: kilojoule
+        - `ftlb`: foot-pound energy
+        - `Wh`: watt-hour
+        - `kWh`: kilowatt-hour
+        - `cal`: calorie
+        - `kcal`: kilocalorie
+        - `Btu`: British thermal units (1055 joules)
+        - `tTNT`: metric ton of TNT (4.184e9 joules)
+        - `Latm`: liter-atmosphere
+    - ![ROOT > UNIT > PWR](images/menu/root-unit-pwr.png) (ROOT > UNIT > PWR)
+        - ![ROOT > UNIT > PWR > Row1](images/menu/root-unit-pwr-1.png)
+        - ![ROOT > UNIT > PWR > Row2](images/menu/root-unit-pwr-2.png)
+        - `W`: watt
+        - `kW`: kilowatt
+        - `fl/s`: foot-pound per second
+        - `Bt/h`: Btu per hour
+        - `Bt/m`: Btu per minute
+        - `ca/s`: calorie per second
+        - `hp`: horsepower
+    - ![ROOT > UNIT > TIME](images/menu/root-unit-time.png) (ROOT > UNIT > TIME)
+        - ![ROOT > UNIT > TIME > Row1](images/menu/root-unit-time-1.png)
+        - ![ROOT > UNIT > TIME > Row2](images/menu/root-unit-time-2.png)
+        - `ns`: nanosecond
+        - `us`: microsecond
+        - `ms`: millisecond
+        - `sec`: second
+        - `min`: minute
+        - `hour`: hour
+        - `day`: day
+        - `week`: week
+        - `year`: Julian year (365.25 days exactly)
+    - ![ROOT > UNIT > SPD](images/menu/root-unit-spd.png) (ROOT > UNIT > SPD)
+        - ![ROOT > UNIT > SPD > Row1](images/menu/root-unit-spd-1.png)
+        - ![ROOT > UNIT > SPD > Row2](images/menu/root-unit-spd-2.png)
+        - `m/s`: meter per second
+        - `ft/s`: foot per second
+        - `kph`: kilometer per hour
+        - `mph`: mile per hour
+        - `knot`: nautical mile per hour
+        - `c`: speed of light
+    - ![ROOT > UNIT > FUEL](images/menu/root-unit-fuel.png) (ROOT > UNIT > FUEL)
+        - ![ROOT > UNIT > FUEL > Row1](images/menu/root-unit-fuel-1.png)
+        - `Lkm`: liters per 100 km
+        - `mpg`: miles per US gallon
+- ![ROOT > DATE](images/menu/root-date.png) (ROOT > DATE)
+    - ![ROOT > DATE > Row1](images/menu/root-date-1.png)
+    - ![ROOT > DATE > Row2](images/menu/root-date-2.png)
+    - `D`: Date folder
+    - `T`: Time folder
+    - `DT`: DateTime folder
+    - `TZ`: TimeZone folder
+    - `DZ`: ZonedDateTime folder
+    - `DR`: Duration folder
+    - `DW`: DayOfWeek folder
+    - `EPCH`: Epoch folder
+    - `CLK`: Clock folder
+    - ![ROOT > DATE > D](images/menu/root-date-d.png) (ROOT > DATE > D)
+        - ![ROOT > DATE > Date > Row1](images/menu/root-date-d-1.png)
+        - ![ROOT > DATE > Date > Row2](images/menu/root-date-d-2.png)
+        - ![ROOT > DATE > Date > Row3](images/menu/root-date-d-3.png)
+        - ![ROOT > DATE > Date > Row4](images/menu/root-date-d-4.png)
+        - `D{}`: insert initialization string for Date object
+        - `>ED`: convert Date to epoch days (assuming UTC)
+        - `ED>`: epoch days to Date (assuming UTC)
+        - `>ES`: convert Date to epoch seconds (assuming UTC)
+        - `ES>`: epoch seconds to Date (assuming UTC)
+        - `LEAP`: determine if year of Date is a leap year
+        - `DOW`: calculate the DayOfWeek of given Date, DateTime, ZonedDateTime
+        - `CVTZ`: convert Date (Y) to TimeZone (X)
+        - `.YR`: extract `year` component of Date
+        - `.MON`: extract `month` component of Date
+        - `.DAY`: extract `day` component of Date
+        - `DSHK`: (not defined)
+        - `DEXD`: extend Date to DateTime
+        - `DCUT`: (not defined)
+        - `DLNK`: link Date and Time into DateTime
+    - ![ROOT > DATE > T](images/menu/root-date-t.png) (ROOT > DATE > T)
+        - ![ROOT > DATE > Time > Row1](images/menu/root-date-t-1.png)
+        - ![ROOT > DATE > Time > Row2](images/menu/root-date-t-2.png)
+        - `T{}`: insert initialization string for Time object
+        - `>S`: convert Time to seconds after midnight
+        - `S>`: convert seconds after midnight to Time
+        - `.HR`: extract `hour` component of Time
+        - `.MIN`: extract `minute` component of Time
+        - `.SEC`: extract `second` component of Time
+    - ![ROOT > DATE > DT](images/menu/root-date-dt.png) (ROOT > DATE > DT)
+        - ![ROOT > DATE > DateTime > Row1](images/menu/root-date-dt-1.png)
+        - ![ROOT > DATE > DateTime > Row2](images/menu/root-date-dt-2.png)
+        - ![ROOT > DATE > DateTime > Row3](images/menu/root-date-dt-3.png)
+        - `DT{}`: insert initialization string for DateTime object
+        - `>ED`: convert DateTime to epoch days (assuming UTC)
+        - `ED>`: epoch days to DateTime (assuming UTC)
+        - `>ES`: convert DateTime to epoch seconds (assuming UTC)
+        - `ES>`: epoch seconds to DateTime (assuming UTC)
+        - `LEAP`: determine if given year is a leap year
+        - `DOW`: calculate the DayOfWeek of given DateTime
+        - `CVTZ`: convert DateTime (in Y) to the TimeZone (in X)
+        - `.D{}`: extract the Date from the DateTime
+        - `.T{}`: extract the Time from the DateTime
+        - `DSHK`: shrink a DateTime to a Date by truncating the TimeZone
+        - `DEXD`: extend DateTime into ZonedDateTime by adding a UTC TimeZone
+        - `DCUT`: cut (split) a DateTime into a Date and Time
+        - `DLNK`: link (merge) Date and Time into a DateTime
+    - ![ROOT > DATE > TZ](images/menu/root-date-tz.png) (ROOT > DATE > TZ)
+        - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-tz-1.png)
+        - `TZ{}`: insert initialization string for TimeZone object
+        - `>HR`: convert TimeZone to floating point hours
+        - `HR>`: convert floating point hours into TimeZone
+        - `.HR`: extract `hour` component of TimeZone
+        - `.MIN`: extract `minute` component of TimeZone
+    - ![ROOT > DATE > DZ](images/menu/root-date-dz.png) (ROOT > DATE > DZ)
+        - ![ROOT > DATE > ZonedDateTime > Row1](images/menu/root-date-dz-1.png)
+        - ![ROOT > DATE > ZonedDateTime > Row2](images/menu/root-date-dz-2.png)
+        - ![ROOT > DATE > ZonedDateTime > Row3](images/menu/root-date-dz-3.png)
+        - ![ROOT > DATE > ZonedDateTime > Row4](images/menu/root-date-dz-4.png)
+        - `DZ{}`: insert initialization string for ZonedDateTime object
+        - `>ED`: convert ZonedDateTime to epoch days (assuming UTC)
+        - `ED>`: epoch days to ZonedDateTime (assuming UTC)
+        - `>ES`: convert ZonedDateTime to epoch seconds (assuming UTC)
+        - `ES>`: epoch seconds to ZonedDateTime (assuming UTC)
+        - `ES>@`: epoch seconds to ZonedDateTime (assuming UTC)
+        - `LEAP`: determine if given year is a leap year
+        - `DOW`: calculate the DayOfWeek of given ZonedZonedDateTime
+        - `CVTZ`: convert ZonedDateTime (in Y) to the TimeZone (in X)
+        - `.D{}`: extract the Date from the ZonedDateTime
+        - `.T{}`: extract the Time from the ZonedDateTime
+        - `.DT{}`: extract the DateTime from the ZonedDateTime
+        - `.TZ{}`: extract the Time from the ZonedDateTime
+        - `DSHK`: shrink a ZonedDateTime into a DateTime by truncating the
+          TimeZone
+        - `DEXD`: (not defined)
+        - `DCUT`: cut (split) a ZonedDateTime into a DateTime and TimeZone
+        - `DLNK`: (not defined)
+    - ![ROOT > DATE > DR](images/menu/root-date-dr.png) (ROOT > DATE > DR)
+        - ![ROOT > DATE > Duration > Row1](images/menu/root-date-dr-1.png)
+        - ![ROOT > DATE > Duration > Row2](images/menu/root-date-dr-2.png)
+        - `DR{}`: insert initialization string for Duration object
+        - `DAY>`: convert days into Duration
+        - `HR>`: convert hours into Duration
+        - `MIN>`: convert minutes into Duration
+        - `SEC>`: convert seconds into Duration
+        - `>S`: convert Duration into seconds
+        - `.DAY`: extract `day` component of Duration
+        - `.HR`: extract `hour` component of Duration
+        - `.MIN`: extract `minute` component of Duration
+        - `.SEC`: extract `second` component of Duration
+    - ![ROOT > DATE > DW](images/menu/root-date-dw.png) (ROOT > DATE > DW)
+        - ![ROOT > DATE > TimeZone > Row1](images/menu/root-date-dw-1.png)
+        - `DW{}`: insert initialization string for DayOfWeek object
+        - `>ISO`: convert DayOfWeek into ISO day of week number (Mon=1,Sun=7)
+        - `ISO>`: convert ISO day of week number into DayOfWeek (Mon=1,Sun=7)
+        - `>UNX`: convert DayOfWeek into Unix day of week number (Sun=0,Sat=6)
+        - `UNX>`: convert Unix day of week number into DayOfWeek (Sun=0,Sat=6)
+    - ![ROOT > DATE > EPCH](images/menu/root-date-epch.png)
+      (ROOT > DATE > EPCH)
+        - ![ROOT > DATE > EPCH > Row1](images/menu/root-date-epch-1.png)
+        - ![ROOT > DATE > EPCH > Row2](images/menu/root-date-epch-2.png)
+        - `UNIX`: select Unix Epoch date of 1970-01-01
+        - `NTP`: select NTP Epoch date of 1900-01-01
+        - `GPS`: select GPS Epoch date of 1980-01-06
+        - `TIOS`: select TI-OS Epoch date of 1997-01-01
+        - `Y2K`: select Epoch date of 2000-01-01
+        - `CEPC`: select custom Epoch date
+        - `EPC`: set custom Epoch date
+        - `EPC?`: get current custom Epoch date
+    - ![ROOT > DATE > CLK](images/menu/root-date-clk.png) (ROOT > DATE > CLK)
+        - ![ROOT > DATE > CLK > Row1](images/menu/root-date-clk-1.png)
+        - ![ROOT > DATE > CLK > Row2](images/menu/root-date-clk-2.png)
+        - `NOW`: get the current hardware clock as Epoch seconds
+        - `NOWD`: get the current hardware clock as a Date using the Application
+          timezone
+        - `NOWT`: get the current hardware clock as a Time using the Application
+          timezone
+        - `NWDZ`: get the current hardware clock as a ZonedDateTime using the
+        Application timezone
+        - `NWUT`: get the current hardware clock as a ZonedDateTime using UTC
+        timezone
+        - `ATZ`: set the application timezone
+        - `ATZ?`: get the application timezone
+        - `CTZ`: set the hardware clock timezone
+        - `CTZ?`: get the hardware clock timezone
+        - `SETC`: set the datetime of the hardware clock

@@ -11,7 +11,6 @@
 #   program = menuconfig menugroup
 #   menuconfig = 'MenuConfig' '[' config* ']'
 #   config = 'ItemName' value
-#     | 'ItemNameId' value
 #     | 'ItemHandler' value
 #     | 'GroupHandler' value
 #   menugroup =  'MenuGroup' groupname grouplabel [handler] '[' menurow* ']'
@@ -44,7 +43,7 @@
 #   - itemaltname: alternative name for the menu item
 #   - label: identifier for the node data in the assembly code, also used as
 #       prefix for other identifiers (e.g. if the label="mNum", there will be
-#       other identifiers such as "mNumId", "mNumNameId").
+#       other identifiers such as "mNumId", "mNumName").
 #   - fonttag: a symbol from the TI-OS Small Font table, e.g. '<Sdegree>'
 #   - MenuRow: always has 5 menu nodes
 #   - MenuGroup: supports an optional 3rd argument `handler` that overrides
@@ -53,7 +52,6 @@
 # Define the defaults for blank menu items and menu groups.
 MenuConfig [
   ItemName mNullName
-  ItemNameId mNullNameId
   ItemHandler mNullHandler
   GroupHandler mGroupHandler
 ]
@@ -139,51 +137,64 @@ MenuGroup root mRoot [
         MenuItemAlt BIN BIN<Sblock> mBin # binary
       ]
       MenuRow [
-        MenuItem AND mBitwiseAnd
-        MenuItem OR mBitwiseOr
-        MenuItem XOR mBitwiseXor
-        MenuItem NOT mBitwiseNot # 1's complement
-        MenuItem NEG mBitwiseNeg # 2's complement
-      ]
-      MenuRow [
-        MenuItem SL mShiftLeftLogical # shift left logical
-        MenuItem SR mShiftRightLogical # shift right logical
-        MenuItem ASR mShiftRightArithmetic # shift right arithmetic
-        MenuItem SLn mShiftLeftLogicalN # shift left logical by N
-        MenuItem SRn mShiftRightLogicalN # shift right logical by N
-      ]
-      MenuRow [
-        MenuItem RL mRotateLeftCircular # rotate left circular
-        MenuItem RR mRotateRightCircular # rotate right circular
-        MenuItem RLC mRotateLeftCarry # rotate left carry
-        MenuItem RRC mRotateRightCarry # rotate right carry
-      ]
-      MenuRow [
-        MenuItem RLn mRotateLeftCircularN # rotate left circular by N
-        MenuItem RRn mRotateRightCircularN # rotate right circular by N
-        MenuItem RLCn mRotateLeftCarryN # rotate left carry by N
-        MenuItem RRCn mRotateRightCarryN # rotate right carry by N
-      ]
-      MenuRow [
-        MenuItem CB mClearBit
-        MenuItem SB mSetBit
-        MenuItem B<Squestion> mGetBit
-        MenuItem REVB mReverseBit
-        MenuItem CNTB mCountBit
-      ]
-      MenuRow [
-        MenuItem B<SplusSign> mBaseAdd
-        MenuItem B<Sdash> mBaseSubt
-        MenuItem B<Scross> mBaseMult
-        MenuItem B<Sslash> mBaseDiv
-        MenuItem BDIV mBaseDiv2
-      ]
-      MenuRow [
-        MenuItem CCF mClearCarryFlag
-        MenuItem SCF mSetCarryFlag
-        MenuItem CF<Squestion> mGetCarryFlag
-        MenuItem WSIZ mSetWordSize # 8, 16, 24, 32
-        MenuItem WSZ<Squestion> mGetWordSize
+        MenuGroup LOGI mBaseLogic mBaseLogicHandler [
+          MenuRow [
+            MenuItem AND mBitwiseAnd
+            MenuItem OR mBitwiseOr
+            MenuItem XOR mBitwiseXor
+            MenuItem NOT mBitwiseNot # 1's complement
+            MenuItem NEG mBitwiseNeg # 2's complement
+          ]
+        ]
+        MenuGroup ROTS mBaseRotate mBaseRotateHandler [
+          MenuRow [
+            MenuItem SL mShiftLeftLogical # shift left logical
+            MenuItem SR mShiftRightLogical # shift right logical
+            MenuItem ASR mShiftRightArithmetic # shift right arithmetic
+            MenuItem SLn mShiftLeftLogicalN # shift left logical by N
+            MenuItem SRn mShiftRightLogicalN # shift right logical by N
+          ]
+          MenuRow [
+            MenuItem RL mRotateLeftCircular # rotate left circular
+            MenuItem RR mRotateRightCircular # rotate right circular
+            MenuItem RLC mRotateLeftCarry # rotate left carry
+            MenuItem RRC mRotateRightCarry # rotate right carry
+          ]
+          MenuRow [
+            MenuItem RLn mRotateLeftCircularN # rotate left circular by N
+            MenuItem RRn mRotateRightCircularN # rotate right circular by N
+            MenuItem RLCn mRotateLeftCarryN # rotate left carry by N
+            MenuItem RRCn mRotateRightCarryN # rotate right carry by N
+          ]
+        ]
+        MenuGroup BITS mBaseBits mBaseBitsHandler [
+          MenuRow [
+            MenuItem CB mClearBit
+            MenuItem SB mSetBit
+            MenuItem B<Squestion> mGetBit
+            MenuItem REVB mReverseBit
+            MenuItem CNTB mCountBit
+          ]
+        ]
+        MenuGroup BFCN mBaseFunctions mBaseFunctionsHandler [
+          MenuRow [
+            MenuItem BAS<SplusSign> mBaseAdd
+            MenuItem BAS<Sdash> mBaseSubt
+            MenuItem BAS<Scross> mBaseMult
+            MenuItem BAS<Sslash> mBaseDiv
+            MenuItem BDIV mBaseDiv2
+          ]
+        ]
+        # BCFS means "Base Configs" or "Base Carry Flag and Word Size"
+        MenuGroup BCFS mBaseConfigs mBaseConfigsHandler [
+          MenuRow [
+            MenuItem CCF mClearCarryFlag
+            MenuItem SCF mSetCarryFlag
+            MenuItem CF<Squestion> mGetCarryFlag
+            MenuItem WSIZ mSetWordSize # 8, 16, 24, 32
+            MenuItem WSZ<Squestion> mGetWordSize
+          ]
+        ]
       ]
     ]
     MenuGroup HYP mHyperbolic [
@@ -244,8 +255,8 @@ MenuGroup root mRoot [
         MenuItem PCOV mStatPopCov
         MenuGroup CFIT mCfit [
           MenuRow [
-            MenuItem Y<Sconvert>X mCfitForcastX
-            MenuItem X<Sconvert>Y mCfitForcastY
+            MenuItem Y<Sconvert>X mCfitForecastX
+            MenuItem X<Sconvert>Y mCfitForecastY
             MenuItem SLOP mCfitSlope
             MenuItem YINT mCfitIntercept
             MenuItem CORR mCfitCorrelation
@@ -271,6 +282,8 @@ MenuGroup root mRoot [
       MenuRow [
         MenuItem <Sconvert>HR mHmsToHr
         MenuItem <Sconvert>HMS mHrToHms
+        MenuItem HMS<SplusSign> mHmsPlus
+        MenuItem HMS<Sdash> mHmsMinus
       ]
     ]
     MenuGroup TVM mTvm [
@@ -356,87 +369,449 @@ MenuGroup root mRoot [
     ]
     MenuGroup UNIT mUnit [
       MenuRow [
-        MenuItem <Sconvert><Stemp>C mFToC
-        MenuItem <Sconvert><Stemp>F mCToF
-        MenuItem * *
-        MenuItem <Sconvert>hPa mInhgToHpa
-        MenuItem <Sconvert>iHg mHpaToInhg
+        MenuGroup UFCN mUnitFunctions [
+          MenuRow [
+            MenuItem UVAL mUnitValue # extract the display value
+            MenuItem UBAS mUnitBase # convert to denominate in base unit
+          ]
+        ]
+        MenuGroup LENG mUnitLength [
+          MenuRow [
+            MenuItem ferm mUnitFermi
+            MenuItem angs mUnitAngstrom
+            MenuItem nm mUnitNanoMeter
+            MenuItem <Smu>m mUnitMicroMeter
+          ]
+          MenuRow [
+            MenuItem mm mUnitMilliMeter
+            MenuItem cm mUnitCentiMeter
+            MenuItem m mUnitMeter
+            MenuItem km mUnitKiloMeter
+          ]
+          MenuRow [
+            MenuItem mil mUnitMil
+            MenuItem in mUnitInch
+            MenuItem ft mUnitFoot
+            MenuItem yd mUnitYard
+            MenuItem mi mUnitMile
+          ]
+          # More obscure length units in subfolders here
+          MenuRow [
+            MenuGroup TYPO mTypography [
+              MenuRow [
+                MenuItem twip mUnitTwip
+                MenuItem pt mUnitPoint
+                MenuItem pica mUnitPica
+              ]
+            ]
+            MenuGroup SURV mSurvey [
+              MenuRow [
+                MenuItem svft mUnitSurveyFoot
+                MenuItem rod mUnitRod
+                MenuItem chai mUnitChain
+                MenuItem frlg mUnitFurlong
+                MenuItem svmi mUnitSurveyMile
+              ]
+              MenuRow [
+                MenuItem leag mUnitLeague
+              ]
+            ]
+            MenuGroup NAUT mNautical [
+              MenuRow [
+                MenuItem fath mUnitFathom
+                MenuItem cabl mUnitCable
+                MenuItem nmi mUnitNauticalMile
+              ]
+            ]
+            MenuGroup ASTR mAstronomy [
+              MenuRow [
+                MenuItem lsec mUnitLightSecond
+                MenuItem AU mUnitAstronomicalUnit
+                MenuItem ly mUnitLightYear
+                MenuItem pc mUnitParsec
+              ]
+            ]
+          ]
+        ]
+        MenuGroup AREA mUnitArea [
+          MenuRow [
+            MenuItem mm<Sarea> mUnitSqMilliMeter
+            MenuItem cm<Sarea> mUnitSqCentiMeter
+            MenuItem m<Sarea> mUnitSqMeter
+            MenuItem km<Sarea> mUnitSqKiloMeter
+          ]
+          MenuRow [
+            MenuItem in<Sarea> mUnitSqInch
+            MenuItem ft<Sarea> mUnitSqFoot
+            MenuItem yd<Sarea> mUnitSqYard
+            MenuItem mi<Sarea> mUnitSqMile
+            MenuItem nmi<Sarea> mUnitSqNauticalMile
+          ]
+          MenuRow [
+            MenuItem acre mUnitAcre
+            MenuItem ha mUnitHectare
+            MenuItem usfb mUnitUSFootball
+            MenuItem cafb mUnitCAFootball
+            MenuGroup SURV mUnitAreaSurv [
+              MenuRow [
+                MenuItem rod<Sarea> mUnitSqRod
+                MenuItem chn<Sarea> mUnitSqChain
+                MenuItem fur<Sarea> mUnitSqFurlong
+              ]
+            ]
+          ]
+        ]
+        MenuGroup VOL mUnitVol [
+          MenuRow [
+            MenuItem mm<Scube> mUnitCuMilliMeter
+            MenuItem cm<Scube> mUnitCuCentiMeter
+            MenuItem m<Scube> mUnitCuMeter
+            MenuItem km<Scube> mUnitCuKiloMeter
+          ]
+          MenuRow [
+            MenuItem in<Scube> mUnitCuInch
+            MenuItem ft<Scube> mUnitCuFoot
+            MenuItem yd<Scube> mUnitCuYard
+            MenuItem mi<Scube> mUnitCuMile
+            MenuItem nmi<Scube> mUnitCuNauticalMile
+          ]
+          MenuRow [
+            MenuItem <Smu>L mUnitMicroLiter
+            MenuItem mL mUnitMilliLiter
+            MenuItem L mUnitLiter
+            MenuItem mtsp mUnitMetricTeaspoon
+            MenuItem mtbs mUnitMetricTablespoon
+          ]
+          MenuRow [
+            MenuGroup US mUnitVolUS [
+              MenuRow [
+                MenuItem tsp mUnitTeaspoon
+                MenuItem tbsp mUnitTablespoon
+                MenuItem floz mUnitFluidOunce
+                MenuItem gill mUnitGill
+                MenuItem cup mUnitCup
+              ]
+              MenuRow [
+                MenuItem pint mUnitPint
+                MenuItem qt mUnitQuart
+                MenuItem gal mUnitGallon
+              ]
+            ]
+            MenuGroup IMP mUnitVolImp [
+              MenuRow [
+                MenuItem tsp mUnitImpTeaspoon
+                MenuItem tbsp mUnitImpTablespoon
+                MenuItem floz mUnitImpFluidOunce
+                MenuItem gill mUnitImpGill
+                MenuItem cup mUnitImpCup
+              ]
+              MenuRow [
+                MenuItem pint mUnitImpPint
+                MenuItem qt mUnitImpQuart
+                MenuItem gal mUnitImpGallon
+              ]
+            ]
+            MenuGroup DRY mUnitVolDry [
+              MenuRow [
+                MenuItem drpt mUnitDryPint
+                MenuItem drqt mUnitDryQuart
+                MenuItem dgal mUnitDryGallon
+                MenuItem peck mUnitPeck
+                MenuItem bush mUnitBushel
+              ]
+              MenuRow [
+                MenuItem dbbl mUnitDryBarrel
+              ]
+            ]
+            MenuGroup MISC mUnitVolMisc [
+              MenuRow [
+                MenuItem bdft mUnitBoardFoot
+                MenuItem bbl mUnitOilBarrel
+                MenuItem olmp mUnitOlympicPool
+                MenuItem acft mUnitAcreFoot
+              ]
+            ]
+          ]
+        ]
+        MenuGroup TEMP mUnitTemp [
+          MenuRow [
+            MenuItem <Stemp>C mUnitCelsius
+            MenuItem <Stemp>F mUnitFahrenheit
+            MenuItem <Stemp>R mUnitRankine
+            MenuItem <Stemp>K mUnitKelvin # add <Stemp> to 'K' for visual hint
+          ]
+        ]
       ]
       MenuRow [
-        MenuItem <Sconvert>km mMiToKm
-        MenuItem <Sconvert>mi mKmToMi
-        MenuItem * *
-        MenuItem <Sconvert>m mFtToM
-        MenuItem <Sconvert>ft mMToFt
+        MenuGroup MASS mUnitMass [
+          MenuRow [
+            MenuItem <Smu>g mUnitMicroGram
+            MenuItem mg mUnitMilliGram
+            MenuItem g mUnitGram
+            MenuItem kg mUnitKiloGram
+            MenuItem t mUnitMetricTon
+          ]
+          MenuRow [
+            MenuItem amu mUnitAtomicMassUnit
+            MenuGroup US mUnitMassUS [
+              MenuRow [
+                MenuItem grai mUnitGrain
+                MenuItem dram mUnitDram
+                MenuItem oz mUnitOunce
+                MenuItem lb mUnitPound
+                MenuItem slug mUnitSlug
+              ]
+              MenuRow [
+                MenuItem scwt mUnitShortHundredWeight
+                MenuItem ston mUnitShortTon
+              ]
+            ]
+            MenuGroup IMP mUnitMassImp [
+              MenuRow [
+                MenuItem lb mUnitImpPound # same as normal 'lb'
+                MenuItem stne mUnitStone
+                MenuItem qrtr mUnitQuarter
+                MenuItem lcwt mUnitLongHundredWeight
+                MenuItem lton mUnitLongTon
+              ]
+            ]
+            MenuGroup TROY mUnitMassTroy [
+              MenuRow [
+                MenuItem grai mUnitTroyGrain # same as normal 'grain'
+                MenuItem dwt mUnitTroyPennyWeight
+                MenuItem ozt mUnitTroyOunce
+                MenuItem lbt mUnitTroyPound
+              ]
+            ]
+          ]
+        ]
+        MenuGroup FORC mUnitForce [
+          MenuRow [
+            MenuItem dyne mUnitDyne
+            MenuItem N mUnitNewton
+            MenuItem kgf mUnitKilogramForce
+            MenuItem tonf mUnitMetricTonForce
+          ]
+          MenuRow [
+            MenuItem pdl mUnitPoundal
+            MenuItem lbf mUnitPoundForce
+            MenuItem stnf mUnitShortTonForce
+            MenuItem ltnf mUnitLongTonForce
+          ]
+        ]
+        MenuGroup PRES mUnitPressure [
+          MenuRow [
+            MenuItem Pa mUnitPascal
+            MenuItem hPa mUnitHectoPascal
+            MenuItem kPa mUnitKiloPascal
+            MenuItem torr mUnitTorr
+            MenuItem atm mUnitAtmosphere
+          ]
+          MenuRow [
+            MenuItem mbar mUnitMilliBar
+            MenuItem dbar mUnitDeciBar
+            MenuItem bar mUnitBar
+            MenuItem psi mUnitPoundSquareInch
+          ]
+          MenuRow [
+            MenuItem mmH mUnitMilliMeterMercury
+            MenuItem inHg mUnitInchMercury
+            MenuItem mmw mUnitMilliMeterWater
+            MenuItem inwg mUnitInchWater
+          ]
+        ]
+        MenuGroup ENER mUnitEnergy [
+          MenuRow [
+            MenuItem eV mUnitElectronVolt
+            MenuItem erg mUnitErg
+            MenuItem J mUnitJoule
+            MenuItem kJ mUnitKiloJoule
+            MenuItem ftlb mUnitFootPoundEnergy
+          ]
+          MenuRow [
+            MenuItem Wh mUnitWattHour
+            MenuItem kWh mUnitKiloWattHour
+            MenuItem cal mUnitCalorie
+            MenuItem kcal mUnitKiloCalorie
+            MenuItem Btu mUnitBritishThermalUnit
+          ]
+          MenuRow [
+            MenuItem tTNT mUnitTonTNT # metric ton
+            MenuItem Latm mUnitLiterAtmosphere
+          ]
+        ]
+        MenuGroup PWR mUnitPower [
+          MenuRow [
+            MenuItem W mUnitWatt
+            MenuItem kW mUnitKiloWatt
+            MenuItem fl<Sslash>s mUnitFootPoundEnergyPerSecond
+            MenuItem Bt<Sslash>h mUnitBtuPerHour
+            MenuItem Bt<Sslash>m mUnitBtuPerMinute
+          ]
+          MenuRow [
+            MenuItem ca<Sslash>s mUnitCaloriePerSecond
+            MenuItem hp mUnitHorsepower
+          ]
+        ]
       ]
       MenuRow [
-        MenuItem <Sconvert>cm mInToCm
-        MenuItem <Sconvert>in mCmToIn
-        MenuItem * *
-        MenuItem <Sconvert><Smu>m mMilToMicron
-        MenuItem <Sconvert>mil mMicronToMil
-      ]
-      MenuRow [
-        MenuItem <Sconvert>kg mLbsToKg
-        MenuItem <Sconvert>lbs mKgToLbs
-        MenuItem * *
-        MenuItem <Sconvert>g mOzToG
-        MenuItem <Sconvert>oz mGToOz
-      ]
-      MenuRow [
-        MenuItem <Sconvert>L mGalToL
-        MenuItem <Sconvert>gal mLToGal
-        MenuItem * *
-        MenuItem <Sconvert>mL mFlozToMl
-        MenuItem <Sconvert>foz mMlToFloz
-      ]
-      MenuRow [
-        MenuItem <Sconvert>kJ mCalToKj
-        MenuItem <Sconvert>cal mKjToCal
-        MenuItem * *
-        MenuItem <Sconvert>kW mHpToKw
-        MenuItem <Sconvert>hp mKwToHp
-      ]
-      MenuRow [
-        MenuItem <Sconvert>Lkm mMpgToLkm
-        MenuItem <Sconvert>mpg mLkmToMpg
-        MenuItem * *
-        MenuItem <Sconvert>kPa mPsiToKpa
-        MenuItem <Sconvert>psi mKpaToPsi
-      ]
-      MenuRow [
-        MenuItem <Sconvert>ha mAcreToHectare
-        MenuItem <Sconvert>acr mHectareToAcre
-        MenuItem * *
-        MenuItem * *
-        MenuItem * *
+        MenuGroup TIME mUnitTime [
+          MenuRow [
+            MenuItem ns mUnitNanoSecond
+            MenuItem <Smu>s mUnitMicroSecond
+            MenuItem ms mUnitMilliSecond
+            MenuItem sec mUnitSecond
+            MenuItem min mUnitMinute
+          ]
+          MenuRow [
+            MenuItem hour mUnitHour
+            MenuItem day mUnitDay
+            MenuItem week mUnitWeek
+            MenuItem year mUnitJulianYear
+          ]
+        ]
+        MenuGroup SPD mUnitSpeed [
+          MenuRow [
+            MenuItem m<Sslash>s mUnitMeterPerSecond
+            MenuItem ft<Sslash>s mUnitFootPerSecond
+            MenuItem kph mUnitKiloMeterPerHour
+            MenuItem mph mUnitMilePerHour
+            MenuItem knot mUnitKnot
+          ]
+          MenuRow [
+            MenuItem c mUnitLightSpeed
+          ]
+        ]
+        MenuGroup FUEL mUnitFuel [
+          MenuRow [
+            MenuItem Lkm mUnitLitersPerHundredKiloMeters
+            MenuItem mpg mUnitMilesPerGallon
+          ]
+        ]
       ]
     ]
     MenuGroup DATE mDate [
       MenuRow [
-        MenuItem LEAP mLeapYear # operates on year
-        MenuItem DOW mDayOfWeek # operates on Date
-        MenuItem * *
-        MenuItem D<Sconvert>DY mDateToEpochDays
-        MenuItem DY<Sconvert>D mEpochDaysToDate
-      ]
-      MenuRow [
-        MenuItem D<Scross><Sconvert>S mDateRelatedToSeconds
-        MenuItem S<Sconvert>DR mSecondsToDuration
-        MenuItem S<Sconvert>T mSecondsToTime
-        MenuItem S<Sconvert>DZ mEpochSecondsToAppDateTime
-        MenuItem S<Sconvert>UT mEpochSecondsToUTCDateTime
-      ]
-      MenuRow [
-        MenuItem TZ<Sconvert>H mTimeZoneToHours
-        MenuItem H<Sconvert>TZ mHoursToTimeZone
-        MenuGroup DOPS mDops [
+        MenuGroup D mDateFolderDate [
           MenuRow [
-            MenuItem DSHK mDateShrink # shrink DZ to DT, DT to D
-            MenuItem DEXD mDateExtend # extend D to DT, DT to DZ
-            MenuItem DCUT mDateCut # cut DZ to (DT,TZ), DT to (D,T)
-            MenuItem DLNK mDateLink # link (DT,TZ) to DZ, (D,T) to DT
-            MenuItem * *
+            MenuItem D<SlBrace><SrBrace> mDateCreate
+            MenuItem <Sconvert>ED mDateToEpochDays
+            MenuItem ED<Sconvert> mEpochDaysToDate
+            MenuItem <Sconvert>ES mDateToEpochSeconds
+            MenuItem ES<Sconvert> mEpochSecondsToDate
+          ]
+          MenuRow [
+            MenuItem LEAP mIsDateLeap
+            MenuItem DOW mDateToDayOfWeek
+            MenuItem CVTZ mDateConvertToTimeZone
+          ]
+          MenuRow [
+            MenuItem <Speriod>YR mDateExtractYear
+            MenuItem <Speriod>MON mDateExtractMonth
+            MenuItem <Speriod>DAY mDateExtractDay
+          ]
+          MenuRow [
+            MenuItem DSHK mDateShrinkToNothing
+            MenuItem DEXD mDateExtendToDateTime
+            MenuItem DCUT mDateCutToNothing
+            MenuItem DLNK mDateLinkToDateTime
+          ]
+        ]
+        MenuGroup T mDateFolderTime [
+          MenuRow [
+            MenuItem T<SlBrace><SrBrace> mTimeCreate
+            MenuItem <Sconvert>S mTimeToSeconds
+            MenuItem S<Sconvert> mSecondsToTime
+          ]
+          MenuRow [
+            MenuItem <Speriod>HR mTimeExtractHour
+            MenuItem <Speriod>MIN mTimeExtractMinute
+            MenuItem <Speriod>SEC mTimeExtractSecond
+          ]
+        ]
+        MenuGroup DT mDateFolderDateTime [
+          MenuRow [
+            MenuItem DT<SlBrace><SrBrace> mDateTimeCreate
+            MenuItem <Sconvert>ED mDateTimeToEpochDays
+            MenuItem ED<Sconvert> mEpochDaysToDateTime
+            MenuItem <Sconvert>ES mDateTimeToEpochSeconds
+            MenuItem ES<Sconvert> mEpochSecondsToDateTime
+          ]
+          MenuRow [
+            MenuItem LEAP mIsDateTimeLeap
+            MenuItem DOW mDateTimeToDayOfWeek
+            MenuItem CVTZ mDateTimeConvertToTimeZone
+            MenuItem <Speriod>D<SlBrace><SrBrace> mDateTimeExtractDate
+            MenuItem <Speriod>T<SlBrace><SrBrace> mDateTimeExtractTime
+          ]
+          MenuRow [
+            MenuItem DSHK mDateTimeShrinkToDate
+            MenuItem DEXD mDateTimeExtendToOffsetDateTime
+            MenuItem DCUT mDateTimeCutToDate
+            MenuItem DLNK mDateTimeLinkToOffsetDateTime
+          ]
+        ]
+        MenuGroup TZ mDateFolderOffset [
+          MenuRow [
+            MenuItem TZ<SlBrace><SrBrace> mOffsetCreate
+            MenuItem <Sconvert>HR mOffsetToHours
+            MenuItem HR<Sconvert> mHoursToOffset
+            MenuItem <Speriod>HR mOffsetExtractHour
+            MenuItem <Speriod>MIN mOffsetExtractMinute
+          ]
+        ]
+        MenuGroup DZ mDateFolderOffsetDateTime [
+          MenuRow [
+            MenuItem DZ<SlBrace><SrBrace> mOffsetDateTimeCreate
+            MenuItem <Sconvert>ED mOffsetDateTimeToEpochDays
+            MenuItem ED<Sconvert> mEpochDaysToOffsetDateTime
+            MenuItem <Sconvert>ES mOffsetDateTimeToEpochSeconds
+            MenuItem ES<Sconvert> mEpochSecondsToOffsetDateTimeUTC
+          ]
+          MenuRow [
+            MenuItem ES<Sconvert><SatSign> mEpochSecondsToOffsetDateTimeApp
+            MenuItem LEAP mIsOffsetDateTimeLeap
+            MenuItem DOW mOffsetDateTimeToDayOfWeek
+            MenuItem CVTZ mOffsetDateTimeConvertToTimeZone
+          ]
+          MenuRow [
+            MenuItem <Speriod>D<SlBrace><SrBrace> mOffsetDateTimeExtractDate
+            MenuItem <Speriod>T<SlBrace><SrBrace> mOffsetDateTimeExtractTime
+            MenuItem <Speriod>DT<SlBrace> mOffsetDateTimeExtractDateTime
+            MenuItem <Speriod>TZ<SlBrace> mOffsetDateTimeExtractOffset
+          ]
+          MenuRow [
+            MenuItem DSHK mOffsetDateTimeShrinkToDateTime
+            MenuItem DEXD mOffsetDateTimeExtendToNothing
+            MenuItem DCUT mOffsetDateTimeCutToDateTime
+            MenuItem DLNK mOffsetDateTimeLinkToNothing
+          ]
+        ]
+      ]
+      MenuRow [
+        MenuGroup DR mDateFolderDuration [
+          MenuRow [
+            MenuItem DR<SlBrace><SrBrace> mDurationCreate
+            MenuItem DAY<Sconvert> mDaysToDuration
+            MenuItem HR<Sconvert> mHoursToDuration
+            MenuItem MIN<Sconvert> mMinutesToDuration
+            MenuItem SEC<Sconvert> mSecondsToDuration
+          ]
+          MenuRow [
+            MenuItem <Sconvert>S mDurationToSeconds
+            MenuItem <Speriod>DAY mDurationExtractDay
+            MenuItem <Speriod>HR mDurationExtractHour
+            MenuItem <Speriod>MIN mDurationExtractMinute
+            MenuItem <Speriod>SEC mDurationExtractSecond
+          ]
+        ]
+        MenuGroup DW mDateFolderDayOfWeek [
+          MenuRow [
+            MenuItem DW<SlBrace><SrBrace> mDayOfWeekCreate
+            MenuItem <Sconvert>ISO mDayOfWeekToIsoDowNumber # Mon=1, Sun=7
+            MenuItem ISO<Sconvert> mIsoDowNumberToDayOfWeek # Mon=1, Sun=7
+            MenuItem <Sconvert>UNX mDayOfWeekToUnixDowNumber # Sun=0, Sat=6
+            MenuItem UNX<Sconvert> mUnixDowNumberToDayOfWeek # Sun=0, Sat=6
           ]
         ]
         MenuGroup EPCH mEpoch [
@@ -460,12 +835,12 @@ MenuGroup root mRoot [
             MenuItem NOW mGetNow # RTC epochSeconds
             MenuItem NOWD mGetNowDate # RTC Date using appTimeZone
             MenuItem NOWT mGetNowTime # RTC Time using appTimeZone
-            MenuItem NWDZ mGetNowAppDateTime # RTC OffsetDateTime using appTimeZone
-            MenuItem NWUT mGetNowUTCDateTime # RTC OffsetDateTime using UTC
+            MenuItem NWDZ mGetNowOffsetDateTime # RTC OffsetDateTime using appTimeZone
+            MenuItem NWUT mGetNowOffsetDateTimeUtc # RTC OffsetDateTime using UTC
           ]
           MenuRow [
-            MenuItem TZ mSetTimeZone
-            MenuItem TZ<Squestion> mGetTimeZone
+            MenuItem ATZ mSetAppTimeZone
+            MenuItem ATZ<Squestion> mGetAppTimeZone
             MenuItem CTZ mSetClockTimeZone
             MenuItem CTZ<Squestion> mGetClockTimeZone
             MenuItem SETC mSetClock # set current clock

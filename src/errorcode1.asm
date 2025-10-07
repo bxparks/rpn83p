@@ -67,7 +67,6 @@ PrintErrorString:
     ld hl, OP1
     push hl
     bcall(_FormatAToString) ; HL points to char after string
-    ld (hl), 0 ; add NUL
     pop hl
     call vPutSPageOne
     ;

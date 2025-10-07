@@ -19,4 +19,7 @@ test:
 	python3 -m unittest
 
 menusample.asm: menusample.txt compilemenu.py
-	./compilemenu.py -o $@ $<
+	./compilemenu.py --debug -o $@ $<
+
+unitsample.asm: unitsample.txt compileunit.py
+	./compileunit.py --debug -o $@ $<

@@ -7,17 +7,23 @@ calculator app for the [TI-83 Plus
 series](https://en.wikipedia.org/wiki/TI-83_series) and the [TI-84 Plus
 series](https://en.wikipedia.org/wiki/TI-84_Plus_series) calculators. The app is
 inspired mostly by the [HP-42S](https://en.wikipedia.org/wiki/HP-42S)
-calculator, with some significant features from the
-[HP-12C](https://en.wikipedia.org/wiki/HP-12C) and the
-[HP-16C](https://en.wikipedia.org/wiki/HP-16C). RPN83P also hopes to be the
-easiest and cheapest gateway app that introduces new users to the beauty and
-power of RPN calculators.
+calculator, with some significant features borrowed from
+the [HP-12C](https://en.wikipedia.org/wiki/HP-12C),
+the [HP-16C](https://en.wikipedia.org/wiki/HP-16C),
+the [HP-19BII](https://en.wikipedia.org/wiki/HP-19B), and
+the [TI-85](https://en.wikipedia.org/wiki/TI-85) calculators.
+RPN83P hopes to be the easiest and cheapest gateway app that introduces new
+users to the beauty and power of RPN calculators.
 
-RPN83P is a flash application written in Z80 assembly language that consumes 3
-pages (48 kiB) of flash memory. Since it is stored in flash, it is preserved if
-the RAM is cleared. It consumes about 1025 to 2535 bytes of TI-OS RAM through 4
+Your calculator will look like this when using RPN83P:
+
+![RPN83P Teaser](docs/images/fullshot/fullshot-teaser.png)
+
+RPN83P is a flash application written in Z80 assembly language that consumes 4
+pages (64 kiB) of flash memory. Since it is stored in flash, it is preserved if
+the RAM is cleared. It consumes about 1044 to 2545 bytes of TI-OS RAM through 4
 AppVars, depending on the number of storage registers: `RPN83REG` (500 to 1925
-bytes), `RPN83SAV` (140 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
+bytes), `RPN83SAV` (152 byte), `RPN83STA` (272 bytes), and `RPN83STK` (120 to
 196 bytes).
 
 Summary of features:
@@ -29,6 +35,7 @@ Summary of features:
 - 8-line display showing 4 stack registers
 - hierarchical menu system similar to HP-42S
 - quick reference `HELP` menu
+- auto-start capability using the Start-Up app
 - storage registers and variables
     - store and recall:`STO nn`, `RCL nn`
     - storage arithmetics: `STO+ nn`, `STO- nn`, `STO* nn`, `STO/ nn`, `RCL+
@@ -53,11 +60,8 @@ Summary of features:
     - trigonometric: `ATN2`
     - hyperbolic: `SINH`, `COSH`, `TANH`, `ASNH`, `ACSH`, `ATNH`
     - probability: `PERM`, `COMB`, `N!`, `RAND`, `SEED`
-    - angle conversions: `>DEG`, `>RAD`, `>HR`, `>HMS`, `>REC`, `>POL`
-    - unit conversions: `>C`, `>F`, `>hPa`, `>inHg`, `>km`, `>mi`, `>m`, `>ft`,
-      `>cm`, `>in`, `>um`, `>mil`, `>kg`, `>lbs`, `>g`, `>oz`, `>L`, `>gal`,
-      `>mL`, `>floz`, `>kJ`, `>cal`, `>kW`, `>hp`, `>Lkm`, `>mpg`, `>kPa`,
-      `>psi`, `>ha`, `>acr`
+    - angle conversions: `>DEG`, `>RAD`, `>REC`, `>POL`, `>HR`, `>HMS`, `HMS+`,
+      `HMS-`
 - statistics and curve fitting, inspired by HP-42S
     - statistics: `Σ+`, `Σ-`, `SUM`, `MEAN`, `WMN` (weighted mean),
       `SDEV` (sample standard deviation), `SCOV` (sample covariance),
@@ -68,13 +72,14 @@ Summary of features:
       (exponential), `PWRF` (power)
 - base conversion and bitwise operations, inspired by HP-16C and HP-42S
     - base conversions: `DEC`, `HEX`, `OCT`, `BIN`
-    - bitwise operations: `AND`, `OR`, `XOR`, `NOT`, `NEG`, `REVB` (reverse
-      bits), `CNTB` (count bits)
-    - integer arithmetics: `B+`, `B-`, `B*`, `B/`, `BDIV` (divide with
-      remainder)
-    - shift and rotate: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
+    - logical: `AND`, `OR`, `XOR`, `NOT`, `NEG`
+    - rotate and shift: `SL`, `SR`, `ASR`, `RL`, `RR`, `RLC`, `RRC`,
       `SLn`, `SRn`, `RLn`, `RRn`, `RLCn`, `RRCn`
-    - carry flag and bit masks: `CCF`, `SCF`, `CF?`, `CB`, `SB`, `B?`
+    - bit operations: `CB`, `SB`, `B?`, `REVB` (reverse bits), `CNTB` (count
+      bits)
+    - arithmetic functions: `BAS+`, `BAS-`, `BAS*`, `BAS/`, `BDIV` (divide with
+      remainder)
+    - carry flag: `CCF`, `SCF`, `CF?`
     - word sizes: `WSIZ`, `WSZ?`: 8, 16, 24, 32 bits
 - time value of money (TVM), inspired by HP-12C, HP-17B, and HP-30b
     - `N`, `I%YR`, `PV`, `PMT`, `FV`
@@ -94,6 +99,10 @@ Summary of features:
     - complex specific functions: `REAL`, `IMAG`, `CONJ`, `CABS`, `CANG`
     - unsupported: trigonometric and hyperbolic functions (not supported by
       TI-OS)
+- unit conversions, inspired by HP-19BII and TI-85
+    - ~170 units across 12 unit types (LENG, AREA, VOL, TEMP, MASS, FORC, PRES,
+      ENER, PWR, TIME, SPD, FUEL)
+    - includes all 63 units on the HP-19BII and all 90 units on the TI-85
 - date functions
     - date, time, datetime, timezone, and hardware clock
     - proleptic Gregorian calendar from year 0001 to 9999
@@ -115,13 +124,10 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.1.0 (2025-10-07) \
+**Project Home**: https://github.com/bxparks/rpn83p \
+**User Guide**: [USER_GUIDE.md](docs/USER_GUIDE.md) \
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
-
-**User Guide**: [USER_GUIDE.md](docs/USER_GUIDE.md)
 
 ## Table of Contents
 
@@ -162,7 +168,7 @@ Guide](docs/USER_GUIDE.md), but here is the quick version:
 
 The RPN83P app starts directly into the calculator mode, like this:
 
-![RPN83P Initial Start Screen](docs/images/rpn83p-initial.png)
+![RPN83P Initial Start Screen](docs/images/installation/rpn83p-initial.png)
 
 ### Supported Hardware
 
@@ -189,12 +195,13 @@ I have tested it on the following calculators that I own:
 
 - TI-83 Plus (OS v1.19)
 - TI-83 Plus Silver Edition (OS v1.19)
+- TI-84 Plus (OS v2.55MP)
 - TI-84 Plus Silver Edition (OS v2.55MP)
-- TI-Nspire with TI-84 Plus Keypad (OS v2.46)
+- TI-Nspire Clickpad with TI-84 Plus Keypad (OS v2.46)
+- TI-Nspire Touchpad with TI-84 Plus Keypad (OS v2.56MP)
 
 Community members have verified that it works on the following variants:
 
-- TI-84 Plus
 - TI-84 Plus Pocket SE
 - TI-84 Pocket.fr (French version of the Pocket SE?)
 
@@ -218,23 +225,24 @@ a sphere is `(4/3) pi r^3`. There are many ways to compute this in an RPN
 system, but I tend to start with the more complex, inner expression and work
 outwards. Enter the following keystrokes:
 
-- Press `2` button
-- Press `.` button
-- Press `1` button
-- Press `X^2` button
-- Press `2ND` `ANS` button (invokes the `LASTX` functionality)
-- Press `*` button (`r^3` is now in the `X` register)
-- Press `2ND` `PI` button (above the `^` button)
-- Press `*` button (`pi r^3`)
-- Press `4` button
-- Press `*` button (`4 pi r^3`)
-- Press `3` button
-- Press `/` button (`4 pi r^3 / 3`)
-- the `X` register should show `38.79238609`
+| **Keys**          | **Display**                            |
+| ----------------  | ---------------------                  |
+| `2.1`             | ![](docs/images/readme/example1-01.png) |
+| `X^2`             | ![](docs/images/readme/example1-02.png) |
+| `2ND ANS`         | ![](docs/images/readme/example1-03.png) |
+| `*`               | ![](docs/images/readme/example1-04.png) |
+| `2ND PI`          | ![](docs/images/readme/example1-05.png) |
+| `*`               | ![](docs/images/readme/example1-06.png) |
+| `4`               | ![](docs/images/readme/example1-07.png) |
+| `*`               | ![](docs/images/readme/example1-08.png) |
+| `3`               | ![](docs/images/readme/example1-09.png) |
+| `/`               | ![](docs/images/readme/example1-10.png) |
+
+The `X` register should show `38.79238609`.
 
 Here is an animated GIF that shows this calculation:
 
-![RPN83P Example 1 GIF](docs/images/rpn83p-example1.gif)
+![RPN83P Example 1 GIF](docs/images/readme/rpn83p-example1.gif)
 
 (Note that the RPN83P provides a `X^3` menu function that could have been used
 for this formula, but I used the `LASTX` feature to demonstrate its use.)
@@ -249,39 +257,30 @@ and `65`, then see the result as an octal number (base-8), a binary number
 (base-2), then right shift the result 3 bits which sets the Carry Flag, then
 view the final result as a decimal number:
 
-- Press the `MATH` button to reset the menu to the home row.
-- Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/menu-root-2.png)
-- Press `BASE` menu to get to
-  ![BASE Menu DEC](docs/images/menu-root-base-dec.png)
-- Press `HEX` menu to get to
-  ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
-- Press `ALPHA` `B` buttons
-- Press `6` button
-- Press `ENTER` button (`X` shows `00 00 00 B6`)
-- Press `6` button
-- Press `5` button
-- Press DOWN arrow to get to the menu row with the `AND` menu item
-  ![BASE MenuRow AND](docs/images/menu-root-base-2.png)
-- Press `AND` menu, the `X` register should show `00 00 00 24`
-- Press UP arrow to go back to
-  ![BASE Menu HEX](docs/images/menu-root-base-hex.png)
-- Press `OCT` menu, the `X` register should show `00 000 000 044` with the menu
-  showing ![BASE Menu OCT](docs/images/menu-root-base-oct.png)
-- Press `BIN` menu, the `X` register should show `0000 0000 0010 0100` with the
-  menu showing ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
-- Press DOWN DOWN (twice) to the menu row with the shift right `SR` item
-  ![BASE MenuRow SR](docs/images/menu-root-base-3.png)
-- Press `SR` `SR` `SR` (three times) to show `0000 0000 0000 0100` and the Carry
-  Flag `C` set
-- Press UP UP (twice) to reach the base conversion menu row
-  ![BASE Menu BIN](docs/images/menu-root-base-bin.png)
-- Press `DEC` menu, the `X` register should show `4` with the menu showing
-  ![BASE Menu DEC](docs/images/menu-root-base-dec.png)
+| **Keys**              | **Display**                               |
+| ---------             | ----------                                |
+| `MATH` (HOME)         | ![](docs/images/readme/example2-01.png)   |
+| `DownArrow`           | ![](docs/images/readme/example2-02.png)   |
+| `BASE`                | ![](docs/images/readme/example2-03.png)   |
+| `HEX`                 | ![](docs/images/readme/example2-04.png)   |
+| `ALPHA B` `6`         | ![](docs/images/readme/example2-05.png)   |
+| `ENTER`               | ![](docs/images/readme/example2-06.png)   |
+| `6` `5`               | ![](docs/images/readme/example2-07.png)   |
+| `DownArrow`           | ![](docs/images/readme/example2-08.png)   |
+| `LOGI`                | ![](docs/images/readme/example2-09.png)   |
+| `AND`                 | ![](docs/images/readme/example2-10.png)   |
+| `ON/EXIT` `UpArrow`   | ![](docs/images/readme/example2-11.png)   |
+| `OCT`                 | ![](docs/images/readme/example2-12.png)   |
+| `BIN`                 | ![](docs/images/readme/example2-13.png)   |
+| `DownArrow`           | ![](docs/images/readme/example2-14.png)   |
+| `ROTS`                | ![](docs/images/readme/example2-15.png)   |
+| `SR` `SR` `SR` (3X)   | ![](docs/images/readme/example2-16.png)   |
+| `ON/EXIT` `UpArrow`   | ![](docs/images/readme/example2-17.png)   |
+| `DEC`                 | ![](docs/images/readme/example2-18.png)   |
 
 Here is the animated GIF that shows this calculation:
 
-![RPN83P Example 2 GIF](docs/images/rpn83p-example2.gif)
+![RPN83P Example 2 GIF](docs/images/readme/rpn83p-example2.gif)
 
 ### Example 3
 
@@ -297,32 +296,26 @@ In this example:
 
 Here are the steps:
 
-- Press the `MATH` button to reset the menu to the home row.
-- Navigate the menu with the DOWN arrow to get to
-  ![ROOT MenuRow 2](docs/images/menu-root-2.png)
-- Press the `TVM` menu to get to
-  ![TVM MenuRow 1](docs/images/menu-root-tvm-1.png)
-- Press the DOWN arrow to get to
-  ![TVM MenuRow 2](docs/images/menu-root-tvm-2.png)
-- Press the `CLTV` button to clear the TVM variables.
-- Press the UP arrow to get back to
-  ![TVM MenuRow 1](docs/images/menu-root-tvm-1.png)
-- Press `360` `N` (30 years * 12 months = 360 payments)
-- Press `8` `I%YR` (interest percent per year)
-- Press `500000` `PV` (present value)
-- Press `0` `FV` (future value)
-- Press `PMT` (payments)
-    - You should see `-3668.822869` ($3668.82)
-- Press `7` `I%YR`
-- Press `PMT`
-    - You should see `-3326.512476` ($3326.51)
-- Press `-3000` `PMT`
-- Press `I%YR`
-    - After a slight delay, you should see 6.006990008 (6%).
+| **Keys**              | **Display**                               |
+| ---------             | ----------                                |
+| `MATH` `DownArrow`    | ![](docs/images/readme/example3-01.png)   |
+| `TVM`                 | ![](docs/images/readme/example3-02.png)   |
+| `DownArrow`           | ![](docs/images/readme/example3-03.png)   |
+| `CLTV`                | ![](docs/images/readme/example3-04.png)   |
+| `UpArrow`             | ![](docs/images/readme/example3-05.png)   |
+| `360` `N`             | ![](docs/images/readme/example3-06.png)   |
+| `8` `I%YR`            | ![](docs/images/readme/example3-07.png)   |
+| `500000` `PV`         | ![](docs/images/readme/example3-08.png)   |
+| `0` `FV`              | ![](docs/images/readme/example3-09.png)   |
+| `PMT`                 | ![](docs/images/readme/example3-10.png)   |
+| `7` `I%YR`            | ![](docs/images/readme/example3-11.png)   |
+| `PMT`                 | ![](docs/images/readme/example3-12.png)   |
+| `-3000` `PMT`         | ![](docs/images/readme/example3-13.png)   |
+| `I%YR`                | ![](docs/images/readme/example3-14.png)   |
 
 Here is the animated GIF that shows this calculation:
 
-![RPN83P Example 3 GIF](docs/images/rpn83p-example3.gif)
+![RPN83P Example 3 GIF](docs/images/readme/rpn83p-example3.gif)
 
 ### Example 4
 
@@ -338,23 +331,28 @@ the 4 ways that complex numbers can be entered into RPN83P:
 
 The keystrokes are:
 
-- (optional) Press `CLEAR CLEAR CLEAR` to clear the RPN stack.
-- Press `MODE` button, `downarrow`,  `RECT`:
-  ![MODE MenuRow 2](docs/images/menu-root-mode-2.png)
-- Press `100` `ENTER`
-- Press `2` `PI` `*` `60` `*` `1 EE 5` `(-)` `*` `1/X` `(-)` (X: -265.26)
-- Press `2ND LINK` (X: 100 i -265.26)
-- Press `100` `2ND i` `250` `+` (X: 200 i -15.26)
-- Press `200` `2ND ANGLE` `10` `+` (X: 396.96 i 19.47)
-- Press `300` `2ND ANGLE` `2ND ANGLE` `0.1` `+` (X: 695.46 i 49.42)
-- Press `4` `/` (X: 173.89 i 12.35)
-- Press `PRAD` (X: 174.30 ∠ 0.07)
-- Press `PDEG` (X: 174.30 ∠° 4.04)
-- Press `MATH` button `CPLX`:
-  ![CPLX MenuRow 1](docs/images/menu-root-cplx-1.png)
-- Press `CABS` (X: 174.30)
+| **Keys**                              | **Display**                               |
+| ---------                             | ----------                                |
+| `MODE` `DownArrow` `RECT`             | ![](docs/images/readme/example4-01.png)   |
+| `100` `ENTER`                         | ![](docs/images/readme/example4-02.png)   |
+| `2` `2ND PI` `*` `60` `*`             | ![](docs/images/readme/example4-03.png)   |
+| `1` `2ND EE` `5` `(-)` `*`            | ![](docs/images/readme/example4-04.png)   |
+| `1/X` `(-)`                           | ![](docs/images/readme/example4-05.png)   |
+| `2ND LINK`                            | ![](docs/images/readme/example4-06.png)   |
+| `100` `2ND i` `250`                   | ![](docs/images/readme/example4-07.png)   |
+| `+`                                   | ![](docs/images/readme/example4-08.png)   |
+| `200` `2ND ANGLE` `10`                | ![](docs/images/readme/example4-09.png)   |
+| `+`                                   | ![](docs/images/readme/example4-10.png)   |
+| `300` `2ND ANGLE` `2ND ANGLE` `0.1`   | ![](docs/images/readme/example4-11.png)   |
+| `+`                                   | ![](docs/images/readme/example4-12.png)   |
+| `4` `/`                               | ![](docs/images/readme/example4-13.png)   |
+| `PRAD`                                | ![](docs/images/readme/example4-14.png)   |
+| `PDEG`                                | ![](docs/images/readme/example4-15.png)   |
+| `MATH` (HOME) `CPLX` `CABS`           | ![](docs/images/readme/example4-16.png)   |
 
-![RPN83P Example 4 GIF](docs/images/rpn83p-example4.gif)
+Here is the animated GIF that shows this calculation:
+
+![RPN83P Example 4 GIF](docs/images/readme/rpn83p-example4.gif)
 
 ### Exiting the Menu
 
@@ -363,13 +361,14 @@ Press:
 - `ON` button (`ESC/EXIT`) multiple times to back to the home menu, or
 - `MATH` button (`HOME`) to go back directly.
 
-![ROOT MenuRow 1](docs/images/menu-root-1.png)
+![ROOT MenuRow 1](docs/images/menu/root-1.png)
 
 ## Documentation
 
 - [RPN83P User Guide](docs/USER_GUIDE.md)
-- [TVM Algorithms](docs/TVM.md)
 - [Developer Notes](docs/DEVELOPER.md)
+    - [TVM Algorithms](docs/DEVELOPER_TVM.md)
+- [Future Enhancements](docs/USER_GUIDE_FUTURE.md)
 
 ## Compiling from Source
 
@@ -384,7 +383,7 @@ been verified only on my dev machine.
     - I use the static binary zip file, because the `.deb` file would not
       resolve dependencies.
     - Unpack the zip file so that the `spasm` directory is a *sibling* to the
-      `rpn83` directory. (See the `SPASM_DIR` variable inside the `Makefile`).
+      `rpn83p` directory. (See the `SPASM_DIR` variable inside the `Makefile`).
 - `$ cd src`
 - `$ make`
 - Should produce a file named `rpn83p.8xk`.
@@ -460,8 +459,8 @@ Calculators](https://www.hpmuseum.org/). That's another option for feedback and
 support.
 
 For feature requests, I recommend scanning through the [Future
-Enhancements](docs/FUTURE.md) document and verifying that your feature is not
-already there.
+Enhancements](docs/USER_GUIDE_FUTURE.md) document and verifying that your
+feature is not already there.
 
 Please refrain from emailing me directly unless the content is sensitive. The
 problem with email is that I cannot reference the email conversation when other

@@ -198,7 +198,6 @@ DebugUnsignedA:
     ; Convert A into string
     push hl
     bcall(_FormatAToString)
-    ld (hl), 0
     pop hl
     call putSPageOne
     bcall(_EraseEOL)
@@ -255,7 +254,6 @@ debugSignedAPrint:
     ; Convert A into string
     push hl
     bcall(_FormatAToString)
-    ld (hl), 0
     pop hl
     call putSPageOne
     bcall(_EraseEOL)
@@ -303,11 +301,6 @@ DebugFlags:
     ; Print Editing flag
     bit rpnFlagsEditing, (iy + rpnFlags)
     ld a, 'E'
-    call debugPrintFlag
-
-    ; Print ClosedEmpty flag
-    bit inputBufFlagsClosedEmpty, (iy + inputBufFlags)
-    ld a, 'Z'
     call debugPrintFlag
 
     ld a, ' '
@@ -559,7 +552,7 @@ DebugPause:
     push bc
     push de
     push hl
-    bcall(_GetKey)
+    bcall(_GetKey) ; pause for user input
     bit onInterrupt, (iy + onFlags)
     jr nz, debugPauseBreak
     res onInterrupt, (iy + onFlags) ; reset flag set by ON button

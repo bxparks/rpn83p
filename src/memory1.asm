@@ -11,11 +11,9 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Exchange OP2 and FPS.
-; Destroys: all registers
-exchangeFPSOP2PageOne:
-    ld hl, OP2
-    jr exchangeFPSHLPageOne
+;-----------------------------------------------------------------------------
+; Exchange FPS operations.
+;-----------------------------------------------------------------------------
 
 ; Description: Exchange OP1 and FPS.
 ; Destroys: all registers
@@ -49,8 +47,10 @@ exchange9PageOne:
     ; [[fallthrough]]
 
 ; Description: Exchange 'B' bytes between DE and HL.
+; Input: DE, HL: pointers; B=numBytes
+; Output: contents of DE, HL exchanged
 ; Destroys: all registers
-exchangePageOneLoop:
+exchangeLoopPageOne:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -58,50 +58,11 @@ exchangePageOneLoop:
     ld (de), a
     inc de
     inc hl
-    djnz exchangePageOneLoop
+    djnz exchangeLoopPageOne
     ret
 
-; Description: Exchange the top 2 floating point numbers on the FPS.
-; Destroys: all
-; Preserves: OP1, OP2
-exchangeFPSFPSPageOne:
-    ld hl, (FPS)
-    ld bc, 9
-    or a ; clear CF
-    sbc hl, bc ; HL=(FPS)-9
-    ld e, l
-    ld d, h
-    sbc hl, bc ; HL=(FPS)-18
-    jr exchange9PageOne
-
 ;-----------------------------------------------------------------------------
-
-; Description: Exchange CP3=OP3/OP4 with top of FPS.
-; Destroys: all
-exchangeFPSCP3PageOne:
-    ld hl, OP3
-    jr exchangeFPS18HLPageOne
-
-; Description: Exchange CP1=OP1/OP2 with top of FPS.
-; Destroys: all
-exchangeFPSCP1PageOne:
-    ld hl, OP1
-    ; [[fallthrough]]
-
-; Description: Exchange the 18 bytes from the top of the FPS with HL.
-; Input: HL=rpnObjectPointer
-; Destroys: all
-exchangeFPS18HLPageOne:
-    ex de, hl ; DE=pointer to OPx
-    ld hl, (FPS)
-    ld bc, 18
-    or a ; CF=0
-    sbc hl, bc
-    call exchange9PageOne
-    inc de
-    inc de ; skip past extra 2 bytes in OPx
-    jr exchange9PageOne
-
+; Floating point registers OP1-OP6.
 ;-----------------------------------------------------------------------------
 
 ; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
@@ -135,6 +96,18 @@ move9ToOp2PageOne:
 ; Destroys: BC, DE, HL
 ; Preserves: A
 move9ToOp3PageOne:
+    ld de, OP3
+    ld bc, 9
+    ldir
+    ret
+
+; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
+; OP4. Implements bcall(_Mov9ToOP3) without the overhead of a bcall().
+; Input: HL=pointer to float
+; Output: (OP2)=contains float
+; Destroys: BC, DE, HL
+; Preserves: A
+move9ToOp4PageOne:
     ld de, OP3
     ld bc, 9
     ldir
@@ -207,6 +180,63 @@ op4ToOp1PageOne:
     jr move9ToOp1PageOne
 
 ;-----------------------------------------------------------------------------
+; Complex numbers in OPx registers. Complex numbers are stored in consecutive
+; registers (e.g. OP1/OP2), but each OPx register is 11 bytes wide not 9 bytes,
+; which explains the 22 bytes that we move below.
+;-----------------------------------------------------------------------------
+
+; Input: HL=pointer to 2 floats in OPx registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+move22ToOp1PageOne:
+    ld de, OP1
+    ld bc, 22
+    ldir
+    ret
+
+; Input: HL=pointer to 2 floats in OPx registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+move22ToOp3PageOne:
+    ld de, OP3
+    ld bc, 22
+    ldir
+    ret
+
+; Input: HL=pointer to 2 floats in OPx registers.
+; Destroys: BC, DE, HL
+; Preserves: A
+move22ToOp5PageOne:
+    ld de, OP5
+    ld bc, 22
+    ldir
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Move complex number in OP1/OP2 to OP3/OP4.
+; Preserves: A
+cp1ToCp3PageOne:
+    ld hl, OP1
+    jr move22ToOp3PageOne
+
+; Description: Move complex number in OP3/OP4 to OP1/OP2.
+; Preserves: A
+cp3ToCp1PageOne:
+    ld hl, OP3
+    jr move22ToOp1PageOne
+
+; Description: Move complex number in OP1/OP2 to OP5/OP6.
+; Preserves: A
+cp1ToCp5PageOne:
+    ld hl, OP1
+    jr move22ToOp5PageOne
+
+; Description: Move complex number in OP5/OP6 to OP1/OP2.
+; Preserves: A
+cp5ToCp1PageOne:
+    ld hl, OP5
+    jr move22ToOp1PageOne
 
 ; Description: Exchange OP1 with OP2. Inlined version of bcall(_OP1ExOP2) to
 ; avoid the overhead of bcall().
@@ -222,7 +252,7 @@ cp1ExCp3PageOne:
     ld de, OP1
     ld hl, OP3
     ld b, 22 ; each OP register is 11 bytes
-    jp exchangePageOneLoop
+    jp exchangeLoopPageOne
 
 ;-----------------------------------------------------------------------------
 

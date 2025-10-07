@@ -20,25 +20,39 @@ ColdInitDate:
     ret
 
 ;-----------------------------------------------------------------------------
-; Simple date functions.
+; Leap year algorithms.
+;-----------------------------------------------------------------------------
+
+; Description: Determine if a Date, DateTime, or OffsetDateTime is leap.
+; Input: OP1:(Date|DateTime|OffsetDateTime)=date
+; Output: OP1:Real=1 if leap, 0 otherwise
+; Destroys: all
+IsDateLeap:
+    ld hl, OP1+rpnObjectTypeSizeOf
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=year
+    jr isYearLeapAlt
+
 ;-----------------------------------------------------------------------------
 
 ; Description: Determine if OP1 is leap year.
 ; Input: OP1:Real=year
 ; Output: OP1:Real=1 or 0
 ; Destroys: all
-IsLeap:
+IsYearLeap:
     call convertOP1ToYear ; BC=year, [1,9999]
+isYearLeapAlt:
     call isLeapYear ; CF=1 if leap
-    jr c, isLeapTrue
+    jr c, isYearLeapTrue
     bcall(_OP1Set0)
     ret
-isLeapTrue:
+isYearLeapTrue:
     bcall(_OP1Set1)
     ret
 
-; Description: Convert real number in OP1 to a u16 year in BC. Throws
-; Err:Domain if year is outside the range of[1,9999].
+; Description: Convert real number in OP1 to a u16 year in BC.
+; Throws: Err:Domain if year is outside the range of[1,9999].
 ; Input: OP1:Real=year
 ; Output: BC:u16=year in the range of [1,9999]
 ; Destroys: A, BC, DE, HL
@@ -110,7 +124,7 @@ isLeapYearTrue:
 
 ; Description: Convert RpnDate{} to epochDays relative to the currentEpochDate.
 ; Input:
-;   - OP1:(RpnDate*)=rpnDate
+;   - OP1:RpnDate=rpnDate
 ;   - (currentEpochDate):Date{}=reference epoch date
 ; Output:
 ;   - OP1:(i40*)=epochDays
@@ -386,3 +400,62 @@ subRpnDateByRpnDuration:
     ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
     jr addRpnDateByDurationAdd
+
+; Description: Convert RpnDate into RpnDateTime by appending a Time field of
+; "00:00:00", i.e. T{0,0,0}.
+; Input:
+;   - OP1:RpnDate
+; Output:
+;   - OP1:RpnDateTime
+; Destroys: OP1
+ExtendRpnDateToDateTime:
+    ld a, rpnObjectTypeDateTime
+    call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
+    ; clear the Time fields
+    ld de, rpnObjectTypeDateSizeOf-rpnObjectTypeSizeOf
+    add hl, de ; HL=timePointer
+    xor a
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    inc hl
+    ld (hl), a
+    ret
+
+;-----------------------------------------------------------------------------
+; Extractors
+;-----------------------------------------------------------------------------
+
+; Description: Extract the year component.
+; Input: OP1:RpnDate|RpnDateTime|RpnOffsetDateTime=date
+; Output: OP1:Real=date.year()
+RpnDateExtractYear:
+    ld hl, OP1+rpnObjectTypeSizeOf
+    ld c, (hl)
+    inc hl
+    ld b, (hl) ; BC=year
+    ld hl, OP1
+    call setU40ToBC ; OP1=year
+    jp convertU40ToOP1
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the month component.
+; Input: OP1:RpnDate|RpnDateTime|RpnOffsetDateTime=date
+; Output: OP1:Real=date.month()
+RpnDateExtractMonth:
+    ld a, (OP1+rpnObjectTypeSizeOf+2) ; A=month
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=year
+    jp convertU40ToOP1 ; OP1:Real=year
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the day component.
+; Input: OP1:RpnDate|RpnDateTime|RpnOffsetDateTime=date
+; Output: OP1:Real=date.day()
+RpnDateExtractDay:
+    ld a, (OP1+rpnObjectTypeSizeOf+3) ; A=day
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=day
+    jp convertU40ToOP1 ; OP1:Real=day

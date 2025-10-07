@@ -1,6 +1,118 @@
 # Changelog
 
 - Unreleased
+- 1.1.0 (2025-10-07)
+    - DATE (**Major UI Change**)
+        - Support additional method of entry of Duration objects:
+            - compact string form, `{dd}D{hh}H{mm}M{ss}S`, e.g. `1D30M2S` for
+              `DR{1,0,30,2}`.
+                - Obsoletes the "Duration Colon Modifier" entry form
+                  `{nn}:{modifier}`. Currently retained for backwards
+                  compatibility.
+            - incremental building of Duration components using the `DAY>`,
+              `HR>`, `MIN>`, and `SEC>` menu functions
+        - Add MenuFolder for the 7 Date types: `D`, `T`, `DT`, `TZ`, `DZ`, `DR`,
+          `DW`
+            - add convenience menu function that inserts the Date-type prefix
+              (i.e. "D{", "T{", "DT{", "TZ{", "DZ{", "DR{", "DW{"), to make
+              entering Date-objects much easier
+            - add complete list of polymorphic functions that apply to each
+              Date-object under each menu folder
+        - Remove `DOPS` folder, and scatter its functions (`LEAP`, `DSHK`,
+          `DEXD`, `DCUT`, `DLNK`) under the 3 Date-object folders which support
+          them: `D`, `DT`, `DZ`
+        - Assume that `DT` (DateTime) is always in UTC timezone whenever its
+          timezone is needed in a calculation
+    - HMS functions
+        - **New** Add `HMS+` and `HMS-` menu functions under `CONV` menu folder.
+        - **Bug Fix**: Add normalization to `>HMS` conversion function to
+          prevent bug that caused `[1.32] [1.32] [HMS+]` to return `3.0360`
+          instead of `3.04`.
+        - Validate `mm` and `ss` fields of `hh.mmss` and throw `Err:Invalid` if
+          greater than than 60.
+    - UNIT menu (**Complete Reimplementation**)
+        - Reimplement the underlying architecture using a workflow similar to
+          the UNITS menu of the HP-19BII and TI-85
+            - Pressing a UNIT menu converts a Real number to a Denominate number
+              (i.e. a number with units).
+            - Pressing a subsequent UNIT menu converts that Denominate number
+              into the unit requested by the menu key.
+        - Support misc Unit Functions (UFCN)
+            - UVAL: return display value without units
+            - UBAS: convert to its "base unit"
+        - Increase number of supported units from 30 to 169.
+            - Support *all* units in the HP-19BII and the TI-85.
+        - Reorganize UNIT menus across 13 sub MenuFolders: UFCN, LENG, AREA,
+          VOL, TEMP, MASS, FORC, PRES, ENER, TIME, SPD, PWR, FUEL.
+        - Support basic arithmetic operations on units: `CHS`, `+`, `-`, `*`,
+          `/`
+        - Support most NUM operations on units: `%`, `%CH`, `IP`, `FP`,
+          `FLR`,`CEIL`, `NEAR`, `ABS`, `SIGN`, `MOD`, `MIN`, `MAX`, `RNDF`,
+          `RNDN`, `RNDG` (i.e. all NUM functions except GCD, LCM, and PRIM)
+        - Support Storage Register arithmetics with UNIT objects.
+    - BASE (**UI Reorganization**)
+        - move most menu functions under 5 new subfolders: LOGI, ROTS, BITS,
+          BFCN, BCFS ("Configs" or "Carry Flag and Word Size")
+        - rename (B+ B- B* B/) to (BAS+ BAS- BAS* BAS/) for better
+          self-documentation
+        - no functional change
+    - RPN Stack (**Bug Fixes**)
+        - **Bug Fix**: Fix incorrect stack lift behavior for functions that
+          produce a value without consuming the X register (e.g. PI, E, MEAN).
+          Previously, these functions would ignore the 'disable stack lift'
+          setting. Now, they will correctly interpret that flag and overwrite
+          the existing X register.
+        - **Bug Fix**: Preserve `LASTX` during `CLST` (Clear Stack), consistent
+          with HP-42S.
+        - **Bug Fix**: Handle an empty string input buffer correctly for all
+          commands including the 'disable stack lift' behavior.
+        - Handle edge case of `STO` which consumes `X` but spits back the same
+          value. Input termination must occur and stack lift must be enabled.
+        - Terminate input buffer and correctly enable stack lift for stack
+          manipulation commands: `DUP`, `Rollup`, `Rolldown`, `DROP`, `X<>Y`.
+    - Input Termination (**Consistency**)
+        - Update all functions and menu navigation to avoid input termination
+          for as long as it makes sense. See the new [Input
+          Termination](docs/USER_GUIDE_BASIC.md#input-termination) section for
+          full details.
+    - Key bindings (**New**)
+        - Add `2ND v` as a shortcut to `UVAL` menu function under `UNIT`. Allows
+          quick extraction of the value part of a Denominate object.
+    - SHOW (**Workflow**)
+        - Pass along most button keys to the main command processor so that
+          their normal function are directly invoked from SHOW mode. Previously,
+          all button presses were consumed by the SHOW mode. So to enter a new
+          number from SHOW mode, the digit key (0-9) had to be pressed twice.
+        - Preserve previous behavior for 4 buttons: `DEL`, `CLEAR`, `ENTER`,
+          `ON/EXIT`. These buttons are consumed by the SHOW mode, and simply
+          cause the SHOW mode to exit back to the normal mode. The user must
+          press these buttons again in normal mode to invoke their normal
+          function.
+    - RPN83P application size
+        - increase to 64kiB (4 flash pages) from 48kiB
+    - **WARNING** Most MODE settings will be lost when upgrading from v1.0 to
+      v1.1. Variables and registers will be preserved.
+        - Lost
+            - Pending entry in the input buffer
+            - FIX, SCI, ENG selection
+            - Trig modes (DEG, RAD)
+            - Complex result (CRES,RRES)
+            - Complex display modes (RECT, PRAD, PDEG)
+            - `,EE` or `EE,` selection
+            - `{..}` or `".."` selection
+            - 'BASE > DEC|BIN|OCT|HEX' selection
+            - 'BASE > WSIZ' selection
+            - 'BASE > CF' flag
+            - 'DATE > EPCH' selection and custom epoch date
+            - 'DATE > CLK > ATZ' application timezone
+            - 'DATE > CLK > CTZ' clock timezone
+            - TVM Solver parameters: IYR1, IYR2, TMAX
+        - Preserved
+            - Storage registers (R00-R99)
+            - Storage variables (A-Z,Theta)
+            - RPN stack registers (X,Y,Z,T,A,B,C,D)
+            - STAT registers (ΣX to ΣYLX)
+            - TVM variables: N, I%YR, PV, PMT, FV, P/YR, C/YR, BEG, END
 - 1.0.0 (2024-07-19)
     - RPN83P is now out of beta!
     - Documentation

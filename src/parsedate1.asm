@@ -13,7 +13,7 @@
 ; Description: Parse a string of the form "{yyyy,mm,dd}" into a Date{} record.
 ; Input:
 ;   - HL:(char*)=charPointer
-;   - DE:(Date*) or (Datetime*)=dateOrDateTimePointer
+;   - DE:(Date*) or (DateTime*)=dateOrDateTimePointer
 ; Output:
 ;   - (*DE):Date filled
 ;   - DE=DE+4
@@ -353,8 +353,8 @@ parseU16D4:
     call isValidUnsignedDigit ; CF=1 is valid
     jr nc, parseDateSyntaxErrr
     ;
-    push bc
-    push de ; stack=[destPointer]
+    push bc ; stack=[BC]
+    push de ; stack=[BC,destPointer]
     ld de, 0 ; DE=sum
     ld b, 4
 parseU16D4Loop:
@@ -370,14 +370,14 @@ parseU16D4Loop:
     djnz parseU16D4Loop
 parseU16D4End:
     ; Save u16 to destPointer
-    ex (sp), hl ; stack=[charPointer]; HL=destPointer
+    ex (sp), hl ; stack=[BC,charPointer]; HL=destPointer
     ld (hl), e
     inc hl
     ld (hl), d
     inc hl
     ex de, hl ; DE=destPointer
-    pop hl ; HL= charPointer
-    pop bc
+    pop hl ; stack=[BC]; HL=charPointer
+    pop bc ; stack=[]
     ret
 
 ;------------------------------------------------------------------------------

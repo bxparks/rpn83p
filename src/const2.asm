@@ -45,6 +45,20 @@ op2Set1PageTwo:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to 7.
+; Destroys: all, HL
+op1Set7PageTwo:
+    ld hl, const7PageTwo
+    jp move9ToOp1PageTwo
+
+; Description: Set OP1 to 7.
+; Destroys: all, HL
+op2Set7PageTwo:
+    ld hl, const7PageTwo
+    jp move9ToOp2PageTwo
+
+;-----------------------------------------------------------------------------
+
 ; Description: Set OP2 to 12.
 ; Destroys: all, HL
 op2Set12PageTwo:
@@ -117,6 +131,14 @@ op2Set1E14PageTwo:
 
 ;-----------------------------------------------------------------------------
 
+; Description: Set OP1 to the maximum floating point number.
+; Destroys: all, HL
+op1SetMaxFloatPageTwo:
+    ld hl, constMaxFloatPageTwo
+    jp move9ToOp1PageTwo
+
+;-----------------------------------------------------------------------------
+
 constM50PageTwo: ; -50
     .db $80, $81, $50, $00, $00, $00, $00, $00, $00
 
@@ -131,6 +153,9 @@ const6EM5PageTwo: ; 6E-5
 
 const1PageTwo: ; 1
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00
+
+const7PageTwo: ; 7
+    .db $00, $80, $70, $00, $00, $00, $00, $00, $00
 
 const12PageTwo: ; 12
     .db $00, $81, $12, $00, $00, $00, $00, $00, $00
@@ -155,3 +180,10 @@ const2Pow40PageTwo: ; 2^40 = 1 099 511 627 776
 
 const1E14PageTwo: ; 10^14, EXP=$80+14=$8E
     .db $00, $8E, $10, $00, $00, $00, $00, $00, $00
+
+; Useful to indicate an error condition in some parameters, while allowing
+; other parameters to be calculated. If an exception is thrown instead (e.g.
+; Err: Domain), then the entire calculation will be aborted, and none of the
+; parameters can be calculated, which is not as useful in some cases.
+constMaxFloatPageTwo: ; 9.9999999999999E99
+    .db $00, $E3, $99, $99, $99, $99, $99, $99, $99

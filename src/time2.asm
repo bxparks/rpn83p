@@ -291,3 +291,38 @@ subRpnTimeByRpnDuration:
     ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
     jp addRpnTimeByDurationAdd
+
+;-----------------------------------------------------------------------------
+; Extractors
+;-----------------------------------------------------------------------------
+
+; Description: Extract the hour component.
+; Input: OP1:RpnTime=time
+; Output: OP1:Real=time.hour()
+RpnTimeExtractHour:
+    ld a, (OP1+rpnObjectTypeSizeOf) ; A=hour
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=hour
+    jp convertU40ToOP1 ; OP1:Real=hour
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the minute component.
+; Input: OP1:RpnTime=time
+; Output: OP1:Real=time.minute()
+RpnTimeExtractMinute:
+    ld a, (OP1+rpnObjectTypeSizeOf+1) ; A=minute
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=minute
+    jp convertU40ToOP1 ; OP1:Real=year
+
+;-----------------------------------------------------------------------------
+
+; Description: Extract the second component.
+; Input: OP1:RpnTime=time
+; Output: OP1:Real=time.second()
+RpnTimeExtractSecond:
+    ld a, (OP1+rpnObjectTypeSizeOf+2) ; A=second
+    ld hl, OP1
+    call setU40ToA ; OP1:U40=second
+    jp convertU40ToOP1 ; OP1:Real=second

@@ -99,23 +99,19 @@ checkOp3Real:
     cp rpnObjectTypeReal
     ret
 
-; Description: Check that both OP1 and OP3 are Real.
-; Input: OP1, OP3
-; Output: ZF=1 if both are real, ZF=0 otherwise
-; Destroys: A
-checkOp1AndOp3Real:
-    call getOp1RpnObjectType
-    cp rpnObjectTypeReal
-    ret nz
-    call getOp3RpnObjectType
-    cp rpnObjectTypeReal
-    ret
-
-; Description: Verify that X is real.
+; Description: Verify that OP1 is real.
 ; Throws: Err:DateType if not
 ; Destroys: OP1/OP2
 validateOp1Real:
     call checkOp1Real
+    ret z
+    bcall(_ErrDataType)
+
+; Description: Verify that OP3 is real.
+; Throws: Err:DateType if not
+; Destroys: OP1/OP2
+validateOp3Real:
+    call checkOp3Real
     ret z
     bcall(_ErrDataType)
 
@@ -273,4 +269,29 @@ checkOp1Duration:
 checkOp3Duration:
     call getOp3RpnObjectType
     cp rpnObjectTypeDuration
+    ret
+
+;-----------------------------------------------------------------------------
+
+; Description: Check if OP1 is an RpnDenominate.
+; Output: ZF=1 if RpnDenominate
+checkOp1Denominate:
+    call getOp1RpnObjectType
+    cp rpnObjectTypeDenominate
+    ret
+
+; Description: Check if OP3 is an RpnDenominate.
+; Output: ZF=1 if RpnDenominate
+checkOp3Denominate:
+    call getOp3RpnObjectType
+    cp rpnObjectTypeDenominate
+    ret
+
+; Description: Check if OP1 and OP3 are both Real or both Denominate.
+; Output: ZF=1 if true, 0 false
+checkOp1Op3BothRealOrBothDenominate:
+    call checkOp1Real
+    jp z, checkOp3Real
+    cp rpnObjectTypeDenominate
+    jr z, checkOp3Denominate
     ret

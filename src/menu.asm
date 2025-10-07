@@ -21,11 +21,11 @@
 ; struct MenuNode {
 ;   uint16_t id; // root begins with 1
 ;   uint16_t parentId; // 0 indicates NONE
-;   uint16_t nameId; // index into NameTable
+;   uint16_t name; // pointer to C-string in the Name string pool
 ;   uint8_t numRows; // 0 if MenuItem; >=1 if MenuGroup
 ;   union {
 ;       uint16_t rowBeginId; // nodeId of the first node of first menu row
-;       uint16_t altNameId; // alternate name string (if nameSelector!=NULL)
+;       uint16_t altName; // alternate name string (if nameSelector!=NULL)
 ;   }
 ;   void *handler; // pointer to the handler function
 ;   void *nameSelector; // function that selects between 2 menu names
@@ -39,32 +39,31 @@
 ; register after calling findMenuNodeIX().
 menuNodeFieldId equ 0
 menuNodeFieldParentId equ 2
-menuNodeFieldNameId equ 4
+menuNodeFieldName equ 4
 menuNodeFieldNumRows equ 6
 menuNodeFieldRowBeginId equ 7
-menuNodeFieldAltNameId equ 7
+menuNodeFieldAltName equ 7
 menuNodeFieldHandler equ 9
 menuNodeFieldNameSelector equ 11
 
 ;-----------------------------------------------------------------------------
-; These routines cannot be moved into menu1.asm because they invoke callback
+; These routines cannot be moved into menu3.asm because they invoke callback
 ; functions which are defined on Flash Page 0.
 ;-----------------------------------------------------------------------------
 
 ; Description: Return the pointer to the name string of the menu node at HL.
-; If MenuNode.nameSelector is 0, then the display name is simply the nameId.
-; But if the MenuNode.nameSelector is not 0, then it is a pointer to a function
-; that returns the display name.
+; If MenuNode.nameSelector is 0, then the display name is simply the normal
+; 'name'. But if the MenuNode.nameSelector is not 0, then it is a pointer to a
+; function. Calling that function returns the result inthe  CF:
 ;
 ; The input to the nameSelector() function is:
 ;   - HL: pointer to MenuNode (in case it is needed)
 ; The output of the nameSelector() is:
-;   - CF=0 to select the normal name, CF=1 to select the alt name
+;   - CF=0 to select the normal name,
+;   - CF=1 to select the alt name
 ;
-; The name is selected according to the relevant internal state (e.g. DEG or
-; RAD). The nameSelector is allowed to modify BC, DE, since they are restored
-; before returning from this function. It is also allowed to modify HL since it
-; gets clobbered with string pointer before returning from this function.
+; The nameSelector() *must not* modify BC (altName), DE (normalName). But it
+; is allowed to modify A or HL.
 ;
 ; Input:
 ;   - HL:u16=menuId
@@ -84,7 +83,7 @@ getMenuName:
     ld a, l
     or h ; if HL==0: ZF=1
     jr z, getMenuNameSelectNormal
-    ; call nameSelector() to select the name string
+    ; Call nameSelector() to select the name string. Must NOT modify BC or DE.
     call jumpHL ; call nameSelector(); CF=1 if altName selected
     jr c, getMenuNameSelectAlt
 getMenuNameSelectNormal:
@@ -102,20 +101,9 @@ getMenuNameFind:
 ;-----------------------------------------------------------------------------
 
 ; Description: Dispatch to the handler for the menu node in register A.
-;
-; There are 2 cases:
-;
-; 1) If the target node is a MenuItem, then the 'onEnter' event is sent to the
-; item by invoking its handler.
-; 2) If the target node is a MenuGroup, a 'chdir' operation is implemented in 3
-; steps:
-;   a) The handler of the previous MenuGroup is sent an 'onExit' event,
-;   signaled by calling its handlers with the carry flag CF=1.
-;   b) The (currentMenuGroupId) and (currentMenuRowIndex) are updated with the
-;   target menu group.
-;   c) The handler of the traget MenuGroup is sent an 'onEnter' event, signaled
-;   by calling its handlers with the carry flag CF=0.
-;
+; 1) If the target node is a MenuItem, find its handler and invoke it.
+; 2) If the target node is a MenuGroup, perform a 'chdir' operation using
+; changeMenuGroup().
 ; Input:
 ;    - HL=targetNodeId
 ; Output:
@@ -125,11 +113,9 @@ getMenuNameFind:
 ;   - (jumpBackMenuRowIndex) cleared
 ; Destroys: A, B, C, DE, HL, IX
 dispatchMenuNode:
-    push hl ; stack=[targetNodeId]
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; HL=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
-    pop hl ; stack=[]; HL=targetNodeId
     jp z, jumpDE ; Invoke menuHandler().
     ; Item was a menuGroup, so change into the target menu group. First clear
     ; the jumpBack registers. Then invoke changeMenuGroup().
@@ -149,11 +135,9 @@ dispatchMenuNode:
 ;   - (jumpBackMenuRowIndex) set to currentMenuRowIndex
 ; Destroys: B
 dispatchMenuNodeWithJumpBack:
-    push hl ; stack=[targetNodeId]
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; HL=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
     ; Invoke a MenuItem.
     or a ; if numRows == 0: ZF=1 (i.e. a MenuItem)
-    pop hl ; stack=[]; HL=targetNodeId
     jp z, jumpDE ; Invoke menuHandler().
     ; Item was a menuGroup, so change into the target menu group. First, update
     ; the jumpBack registers if target is different than current. Then invoke
@@ -266,9 +250,15 @@ deduceRowIndexEnd:
 ;-----------------------------------------------------------------------------
 
 ; Description: Change the current menu group to the target menuGroup and
-; rowIndex. Sends an onExit() event to the previous menuGroupHandler by setting
-; at CF=1. Then sends an onEnter() event to the new menuGroupHandler by setting
-; CF=0.
+; rowIndex using the following steps:
+;   1) Populate BC=oldMenuGroupId and HL=newMenuGroupId.
+;   2) Send an 'onExit' event to the oldMenuGroupHandler by setting the carry
+;   flag CF=1.
+;   3) Update the  (currentMenuGroupId) with the newMenuGroupId, and set
+;   (currentMenuRowIndex) to 0 (first row).
+;   4) Send an 'onEnter' event to the newMenuGroupHandler by setting the carry
+;   flag CF=0.
+;
 ; Input:
 ;   - A=targetRowIndex
 ;   - HL=targetMenuGroupId
@@ -276,21 +266,34 @@ deduceRowIndexEnd:
 ;   - (currentMenuGroupId)=target nodeId
 ;   - (currentMenuRowIndex)=target rowIndex
 ;   - dirtyFlagsMenu set
-; Destroys: A, DE, HL, IX
+; Destroys: A, BC, DE, HL, IX
 changeMenuGroup:
-    push hl ; stack=[targetMenuGroupId]
-    push af ; stack=[targetMenuGroupId,targetRowIndex]
-    ; 1) Invoke the onExit() handler of the previous MenuGroup by setting CF=1.
+    push af ; stack=[targetRowIndex]
+    push hl ; stack=[targetRowIndex,targetMenuGroupId]
+    ; 1) Invoke the onExit() handler of the previous MenuGroup:
+    ;   - CF=1 (onExit())
+    ;   - BC=prevMenuGroupId
+    ;   - HL=targetMenuGroupId
+    ;   - DE=prevMenuGroupHandler
     ld hl, (currentMenuGroupId)
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
+    ld b, h
+    ld c, l ; BC=prevMenuGroupId
+    pop hl ; HL=targetMenuGroupId
+    push hl
     scf ; CF=1 means "onExit()" event
     call jumpDE
-    ; 2) Invoke the onEnter() handler of the target MenuGroup by setting CF=0.
-    pop af ; stack=[targetMenuGroupId]; A=targetRowIndex
-    pop hl ; stack=[]; HL=targeMenuGroupId
+    ; 2) Invoke the onEnter() handler of the target MenuGroup:
+    ;   - CF=0 (onEnter())
+    ;   - BC=prevMenuGroupId
+    ;   - HL=targetMenuGroupId
+    ;   - DE=targetMenuGroupHandler
+    pop hl ; stack=[targetRowIndex]; HL=targeMenuGroupId
+    pop af ; stack=[]; A=targetRowIndex
     ld (currentMenuRowIndex), a
+    ld bc, (currentMenuGroupId) ; BC=prevMenuGroupId
     ld (currentMenuGroupId), hl
-    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode
+    bcall(_GetMenuNodeHandler) ; A=numRows; DE=handler; IX=menuNode; HL=HL
     or a ; set CF=0
     set dirtyFlagsMenu, (iy + dirtyFlags)
     jp jumpDE

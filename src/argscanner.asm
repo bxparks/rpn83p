@@ -3,7 +3,8 @@
 ; Copyright (c) 2023 Brian T. Park
 ;
 ; Interactive key/button scanner for command arguments that follows certain
-; commands: STO, RCL, FIX, SCI, ENG.
+; commands: e.g. STO, RCL, FIX, SCI, ENG. See processArgCommands() for a
+; complete list of commands and its arguments.
 ;------------------------------------------------------------------------------
 
 ; Description: Configure the command arg scanner and display before each
@@ -43,7 +44,23 @@ startArgScanner:
     ret
 
 ; Description: Read loop which reads an argument that comes after certain
-; commands: FIX, SCI, ENG, STO, RCL, WSIZ, SIZE, DRAW, RNDN.
+; commands:
+;
+; - DRAW nn
+; - FIX nn
+; - SCI nn
+; - ENG nn
+; - WSIZ n
+; - RSIZ n
+; - SSIZ n
+; - RNDN n
+; - STO[op] (nn | letter)
+; - RCL[op] (nn | letter)
+;
+; where
+;
+; - 'op' is one of the arithmetic operator (+, -, *, /)
+; - 'letter' is one of A-Z or Theta
 ;
 ; Only a subset of buttons are allowed:
 ;
@@ -83,8 +100,7 @@ processArgCommands:
     call displayAll
 
     ; Get key code, and reset the ON flag.
-    bcall(_GetKey)
-    res onInterrupt, (iy + onFlags)
+    bcall(_GetRpnKeyCode) ; A=keyCode
 
     ; Handle the button press.
     ld hl, argKeyCodeHandlerTable

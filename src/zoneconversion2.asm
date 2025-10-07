@@ -10,66 +10,66 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
-; Description: Convert the RpnDateTime (OP1) to the timeZone specified by
-; RpnOffset (OP3).
+; Description: Convert the RpnDate, RpnDateTime, or RpnOffsetDateTime to the
+; timeZone specified by RpnOffset or Real. The RpnDate and RpnDateTime are
+; assumed to be in UTC timezone.
 ; Input:
-;   - OP1:RpnDateTime or RpnOffset
-;   - OP3:RpnOffset or RpnDateTime
+;   - OP1:(RpnDate|RpnDateTime|RpnOffsetDateTime|RpnOffset|Real)
+;   - OP3:(RpnDate|RpnDateTime|RpnOffsetDateTime|RpnOffset|Real)
+;   - one of OP1 or OP3 must be the RpnDateTime
 ; Output:
-;   - OP1; RpnOffsetDatetime
+;   - OP1:RpnOffsetDateTime
+; Throws: ErrDateType if the other is not a Real or RpnOffset
 ; Destroys: all, OP3-OP6
-ConvertRpnDateTimeToTimeZoneAsOffset:
+ConvertRpnDateLikeToTimeZone:
+    ; check for RpnDate
+    call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
+    jr z, convertRpnDateToObject
+    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=rpnObject
+    call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
+    jr z, convertRpnDateToObject
+    ; check for RpnDateTime
     call checkOp1DateTimePageTwo ; ZF=1 if CP1 is an RpnDateTime
-    jr z, convertRpnDateTimeToTimeZoneAsOffsetConvert
-    call cp1ExCp3PageTwo ; CP1=rpnDateTime; CP3=rpnOffset
-convertRpnDateTimeToTimeZoneAsOffsetConvert:
-    ; CP1=rpnDateTime; CP3=rpnOffset
-    call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
-    skipRpnObjectTypeHL ; HL=dateTime
-    ex de, hl ; DE=dateTime
-    ;
-    call pushRaw9Op3 ; FPS=[rpnDateTime,rpnOffset]; HL=rpnOffset
-    skipRpnObjectTypeHL ; HL=offset
-    push hl ; stack=[offset]
-    ; convert DateTime to epochSeconds
-    call reserveRaw9 ; FPS=[rpnDateTime,rpnOffset,epochSeconds]
-    call dateTimeToEpochSeconds ; HL=epochSeconds
-    ; convert to OffsetDateTime
-    ex de, hl ; DE=epochSeconds
-    pop bc ; stack=[]; BC=offset
-    ld a, rpnObjectTypeOffsetDateTime
-    call setOp1RpnObjectTypePageTwo ; HL=OP1+sizeof(type)
-    call epochSecondsToOffsetDateTime ; (HL)=offsetDateTime
-    call expandOp1ToOp2PageTwo
-    ; clean up FPS
-    call dropRaw9 ; FPS=[rpnDateTime,rpnOffset]
-    call dropRaw9 ; FPS=[rpnDateTime]
-    jp dropRpnObject ; FPS=[]
-
-; Description: Convert the RpnDateTime to the timeZone specified as offsetHour
-; (e.g. 8.5 for Offset{8,30}).
-; Input:
-;   - OP1:RpnDateTime or Real
-;   - OP3:Real or RpnDateTime
-; Output:
-;   - OP1; RpnOffsetDatetime
-; Destroys: all, OP3-OP6
-ConvertRpnDateTimeToTimeZoneAsReal:
+    jr z, convertRpnDateTimeToObject
+    call cp1ExCp3PageTwo ; CP1=rpnDateTime; CP3=rpnObject
     call checkOp1DateTimePageTwo ; ZF=1 if CP1 is an RpnDateTime
-    jr z, convertRpnDateTimeToTimeZoneAsRealConvert
-    call cp1ExCp3PageTwo ; CP1=rpnDateTime; CP3=offsetHour
-convertRpnDateTimeToTimeZoneAsRealConvert:
-    call PushRpnObject1 ; FPS=[rpnDateTime]; HL=rpnDateTime
-    call op3ToOp1PageTwo ; OP1=offsetHour
-    ; convert offsetHour to RpnOffset
-    ld a, rpnObjectTypeOffset
-    call setOp3RpnObjectTypePageTwo ; HL=OP3+sizeof(type)
-    call offsetHourToOffset ; (HL)=offset
-    ; clean up FPS
-    call PopRpnObject1 ; FPS=[]; OP1=rpnDateTime
-    jr convertRpnDateTimeToTimeZoneAsOffsetConvert
+    jr z, convertRpnDateTimeToObject
+    ; check for RpnOffsetDateTime
+    call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
+    jr z, convertRpnOffsetDateTimeToObject
+    call cp1ExCp3PageTwo
+    call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
+    jr z, convertRpnOffsetDateTimeToObject
+    ; neither of OP1 nor OP3 is Date-like
+    bcall(_ErrDataType)
 
-;-----------------------------------------------------------------------------
+convertRpnDateToObject:
+    ; Here CP1=rpnDate; CP3=rpnObject
+    call ExtendRpnDateToDateTime ; OP1=RpnDateTime
+    call ExtendRpnDateTimeToOffsetDateTime ; OP1=RpnOffsetDateTime
+    jr convertRpnOffsetDateTimeToObject
+
+convertRpnDateTimeToObject:
+    ; Here CP1=rpnDateTime; CP3=rpnObject
+    call ExtendRpnDateTimeToOffsetDateTime ; OP1=RpnOffsetDateTime
+    ; [[fallthrough]]
+
+convertRpnOffsetDateTimeToObject:
+    ; OP1:RpnOffsetDateTime; OP3:RpnObject
+    call checkOp3RealPageTwo
+    jr z, convertRpnOffsetDateTimeToReal
+    call checkOp3OffsetPageTwo
+    jr z, convertRpnOffsetDateTimeToOffset
+    bcall(_ErrDataType)
+
+convertRpnOffsetDateTimeToReal:
+    ; Convert Real to RpnOffset
+    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]
+    call op3ToOp1PageTwo ; OP1=real
+    call HoursToRpnOffset ; OP1=rpnOffset
+    call op1ToOp3PageTwo ; OP3=rpnOffset
+    call PopRpnObject1 ; FPS=[]; CP1=rpnOffsetDateTime
+    ; [[fallthrough]]
 
 ; Description: Convert the RpnOffsetDateTime (OP1) to the timeZone specified by
 ; RpnOffset (OP3).
@@ -77,13 +77,9 @@ convertRpnDateTimeToTimeZoneAsRealConvert:
 ;   - OP1:RpnOffsetDateTime
 ;   - OP3:RpnOffset
 ; Output:
-;   - OP1; RpnOffsetDatetime
+;   - OP1; RpnOffsetDateTime
 ; Destroys: all, OP3-OP6
-ConvertRpnOffsetDateTimeToOffset:
-    call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
-    jr z, convertRpnOffsetDateTimeToOffsetConvert
-    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=rpnOffset
-convertRpnOffsetDateTimeToOffsetConvert:
+convertRpnOffsetDateTimeToOffset:
     ; CP1=rpnOffsetDateTime; CP3=rpnOffset
     call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
     skipRpnObjectTypeHL ; HL=offsetDateTime
@@ -107,26 +103,17 @@ convertRpnOffsetDateTimeToOffsetConvert:
     call dropRaw9 ; FPS=[rpnOffsetDateTime]
     jp dropRpnObject ; FPS=[]
 
-; Description: Convert the RpnOffsetDateTime (OP1) to the timeZone specified by
-; (hour,minute) as a floating point number (OP3) (e.g. 8.5 for Offset{8,30}).
-; Input:
-;   - OP1:RpnOffsetDateTime
-;   - OP3:Real
-; Output:
-;   - OP1; RpnOffsetDatetime
-; Destroys: all, OP3-OP6
-ConvertRpnOffsetDateTimeToTimeZoneAsReal:
-    call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
-    jr z, convertRpnOffsetDateTimeToTimeZoneAsRealConvert
-    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=offsetHour
-convertRpnOffsetDateTimeToTimeZoneAsRealConvert:
-    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
-    call op3ToOp1PageTwo ; OP1=offsetHour
-    ; convert offsetHour to RpnOffset
-    ld a, rpnObjectTypeOffset
-    call setOp3RpnObjectTypePageTwo ; HL=OP3+sizeof(type)
-    call offsetHourToOffset ; (HL)=offset
-    ; clean up FPS
-    call PopRpnObject1 ; FPS=[]; OP1=rpnOffsetDateTime
-    jr convertRpnOffsetDateTimeToOffsetConvert
+;-----------------------------------------------------------------------------
 
+; Description: Convert the RpnOffsetDateTime (OP1) to UTC. This is a
+; convenience function for convertRpnOffsetDateTimeToOffset() if UTC is
+; desired.
+; Input: OP1:RpnOffsetDateTime=offsetDateTime
+; Output: OP1:RpnOffsetDateTime=utcOffsetDateTime
+; Dstroys: all, OP1-OP6
+ConvertRpnOffsetDateTimeToUtc:
+    call PushRpnObject1 ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
+    call RpnOffsetUtc ; CP1:RpnOffset=UTC
+    call PopRpnObject3 ; FPS=[]; CP3=rpnOffsetDateTime
+    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=UTC
+    jr convertRpnOffsetDateTimeToOffset

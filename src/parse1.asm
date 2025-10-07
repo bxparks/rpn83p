@@ -14,17 +14,13 @@
 ; subroutines will throw Err:Syntax or Err:Invalid when it detects something
 ; wrong.
 ;
-; The `inputBufFlagsClosedEmpty` flag is set if the inputBuf was an empty string
+; The `rpnFlagsLiftEnabled` flag is 0 if the inputBuf was an empty string
 ; before being closed. The flag is used by functions which do not consume any
 ; value from the RPN stack, but simply push a value or two onto the X or Y
 ; registers (e.g. PI, E, or various TVM functions, various STAT functions). If
 ; the user had pressed CLEAR, to clear the input buffer, then it doesn't make
 ; sense for these functions to lift the empty string (i.e. 0) up when pushing
-; the new values. These functions call pushToX() or pushToXY() which checks if
-; the inputBuf was closed when empty. If empty, pushToX() or pushToXY() will
-; *not* lift the stack, but simply replace the "0" in the X register with the
-; new value. This flag is cleared if the inputBuf was not in edit mode, with
-; the assumption that new X or Y values should lift the stack.
+; the new values.
 ;
 ; This routine calls ClearInputBuf() before returning to the closeInput()
 ; routine. It would be cleaner to move the ClearInputBuf() to closeInput() to
@@ -36,8 +32,8 @@
 ;   - inputBuf:PascalString
 ; Output:
 ;   - OP1/OP2:RpnObject
-;   - inputBufFlagsClosedEmpty: set if inputBuf was an empty string when closed
 ;   - inputBuf cleared to empty string if successful
+;   - rpnFlagsLiftEnabled: 0 if inputBuf was empty, 1 otherwise
 ; Throws:
 ;   - Err:Syntax if there is a syntax error
 ; Destroys: all, OP1, OP2, OP4
@@ -47,11 +43,11 @@ ParseAndClearInputBuf:
     or a
     jr nz, parseAndClearInputBufNonEmpty
 parseAndClearInputBufEmpty:
-    set inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    res rpnFlagsLiftEnabled, (iy + rpnFlags)
     call op1Set0PageOne
     jp ClearInputBuf
 parseAndClearInputBufNonEmpty:
-    res inputBufFlagsClosedEmpty, (iy + inputBufFlags)
+    set rpnFlagsLiftEnabled, (iy + rpnFlags)
     ; add NUL terminator to inputBuf to simplify parsing
     ld hl, inputBuf
     call preparePascalStringForParsing ; preserves HL
@@ -63,6 +59,9 @@ parseAndClearInputBufNonEmpty:
     ld a, ':' ; A=':'
     call findChar ; CF=1 if found; HL preserved
     jr c, parseAndClearInputBufTaggedNumber
+    ; Check for DHMS which identifies a compact Duration.
+    call checkCompactDuration ; CF=1 if compact Duration
+    jr c, parseAndClearInputBufCompactDuration
     ; Everything else should be a Real or a Complex number.
     call parseInputBufNumber ; OP1/OP2=real or complex
     jp ClearInputBuf ; see note above
@@ -71,6 +70,9 @@ parseAndClearInputBufRecord:
     jp ClearInputBuf ; see note above
 parseAndClearInputBufTaggedNumber:
     call parseInputBufTaggedNumber ; OP1/OP2:real
+    jp ClearInputBuf ; see note above
+parseAndClearInputBufCompactDuration:
+    call parseInputBufCompactDuration ; OP1/OP2:real
     jp ClearInputBuf ; see note above
 
 ;------------------------------------------------------------------------------
@@ -366,7 +368,8 @@ parseInputBufDuration:
     ret
 
 ;-----------------------------------------------------------------------------
-; Parse integers with ':' modifiers. Accepted values are:
+; Parse integers with ':' modifiers into RpnDuration object.
+; Accepted values are:
 ;   - nn:D - Duration.days
 ;   - nn:H - Duration.hours
 ;   - nn:M - Duration.minutes
@@ -378,7 +381,7 @@ parseInputBufDuration:
 ; Input:
 ;   - HL:(PascalString*)=inputBuf
 ; Output:
-;   - OP1:Duration=duration
+;   - OP1:RpnDuration=duration
 ; Destroys: all
 parseInputBufTaggedNumber:
     inc hl ; skip len byte
@@ -501,4 +504,32 @@ clearDuration:
     pop hl
     pop de
     pop bc
+    ret
+
+;-----------------------------------------------------------------------------
+; Parse Compact Duration string into an RpnDuration object.
+;-----------------------------------------------------------------------------
+
+; Description: Parse a compact Duration string.
+; terminator. Then check for 'D', 'H', 'M', 'S', and move the integer into the
+; correct position in the Duration object.
+; Input:
+;   - HL:(PascalString*)=inputBuf
+; Output:
+;   - OP1:RpnDuration=duration
+; Destroys: all
+parseInputBufCompactDuration:
+    inc hl ; skip len byte
+    ; set up target RpnDuration object
+    ex de, hl ; DE=inputBuf
+    ld hl, OP1 ; HL:RpnDuration
+    ld a, rpnObjectTypeDuration
+    call setOp1RpnObjectTypePageOne ; HL=OP1+sizeof(type)=duration
+    ; Parse the Duration string in compact form
+    push hl ; stack=[duration]
+    ex de, hl ; DE=Duration; HL=inputBuf
+    call parseCompactDuration
+    pop hl ; stack=[]; HL=duration
+    ; Validate Duration object
+    bcall(_ValidateDuration)
     ret

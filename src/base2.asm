@@ -53,9 +53,10 @@ truncWordSizeExit:
     ret
 
 ;-----------------------------------------------------------------------------
-; Entry points of BASE operations from basehandlers.asm. This layer knows about
-; OP1, OP2, and baseWordSize. It calls down to integer32.asm which contains
-; low-level routines which are independent of TI-OS related parameters.
+; Entry points of BASE operations from basemenuhandlers.asm. This layer knows
+; about OP1, OP2, and baseWordSize. It calls down to integer32.asm which
+; contains low-level routines which are independent of TI-OS related
+; parameters.
 ;-----------------------------------------------------------------------------
 
 ; Description: Calculate the bitwise-and between the integers in OP1 and OP2.

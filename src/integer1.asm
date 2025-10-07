@@ -10,22 +10,6 @@
 ; entry.
 ;------------------------------------------------------------------------------
 
-; Description: Non-destructive compare of (HL-DE). Same as bcall(_CpHLDE)
-; without the overhead of the bcall().
-; Input: HL, DE
-; Output:
-;   - CF=1,ZF=0 if HL<DE
-;   - CF=0,ZF=1 if HL==DE
-;   - CF=0,ZF=0 if HL>DE
-cpHLDEPageOne:
-    or a ; CF=0
-    push hl
-    sbc hl, de
-    pop hl
-    ret
-
-;------------------------------------------------------------------------------
-
 ; Description: Add A to HL.
 ; Input: HL, A
 ; Output: HL+=A
@@ -69,5 +53,30 @@ multABy10:
     add a, a
     add a, a ; A=8*A
     add a, c ; A=10*A
+    pop bc
+    ret
+
+;------------------------------------------------------------------------------
+
+; Description: Divide HL by C
+; Input: HL=dividend; C=divisor
+; Output: HL=quotient; A=remainder
+; Destroys: A, HL
+; Preserves: BC, DE
+divHLByCPageOne:
+    push bc
+    xor a ; A=remainder
+    ld b, 16
+divHLByCLoopPageOne:
+    add hl, hl
+    rla
+    jr c, divHLByCOnePageOne ; remainder overflowed, so must substract
+    cp c ; if remainder(A) < divisor(C): CF=1
+    jr c, divHLByCZeroPageOne
+divHLByCOnePageOne:
+    sub c
+    inc l ; set bit 0 of quotient
+divHLByCZeroPageOne:
+    djnz divHLByCLoopPageOne
     pop bc
     ret

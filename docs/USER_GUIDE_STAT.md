@@ -1,13 +1,11 @@
-# RPN83P User Guide: STAT Functions
+# RPN83P User Guide: Chapter 13: STAT Functions
 
 This document describes the `STAT` functions of the RPN83P application which
 supports all statistical and curve fitting functionality of the HP-42S.
 
-**Version**: 1.0.0 (2024-07-19)
-
+**Version**: 1.1.0 (2025-10-07)\
+**Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
-
-**Project Home**: https://github.com/bxparks/rpn83p
 
 ## Table of Contents
 
@@ -29,15 +27,15 @@ Manual_. Additional reference material can be found at:
 The STAT functions are available through the `ROOT > STAT` menu folder, which is
 also accessible through the `STAT` button on the keypad:
 
-- ![ROOT > STAT](images/menu-root-stat.png)
-    - ![ROOT > STAT > Row1](images/menu-root-stat-1.png)
-    - ![ROOT > STAT > SIGMA](images/menu-root-stat-sigma.png)
-        - ![ROOT > STAT > SIGMA > Row1](images/menu-root-stat-sigma-1.png)
-        - ![ROOT > STAT > SIGMA > Row2](images/menu-root-stat-sigma-2.png)
-        - ![ROOT > STAT > SIGMA > Row3](images/menu-root-stat-sigma-3.png)
-    - ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png)
-        - ![ROOT > STAT > CFIT > Row1](images/menu-root-stat-cfit-1.png)
-        - ![ROOT > STAT > CFIT > Row2](images/menu-root-stat-cfit-2.png)
+- ![ROOT > STAT](images/menu/root-stat.png)
+    - ![ROOT > STAT > Row1](images/menu/root-stat-1.png)
+    - ![ROOT > STAT > SIGMA](images/menu/root-stat-sigma.png)
+        - ![ROOT > STAT > SIGMA > Row1](images/menu/root-stat-sigma-1.png)
+        - ![ROOT > STAT > SIGMA > Row2](images/menu/root-stat-sigma-2.png)
+        - ![ROOT > STAT > SIGMA > Row3](images/menu/root-stat-sigma-3.png)
+    - ![ROOT > STAT > CFIT](images/menu/root-stat-cfit.png)
+        - ![ROOT > STAT > CFIT > Row1](images/menu/root-stat-cfit-1.png)
+        - ![ROOT > STAT > CFIT > Row2](images/menu/root-stat-cfit-2.png)
 
 Most of the menu names are the same as the HP-42S. Here are some of the
 differences:
@@ -80,22 +78,22 @@ HP-42S.
 
 On the HP-42S, the STAT registers are implemented using the storage registers
 from R11 to R23. This means that if the STAT functions are used, then the user
-must remember to avoid using these registers for other purposes.
+must remember to avoid using these registers for other purposes. On RPN83P, the
+STAT registers are separated from regular storage registers by using a different
+TI-OS appVar named `RPN83STA`.
 
-On RPN83P, the STAT registers are separated from regular storage registers by
-using a different TI-OS appVar named `RPN83STA`. It is rarely necessary to
-access the STAT registers, but if needed, access to them are provided through
-the menu functions the `Σ` menu folder instead of through the `RCL` function as
-implemented on the HP-42S. These menu labels are identical to the ones used by
-the [Plus42](https://thomasokken.com/plus42/) app:
+It is rarely necessary to access the STAT registers, but if needed, access to
+them are provided through the menu functions under the `Σ` menu folder instead
+of the `RCL` function as implemented on the HP-42S. These menu labels are
+identical to the ones used by the [Plus42](https://thomasokken.com/plus42/) app:
 
-- ![ROOT > STAT > SIGMA](images/menu-root-stat-sigma.png)
-    - ![ROOT > STAT > SIGMA > Row1](images/menu-root-stat-sigma-1.png)
-    - ![ROOT > STAT > SIGMA > Row2](images/menu-root-stat-sigma-2.png)
-    - ![ROOT > STAT > SIGMA > Row3](images/menu-root-stat-sigma-3.png)
+- ![ROOT > STAT > SIGMA](images/menu/root-stat-sigma.png)
+    - ![ROOT > STAT > SIGMA > Row1](images/menu/root-stat-sigma-1.png)
+    - ![ROOT > STAT > SIGMA > Row2](images/menu/root-stat-sigma-2.png)
+    - ![ROOT > STAT > SIGMA > Row3](images/menu/root-stat-sigma-3.png)
 
-Here is a table that maps a STAT register menu item on the RPN83P to the
-corresponding storage register on the HP-42S:
+Here is a table that maps a STAT register on the RPN83P to the corresponding
+storage register on the HP-42S:
 
 | **RPN83P Menu**   | **HP-42S Register**   | **Content**   |
 | ---               | ---                   | ---           |
@@ -117,25 +115,29 @@ Since the STAT registers on RPN83P do not use the normal storage registers, the
 `ΣREG` and the `ΣRG?` commands of the HP-42S are not necessary and do not exist
 on the RPN83P.
 
-The `CLΣ` menu item clears the STAT registers. On the HP-42S, this command
-clears registers R11 to R16 in when `LINΣ` is selected, and clears the entire
-R11 to R23 when `ALLΣ` is selected. On RPN83P, the `CLΣ` command clears the
-equivalent sets of STAT registers with the difference that the regular storage
-registers R11 to R23 are completely unaffected.
+The `CLΣ` menu function clears all STAT registers regardless of the `LINΣ` or
+`ALLΣ` settings. The regular storage registers R11 to R23 are unaffected.
 
-On the HP-42S, the `CLΣ` command appears only under the `CLEAR` menu hierarchy.
-On the RPN83P, it is far more difficult to reach the `CLR` menu hierarchy, so
-the `CLΣ` commands appears in 2 places for convenience: under the `CLR` menu
-folder, and under the `STAT` menu folder.
+**HP-42S Compatibility Note**: On the HP-42S, the `CLΣ` command clears only a
+subsets of the storage registers depending on the curve fitting mode. When
+`LINΣ` is selected, only registers R11 to R16 are cleared. When `ALLΣ` is
+selected, all STAT related registers R11 to R23 are cleared. On RPN83P,`CLΣ`
+always clears all STAT registers because we don't need to worry about conflicts
+with regular storage registers.
+
+**HP-42S Compatibility Note**: On the HP-42S, the `CLΣ` command appears only
+under the `CLEAR` menu hierarchy. On the RPN83P, it is far more difficult to
+reach the `CLR` menu hierarchy, so the `CLΣ` commands appears in 2 places for
+convenience: under the `CLR` menu folder, and under the `STAT` menu folder.
 
 ## Curve Fitting
 
 The curve fitting functions are available under the `ROOT > STAT > CFIT` menu
 folder:
 
-- ![ROOT > STAT > CFIT](images/menu-root-stat-cfit.png)
-    - ![ROOT > STAT > CFIT > Row1](images/menu-root-stat-cfit-1.png)
-    - ![ROOT > STAT > CFIT > Row2](images/menu-root-stat-cfit-2.png)
+- ![ROOT > STAT > CFIT](images/menu/root-stat-cfit.png)
+    - ![ROOT > STAT > CFIT > Row1](images/menu/root-stat-cfit-1.png)
+    - ![ROOT > STAT > CFIT > Row2](images/menu/root-stat-cfit-2.png)
 
 The supported curve fit models are identical to the HP-42S. The linear curve fit
 `LINF` is available with either `LINΣ` or `ALLΣ` selected. The other models

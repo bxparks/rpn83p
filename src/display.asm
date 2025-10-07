@@ -133,20 +133,17 @@ menuFolderIconLineRow equ 7 ; pixel row of the menu folder icon line
 
 ; Description: Update the display, including the title, RPN stack variables,
 ; and the menu.
-;
-; We must turn off the cursor at the very beginning of the drawing code, then
-; reenable it at the end (if needed). Otherwise, there seems to be a
-; race-condition in the blinking code of TIOS where the cursor is shown
-; (probably through an interrupt handler), then the cursor position is changed
-; by our code, but the blinking code does not remember the prior location where
-; the cursor was enabled, so does not unblink the cursor properly, leaving an
-; artifact of the cursor in the wrong location.
-;
 ; Input: none
 ; Output:
 ; Destroys: all
 displayAll:
-    ; Disable blinking cursor
+    ; Disable blinking cursor at the very beginning of the drawing code, then
+    ; reenable it at the end (if needed). Otherwise, there seems to be a
+    ; race-condition in the blinking code of TIOS where the cursor is shown
+    ; (probably through an interrupt handler), then the cursor position is
+    ; changed by our code, but the blinking code does not remember the prior
+    ; location where the cursor was enabled, so does not unblink the cursor
+    ; properly, leaving an artifact of the cursor in the wrong location.
     res curAble, (iy + curFlags)
     res curOn, (iy + curFlags)
     ;
@@ -154,6 +151,7 @@ displayAll:
     call displayErrorCode
     call displayMain
     call displayMenu
+    ; Reenable cursor if needed.
     call setCursorState
     ; Reset all dirty flags
     xor a
@@ -168,6 +166,11 @@ displayAll:
 ; inputBuf. However setting `curOn=true` and `curAble=false` seems to just
 ; disable the cursor instead of showing a non-blinking cursor.
 setCursorState:
+    ; If Command arg mode, no cursor. Command mode takes precedence over Input
+    ; editing mode.
+    bit rpnFlagsArgMode, (iy + rpnFlags)
+    ret nz
+    ; If not editing, no cursor.
     bit rpnFlagsEditing, (iy + rpnFlags)
     ret z
     ; enable a blinking cursor
@@ -475,7 +478,7 @@ displayStackYZT:
     ; print T value
     ld hl, stTCurCol*$100 + stTCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclT
+    bcall(_RclStackT)
     ld b, displayStackFontFlagsT
     call printOP1
 
@@ -488,7 +491,7 @@ displayStackYZT:
     ; print Z value
     ld hl, stZCurCol*$100 + stZCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclZ
+    bcall(_RclStackZ)
     ld b, displayStackFontFlagsZ
     call printOP1
 
@@ -501,7 +504,7 @@ displayStackYZT:
     ; print Y value
     ld hl, stYCurCol*$100 + stYCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclY
+    bcall(_RclStackY)
     ld b, displayStackFontFlagsY
     call printOP1
 
@@ -543,7 +546,7 @@ displayStackXNormal:
     ; print the X register
     ld hl, stXCurCol*$100 + stXCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclX
+    bcall(_RclStackX)
     ld b, displayStackFontFlagsX
     jp printOP1
 
@@ -790,7 +793,7 @@ displayShow:
     ; Call special FormShowable() function to show all digits of OP1.
     ld hl, showCurCol*$100 + showCurRow ; $(curCol)(curRow)
     ld (curRow), hl
-    call rclX
+    bcall(_RclStackX)
     ; fmtString is a buffer of 65 bytes used by FormDCplx(). There should be no
     ; problems using it as our string buffer.
     ld de, fmtString
@@ -841,6 +844,9 @@ printOP1:
     ;
     cp rpnObjectTypeDuration
     jp z, printOP1DurationRecord
+    ;
+    cp rpnObjectTypeDenominate
+    jp z, printOP1Denominate
     ;
     ld hl, msgRpnObjectTypeUnknown
     jp printHLString
@@ -1211,6 +1217,27 @@ printOP1DurationRecord:
     bcall(_FormatDuration)
     ; print string stored in OP3
     pop hl ; HL=OP3
+    jp printSmallHLString
+
+;-----------------------------------------------------------------------------
+; RpnDenominate objects
+;-----------------------------------------------------------------------------
+
+; Description: Print the RpnDenominate object in OP1 using small font.
+; Input:
+;   - OP1/OP2:RpnDenominate
+;   - B=displayFontMask
+; Destroys: all, OP1-OP3, OP4-OP6 depending on length of string
+printOP1Denominate:
+    call eraseEOLIfNeeded ; uses B
+    call displayStackSetSmallFont
+    ; format OP1/OP2
+    bcall(_PushRpnObject1) ; FPS=[rpnDenominate]; HL=rpnDenominate
+    ld de, fmtString
+    bcall(_FormatDenominate) ; format into fmtString
+    bcall(_PopRpnObject1) ; FPS=[]
+    ; print string stored in fmtString
+    ld hl, fmtString
     jp printSmallHLString
 
 ;-----------------------------------------------------------------------------

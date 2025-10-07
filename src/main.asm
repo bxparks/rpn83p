@@ -34,16 +34,18 @@ main:
     call coldInitCfit
 warmInit:
     ; Alway perform warm initialization.
+    bcall(_ClearRpnKeyCode)
     bcall(_SanitizeMenu) ; Sanitize currentMenuGroupId and currentMenuRowIndex
+    bcall(_ClearJumpBack) ; Cannot assume that the jumpback is valid.
     bcall(_InitArgBuf) ; Start with command ArgScanner off.
     bcall(_InitDisplay)
     bcall(_InitTvmSolver)
-    call updateNumResultMode
-    call updateComplexMode
-    call initStack
-    call initRegs
-    call initStatRegs
-    call initLastX
+    bcall(_UpdateNumResultMode)
+    bcall(_UpdateComplexMode)
+    bcall(_InitStack)
+    bcall(_InitRegs)
+    bcall(_InitStatRegs)
+    bcall(_InitLastX)
 
     ; Initialize the App monitor so that we can intercept the Put Away (2ND
     ; OFF) signal.
@@ -62,9 +64,9 @@ warmInit:
 mainExit:
     ; Save appState and close various appVars.
     call storeAns
-    call closeStack
-    call closeRegs
-    call closeStatRegs
+    bcall(_CloseStack)
+    bcall(_CloseRegs)
+    bcall(_CloseStatRegs)
     bcall(_StoreAppState)
 
     ; Clean up the screen.
@@ -94,7 +96,7 @@ appTurningOff:
 
 ; Description: Store OP1 to Ans, but only if OP1 is Real or Complex.
 storeAns:
-    call rclX ; OP1=X
+    bcall(_RclStackX) ; OP1=X
     call checkOp1RealOrComplex ; ZF=1 if real or complex
     ret nz
     bcall(_StoAns) ; transfer to TI-OS 'ANS' (supports complex numbers)

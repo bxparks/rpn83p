@@ -123,8 +123,8 @@ MENU_TYPE_ITEM_ALT = 2  # MenuItem with alternate display name
 # nodes must fit into a single flash page which is 16 kiB. The sizeof(MenuNode)
 # is 13, so the number of menu nodes is limited to 1260. With the overhead of
 # other code that must fit into that flash page, the actual limit will be lower
-# than 1260. Let's set the limit to 512 as an early warning.
-MENU_ID_LIMIT = 512
+# than 1260. Let's set the limit to 768 as an early warning.
+MENU_ID_LIMIT = 768
 
 MenuRow = List["MenuNode"]
 
@@ -138,7 +138,9 @@ class MenuNode(TypedDict, total=False):
     name_contains_special: bool  # name contains special characters
     altname: str
     altname_contains_special: bool  # altname contains special characters
+    exploded_chars: List[str]  # name as list of single characters
     exploded_name: str  # name as a list of single characters
+    exploded_altchars: List[str]  # altname as list of single characters
     exploded_altname: str  # altname as a list of single characters
     label: str
     rows: List[MenuRow]  # List of MenuNodes in groups of 5
@@ -148,7 +150,6 @@ class MenuNode(TypedDict, total=False):
 class MenuConfig(TypedDict, total=False):
     """Menu configuration at the top of the menudef file."""
     item_name: str  # default MenuItem name
-    item_name_id: str  # default MenuItem name id
     item_handler: str  # default MenuItem handler
     group_handler: str  # default MenuGroup handler
 
@@ -263,9 +264,6 @@ class MenuParser:
             if token == 'ItemName':
                 value = self.lexer.get_token()
                 config['item_name'] = value
-            elif token == 'ItemNameId':
-                value = self.lexer.get_token()
-                config['item_name_id'] = value
             elif token == 'ItemHandler':
                 value = self.lexer.get_token()
                 config['item_handler'] = value
@@ -523,7 +521,9 @@ class StringExploder:
         if name == '*':
             return
         try:
-            node["exploded_name"] = self.explode_str(name)
+            chars = self.explode_str(name)
+            node["exploded_chars"] = chars
+            node["exploded_name"] = ", ".join(chars)
         except ValueError as e:
             raise ValueError(
                 f"Invalid syntax in menu '{name}': {str(e)}"
@@ -536,7 +536,9 @@ class StringExploder:
                 altname.find('<') >= 0 or name.find('>') >= 0
             )
             try:
-                node["exploded_altname"] = self.explode_str(altname)
+                chars = self.explode_str(altname)
+                node["exploded_altchars"] = chars
+                node["exploded_altname"] = ", ".join(chars)
             except ValueError as e:
                 raise ValueError(
                     f"Invalid syntax in menu '{altname}': {str(e)}"
@@ -557,7 +559,7 @@ class StringExploder:
                     self.explode_group(slot)
 
     @staticmethod
-    def explode_str(s: str) -> str:
+    def explode_str(s: str) -> List[str]:
         i = 0
         chars: List[str] = []
         while i < len(s):
@@ -577,7 +579,7 @@ class StringExploder:
             else:
                 raise ValueError(f"Unsupported character '{c}'")
             i += 1
-        return ", ".join(chars)
+        return chars
 
 
 # -----------------------------------------------------------------------------
@@ -591,7 +593,6 @@ class SymbolGenerator:
     def __init__(self, root: MenuNode):
         self.root = root
         self.id_map: Dict[int, MenuNode] = {}  # {node_id -> MenuNode}
-        self.name_map: Dict[str, MenuNode] = {}  # {node_name -> MenuNode}
         self.label_map: Dict[str, MenuNode] = {}  # {node_label -> MenuNode}
         self.id_counter = 1  # Null node is id=0, so Root node starts at id=1
 
@@ -619,26 +620,12 @@ class SymbolGenerator:
 
     def generate_node(self, node: MenuNode, parent_id: int) -> None:
         """Process the given node, no recursion."""
-        # Add menu name to the name_map table. And label to label_map table.
-        # Check for duplicates.
+        # Check for duplicates labels. Duplicate (display) names allowed.
         name = node["name"]
-        if name != "*":
-            entry = self.name_map.get(name)
-            # Check for duplicates.
-            if entry is not None:
-                # Cannot have duplicate MenuGroup, ever.
-                if entry["mtype"] == MENU_TYPE_GROUP or \
-                        node["mtype"] == MENU_TYPE_GROUP:
-                    raise ValueError(f"Duplicate MenuGroup.name '{name}'")
-                # Allow dupes for MenuItem or MenuItemAlt.
-                if entry["mtype"] != node["mtype"]:
-                    raise ValueError(
-                        f"Duplicate MenuItem or MenuItemAlt '{name}'")
-            self.name_map[name] = node
-
+        label = node["label"]
+        if label != "*":
             # Labels must always be unique, because they are used prefixes for
             # various internal assembly language labels.
-            label = node["label"]
             entry = self.label_map.get(label)
             if entry is not None:
                 raise ValueError(f"Duplicate MenuItem.label '{label}'")
@@ -654,7 +641,7 @@ class SymbolGenerator:
             raise ValueError(f"Overflow: id_counter >= {MENU_ID_LIMIT}")
 
         # Set label='mBlankXXX' for blank menus
-        if name == "*":
+        if name == "*" or label == "*":
             label = f"mBlank{id:03}"
             node["label"] = label
 
@@ -680,10 +667,9 @@ class CodeGenerator:
 
         # id_map{} does not include NullNode, the count is off by one
         assert symbols.id_counter == len(symbols.id_map) + 1
-        self.menu_table_size = symbols.id_counter
+        self.menu_table_count = symbols.id_counter
 
         self.id_map = symbols.id_map  # {node_id -> MenuNode}
-        self.name_map = symbols.name_map  # {node_name -> MenuNode}
         self.flat_names: List[MenuNode] = []
 
     def generate(self, output: TextIO) -> None:
@@ -697,45 +683,50 @@ class CodeGenerator:
         self.generate_names(self.root)
 
     def generate_menus(self, node: MenuNode) -> None:
+        default_item_name = self.config["item_name"]
+        default_item_handler = self.config["item_handler"]
+        default_group_handler = self.config["group_handler"]
+
         print(f"""\
 ;-----------------------------------------------------------------------------
 ; Menu hierarchy definitions, generated from {self.inputfile}.
 ; See menu.asm for the equivalent C struct declaration.
 ;
 ; The following symbols are reserved and pre-generated by the compilemenu.py
-; script:
+; script to generate an 'mNull' menu item:
 ;   - mNull
 ;   - mNullId
 ;   - mNullName
-;   - mNullNameId
 ;   - mNullHandler
 ;
-; The following symbols are not reserved, but the root menu group is
-; recommended to use the 'mRoot' label, which then generates the following
-; for the root menu group:
+; The root menu group is recommended to be named 'mRoot', which then generates
+; the following symbols:
 ;   - mRoot
 ;   - mRootId
-;   - mRootNameId
 ;
-; The following is the recommended configuration of the 'GroupHandler'
-; directive inside a 'MenuConfig':
-;   - GroupHandler mGroupHandler
+; The MenuConfig for this file was defined as:
 ;
-; The following are the recommended configurations for a blank menu item:
-;   - ItemName mNullName
-;   - ItemNameId mNullNameId
-;   - ItemHandler mNullHandler
+;   MenuConfig [
+;     ItemName {default_item_name}
+;     ItemHandler {default_item_handler}
+;     GroupHandler {default_group_handler}
+;   ]
+;
+; - 'ItemName' and 'ItemHandler' configure the default values for a "blank"
+;   MenuItem,
+; - 'GroupHandler' configures the default MenuGroup handler.
 ;
 ; DO NOT EDIT: This file was autogenerated.
 ;-----------------------------------------------------------------------------
 
-mMenuTableSize equ {self.menu_table_size}
+mMenuTableCount equ {self.menu_table_count} ; number of menu nodes
 mMenuTable:
+
 mNull:
 mNullId equ 0
     .dw mNullId ; id
     .dw mNullId ; parentId
-    .dw mNullNameId ; nameId
+    .dw mNullName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId
     .dw mNullHandler
@@ -761,34 +752,34 @@ mNullId equ 0
 
         if mtype == MENU_TYPE_ITEM:
             num_rows = 0
-            row_begin_id = "0"
+            row_begin_or_alt_name = "0"
             name_selector = "0"
             if name == '*':
                 node_id = f"{label}Id"
-                name_id = self.config['item_name_id']
+                name_label = self.config['item_name']
                 handler = self.config['item_handler']
                 handler_comment = "predefined"
             else:
                 node_id = f"{label}Id"
-                name_id = f"{label}NameId"
+                name_label = f"{label}Name"
                 handler = f"{label}Handler"
                 handler_comment = "to be implemented"
         elif mtype == MENU_TYPE_ITEM_ALT:
             num_rows = 0
             node_id = f"{label}Id"
-            name_id = f"{label}NameId"
-            row_begin_id = f"{label}AltNameId"
+            name_label = f"{label}Name"
+            row_begin_or_alt_name = f"{label}AltName"
             handler = f"{label}Handler"
             handler_comment = "to be implemented"
             name_selector = f"{label}NameSelector"
         else:
             node_id = f"{label}Id"
-            name_id = f"{label}NameId"
+            name_label = f"{label}Name"
             rows = node["rows"]
             num_rows = len(rows)
             begin_id = rows[0][0]["id"]
             row_begin_node = self.id_map[begin_id]
-            row_begin_id = row_begin_node["label"] + "Id"
+            row_begin_or_alt_name = row_begin_node["label"] + "Id"
             overridden_handler = node.get('group_handler')
             if overridden_handler is None:
                 handler = self.config['group_handler']
@@ -803,9 +794,9 @@ mNullId equ 0
 {label}Id equ {id}
     .dw {node_id} ; id
     .dw {parent_node_label}Id ; parentId
-    .dw {name_id} ; nameId
+    .dw {name_label} ; name
     .db {num_rows} ; numRows
-    .dw {row_begin_id} ; rowBeginId or altNameId
+    .dw {row_begin_or_alt_name} ; rowBeginId or altName
     .dw {handler} ; handler ({handler_comment})
     .dw {name_selector} ; nameSelector
 """, file=self.output, end='')
@@ -837,55 +828,33 @@ mNullId equ 0
         # Collect the name strings into a list, so that we can generate
         # continguous name ids.
         names = self.flatten_nodes(node)
+        names_count = len(names)
 
-        # NameTable size must include the altNames of some nodes.
-        menu_name_table_size = sum([
-            2 if n.get("altname") is not None
-            else 1
-            for n in names
-        ])
-        menu_name_table_size += 1  # add mNullNameId
-
-        # Generate the array of pointers to the C-strings.
-        print(f"""\
-; Table of 2-byte pointers to names in the pool of strings below.
-mMenuNameTableSize equ {menu_name_table_size}
-mMenuNameTable:
-mNullNameId equ 0
-    .dw mNullName
-""", file=self.output, end='')
-        name_index = 1
+        # Calculate total size of string pool
+        names_pool_size = 0
         for node in names:
-            # name
-            label = node["label"]
-            print(f"""\
-{label}NameId equ {name_index}
-    .dw {label}Name
-""", file=self.output, end='')
-            name_index += 1
-            if name_index >= MENU_ID_LIMIT:
-                raise ValueError(f"Overflow: name_index >= {MENU_ID_LIMIT}")
-
-            # altname
-            if node.get("altname"):
-                print(f"""\
-{label}AltNameId equ {name_index}
-    .dw {label}AltName
-""", file=self.output, end='')
-                name_index += 1
-                if name_index >= MENU_ID_LIMIT:
-                    raise ValueError(f"Overflow: name_index > {MENU_ID_LIMIT}")
-
-        print(file=self.output)
+            chars = node["exploded_chars"]
+            names_pool_size += len(chars) + 1  # include NUL
+            alt_name = node.get("altname")
+            if alt_name is not None:
+                chars = node["exploded_altchars"]
+                names_pool_size += len(chars) + 1  # include NUL
 
         # Generate the pool of C-strings
-        print("""\
-; Table of names as NUL terminated C strings.
+        print(f"""\
+;-----------------------------------------------------------------------------
+; Pool of menu names as NUL-terminated C strings.
+;-----------------------------------------------------------------------------
+
+mNamesCount equ {names_count} ; number of names and altnames
+mNamesPoolSize equ {names_pool_size} ; size of names string pool
+
 mNullName:
     .db 0
 """, file=self.output, end='')
         for node in names:
             label = node["label"]
+
             # name
             name_contains_special = node["name_contains_special"]
             if name_contains_special:
@@ -897,6 +866,7 @@ mNullName:
 {label}Name:
     .db {display_name}, 0
 """, file=self.output, end='')
+
             # altname
             if node.get("altname"):
                 altname_contains_special = node["altname_contains_special"]

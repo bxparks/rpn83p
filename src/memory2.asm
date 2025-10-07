@@ -11,6 +11,10 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+;-----------------------------------------------------------------------------
+; Exchange FPS operations.
+;-----------------------------------------------------------------------------
+
 ; Description: Exchange OP2 and FPS.
 ; Destroys: all registers
 exchangeFPSOP2PageTwo:
@@ -50,7 +54,7 @@ exchange9PageTwo:
 
 ; Description: Exchange 'B' bytes between DE and HL.
 ; Destroys: all registers
-exchangePageTwoLoop:
+exchangeLoopPageTwo:
     ld a, (de)
     ld c, (hl)
     ld (hl), a
@@ -58,12 +62,16 @@ exchangePageTwoLoop:
     ld (de), a
     inc de
     inc hl
-    djnz exchangePageTwoLoop
+    djnz exchangeLoopPageTwo
     ret
 
+; Description: Exchange 18 bytes between DE and HL pointers.
+; Input: DE, HL: pointers to complex values
+; Output: 18-byte contents of DE, HL exchanged
+; Destroys: all registers
 exchange18PageTwo:
     ld b, 18
-    jp exchangePageTwoLoop
+    jp exchangeLoopPageTwo
 
 ; Description: Exchange the top 2 floating point numbers on the FPS.
 ; Destroys: all
@@ -79,33 +87,7 @@ exchangeFPSFPSPageTwo:
     jr exchange9PageTwo
 
 ;-----------------------------------------------------------------------------
-
-; Description: Exchange CP3=OP3/OP4 with top of FPS.
-; Destroys: all
-exchangeFPSCP3PageTwo:
-    ld hl, OP3
-    jr exchangeFPS18HLPageTwo
-
-; Description: Exchange CP1=OP1/OP2 with top of FPS.
-; Destroys: all
-exchangeFPSCP1PageTwo:
-    ld hl, OP1
-    ; [[fallthrough]]
-
-; Description: Exchange the 18 bytes from the top of the FPS with HL.
-; Input: HL=rpnObjectPointer
-; Destroys: all
-exchangeFPS18HLPageTwo:
-    ex de, hl ; DE=pointer to OPx
-    ld hl, (FPS)
-    ld bc, 18
-    or a ; CF=0
-    sbc hl, bc
-    call exchange9PageTwo
-    inc de
-    inc de ; skip past extra 2 bytes in OPx
-    jr exchange9PageTwo
-
+; Floating point registers OP1-OP6.
 ;-----------------------------------------------------------------------------
 
 ; Description: Move 9 bytes (size of TI-OS floating point number) from HL to
@@ -222,11 +204,13 @@ op1ExOp2PageTwo:
     jp exchange9PageTwo
 
 ; Description: Exchange CP1=OP1/OP2 with CP3=OP3/OP4.
+; Output: CP1, CP3 exchanged
+; Destroys: all
 cp1ExCp3PageTwo:
     ld de, OP1
     ld hl, OP3
     ld b, 22 ; each OP register is 11 bytes
-    jp exchangePageTwoLoop
+    jp exchangeLoopPageTwo
 
 ;-----------------------------------------------------------------------------
 

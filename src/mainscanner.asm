@@ -15,14 +15,8 @@ processMainCommands:
     xor a
     ld (handlerCode), a
 
-    ; Get the key code, and reset the ON flag right after. See TI-83 Plus SDK
-    ; guide, p. 69. If this flag is not reset, then the next bcall(_DispHL)
-    ; causes subsequent bcall(_GetKey) to always return 0. Interestingly, if
-    ; the flag is not reset, but the next call is another bcall(_GetKey), then
-    ; it sort of seems to work. Except that upon exiting, the TI-OS displays an
-    ; Quit/Goto error message.
-    bcall(_GetKey)
-    res onInterrupt, (iy + onFlags)
+    ; Wait for user input
+    bcall(_GetRpnKeyCode) ; A=code
 
     ; Install error handler
     ld hl, processMainCommandsHandleException

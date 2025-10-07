@@ -2,7 +2,7 @@
 ; MIT License
 ; Copyright (c) 2023 Brian T. Park
 ;
-; TVM low-level functions. The handlers in tvmhandlers.asm will call these.
+; TVM low-level functions. The handlers in tvmmenuhandlers.asm will call these.
 ;
 ; Labels with Capital letters are intended to be exported to other flash pages
 ; and should be placed in the branch table on Flash Page 0. Labels with
@@ -24,9 +24,9 @@ InitTvmSolver:
 
 ;-----------------------------------------------------------------------------
 ; Store and recall the TVM variables. Most of the time, they are needed in this
-; module. But they are also needed in tvmhandlers.asm in Flash Page 0, so they
-; are exported through the bcall(). Fortunately, all of the calls from
-; tvmhandlers.asm are *not* performance critical, so they can pay for the
+; module. But they are also needed in tvmmenuhandlers.asm in Flash Page 0, so
+; they are exported through the bcall(). Fortunately, all of the calls from
+; tvmmenuhandlers.asm are *not* performance critical, so they can pay for the
 ; overhead of the bcall() without problems.
 ;-----------------------------------------------------------------------------
 
@@ -605,7 +605,7 @@ inverseCompoundingFactorZero:
 ; It is roughly the total nominal amount of money that was paid out (positive
 ; sign), if the discount-equivalent of PV and FV had been spread out across N
 ; payments at the given interest rate i. I guess we could also call this the
-; "Net Payment", and I think I used that term in the TVM.md document.
+; "Net Payment", and I think I used that term in the DEVELOPER_TVM.md document.
 ;
 ; Input: OP1: i (interest per period)
 ; Output: OP1=NPMT(i)
