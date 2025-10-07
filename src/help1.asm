@@ -29,12 +29,13 @@ helpPages:
     .dw msgHelpPage17
     .dw msgHelpPage18
     .dw msgHelpPage19
+    .dw msgHelpPage20
 helpPagesEnd:
 helpPageCount equ (helpPagesEnd-helpPages)/2
 
 msgHelpPage1:
     .db escapeLargeFont, "RPN83P", Lenter
-    .db escapeSmallFont, "v1.1.0", Shyphen, "dev (2025", Shyphen, "10", Shyphen, "06)", Senter
+    .db escapeSmallFont, "v1.1.0", Shyphen, "dev (2025", Shyphen, "10", Shyphen, "07)", Senter
     ;.db escapeSmallFont, "v1.0.0 (2024", Shyphen, "07", Shyphen, "19)", Senter
     .db "(c) 2023", Shyphen, "2025 Brian T. Park", Senter
     .db Senter
@@ -42,7 +43,7 @@ msgHelpPage1:
     .db "TI", Shyphen, "83 Plus and TI", Shyphen, "84 Plus", Senter
     .db "inspired by the HP", Shyphen, "42S.", Senter
     .db Senter
-    .db SlBrack, "1/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "1/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage2:
@@ -54,7 +55,7 @@ msgHelpPage2:
     .db Senter
     .db "2ND QUIT: Quit", Senter
     .db "2ND OFF: Off", Senter
-    .db SlBrack, "2/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "2/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage3:
@@ -66,7 +67,7 @@ msgHelpPage3:
     .db "DEL: Delete left", Senter
     .db "CLEAR: CLX", Senter
     .db "CLEAR CLEAR CLEAR: CLST", Senter
-    .db SlBrack, "3/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "3/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage4:
@@ -78,7 +79,7 @@ msgHelpPage4:
     .db "2ND RIGHT: End of line", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "4/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "4/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage5:
@@ -90,7 +91,7 @@ msgHelpPage5:
     .db "DUP: Duplicate X", Senter
     .db "DROP: Delete X", Senter
     .db "SSIZ: Stack size: 4..8", Senter
-    .db SlBrack, "5/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "5/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage6:
@@ -102,7 +103,7 @@ msgHelpPage6:
     .db SFourSpaces, "nn: 10..99: Reset to floating", Senter
     .db "2ND ENTRY: SHOW", Senter
     .db Senter
-    .db SlBrack, "6/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "6/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage7:
@@ -114,7 +115,7 @@ msgHelpPage7:
     .db "PRAD: Polar radian", Senter
     .db "PDEG: Polar degree", Senter
     .db Senter
-    .db SlBrack, "7/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "7/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage8:
@@ -126,7 +127,7 @@ msgHelpPage8:
     .db "2ND LINK: X,Y to complex", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "8/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "8/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage9:
@@ -138,7 +139,7 @@ msgHelpPage9:
     .db SFourSpaces, "nn: 0..(RSIZ-1), A-Z, ", Stheta, Senter
     .db "RSIZ: Register size: 25..100", Senter
     .db Senter
-    .db SlBrack, "9/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "9/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage10:
@@ -150,7 +151,7 @@ msgHelpPage10:
     .db "RNDF: Round to FIX/SCI/ENG", Senter
     .db "RNDN: Round to N digits", Senter
     .db "RNDG: Round to guard digits", Senter
-    .db SlBrack, "10/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "10/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage11:
@@ -162,7 +163,7 @@ msgHelpPage11:
     .db "ATN2: Same as ", Sconvert, "POL", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "11/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "11/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage12:
@@ -174,7 +175,7 @@ msgHelpPage12:
     .db "SCOV: Sample Covariance", Senter
     .db "PDEV: Pop Std Deviation", Senter
     .db "PCOV: Pop Covariance", Senter
-    .db SlBrack, "12/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "12/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage13:
@@ -186,7 +187,7 @@ msgHelpPage13:
     .db "BEST: Select best model", Senter
     .db Senter
     .db Senter
-    .db SlBrack, "13/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "13/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage14:
@@ -198,7 +199,7 @@ msgHelpPage14:
     .db "REVB: Reverse Bits", Senter
     .db "CNTB: Count Bits", Senter
     .db "WSIZ: 8, 16, 24, 32", Senter
-    .db SlBrack, "14/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "14/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage15:
@@ -210,7 +211,7 @@ msgHelpPage15:
     .db "BEG: Payments at begin", Senter
     .db "END: Payments at end", Senter
     .db "CLTV: Clear TVM",  Senter
-    .db SlBrack, "15/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "15/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage16:
@@ -222,10 +223,22 @@ msgHelpPage16:
     .db Senter
     .db Senter
     .db Senter
-    .db SlBrack, "16/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "16/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
 msgHelpPage17:
+    .db escapeLargeFont, "UNIT", Lenter
+    .db escapeSmallFont, SlBrack, "value", SrBrack, Sspace, SlBrack, "unit1", SrBrack, Sspace, SlBrack, "unit2", SrBrack, Senter
+    .db Senter
+    .db "UVAL: Extract value", Senter
+    .db "2ND v: UVAL", Senter
+    .db "UBAS: Convert to base unit", Senter
+    .db Senter
+    .db Senter
+    .db SlBrack, "17/20", SrBrack, " Any key to continue...", Senter
+    .db 0
+
+msgHelpPage18:
     .db escapeLargeFont, "Date Objects", Lenter
     .db escapeSmallFont, "D{y,m,d}: Date", Senter
     .db "T{h,m,s}: Time", Senter
@@ -234,10 +247,10 @@ msgHelpPage17:
     .db "DZ{D,T,TZ}: ZonedDateTime", Senter
     .db "DW{dw}: DayOfWeek (Mon=1)", Senter
     .db "DR{d,h,m,s}: Duration", Senter
-    .db SlBrack, "17/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "18/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage18:
+msgHelpPage19:
     .db escapeLargeFont, "Date Ops", Lenter
     .db escapeSmallFont, "DZ*TZ", Sstore, "DZ: Convert TZ", Senter
     .db "D+n", Sstore, "D: Add", Senter
@@ -246,10 +259,10 @@ msgHelpPage18:
     .db "DEXD: Extend (X", Ssquare, ")", Senter
     .db "DCUT: Cut (X", Sinverse, ")", Senter
     .db "DLNK: Link (2ND LINK)", Senter
-    .db SlBrack, "18/19", SrBrack, " Any key to continue...", Senter
+    .db SlBrack, "19/20", SrBrack, " Any key to continue...", Senter
     .db 0
 
-msgHelpPage19:
+msgHelpPage20:
     .db escapeLargeFont, "Hardware Clock", Lenter
     .db escapeSmallFont, "ATZ,ATZ?: Application TZ", Senter
     .db "CTZ,CTZ?: Clock TZ", Senter
@@ -258,5 +271,5 @@ msgHelpPage19:
     .db "NOWD: Get Date", Senter
     .db "NOWT: Get Time", Senter
     .db "NWDZ: Get ZonedDateTime", Senter
-    .db SlBrack, "19/19", SrBrack, " Any key to return.", Senter
+    .db SlBrack, "20/20", SrBrack, " Any key to return.", Senter
     .db 0
