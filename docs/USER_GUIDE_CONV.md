@@ -125,9 +125,9 @@ Sometimes we want to directly add and subtract numbers formatted as HMS,
 without having to convert them to decimal numbers. For example, let's add and
 subtract the following HMS numbers:
 
-- + 5h3m14s
-- + 2h39m
-- - 1h58s
+- \+ 5h3m14s
+- \+ 2h39m
+- \- 1h58s
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |

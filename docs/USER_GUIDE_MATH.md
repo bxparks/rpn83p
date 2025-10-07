@@ -48,9 +48,9 @@ details about them.
 The `X^3` (cube), `³√X` (cube-root), and `X√Y` (x root of y) functions can be
 calculated manually using the following operations:
 
-- `X^3`: `ENTER` `X^2` `*`
-- `³√X`: `3` `1/X` `^`
-- `X√Y`: `1/X` `^`
+- `X^3`: \[`ENTER`\] \[`X^2`\] \[`*`\]
+- `³√X`: \[`3`\] \[`1/X`\] \[`^`\]
+- `X√Y`: \[`1/X`\] \[`^`\]
 
 But these menu functions have some advantages:
 
