@@ -73,9 +73,8 @@ value of the `X` register.
 ## Clear Display (CLD)
 
 The `CLD` command clears display then causes the screen to rerender. If the
-RPN83P application had no bugs, this command would not be necessary. However,
-in practice, there may be bugs that causes something in the display to become
-messed up, and this command can be used to clear and redraw the entire screen
-to fix the UI problem.
+RPN83P application had no bugs, this command would not be necessary. However, in
+practice, a bug might cause the display to become confused, and this command can
+be used to clear and redraw the entire screen to fix the UI problem.
 
 This command does *not* terminate the input.
