@@ -124,7 +124,7 @@ msgHelpPage8:
     .db "2ND ANGLE: r ", Sangle, Stemp, " ", Stheta, Senter
     .db "2ND ANGLE 2ND ANGLE: r ", Sangle, " ", Stheta, Senter
     .db Senter
-    .db "2ND LINK: X,Y to complex", Senter
+    .db "2ND LINK: (X,Y) to (Y+X", SimagI, ")", Senter
     .db Senter
     .db Senter
     .db SlBrack, "8/20", SrBrack, " Any key to continue...", Senter
