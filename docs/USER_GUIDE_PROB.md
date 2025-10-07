@@ -44,8 +44,8 @@ For example, let's calculate C(2000,5):
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `2000` `ENTER`        | ![](images/prob/comb-1.png) |
-| `5` `COMB`            | ![](images/prob/comb-2.png) |
+| `2000` `ENTER` `5`    | ![](images/prob/comb-1.png) |
+| `COMB`                | ![](images/prob/comb-2.png) |
 
 ## Permutation (PERM)
 
@@ -62,8 +62,8 @@ For example, let's calculate P(2000,5):
 
 | **Keys**              | **Display** |
 | ----------------      | --------------------- |
-| `2000` `ENTER`        | ![](images/prob/perm-1.png) |
-| `5` `PERM`            | ![](images/prob/perm-2.png) |
+| `2000` `ENTER` `5`    | ![](images/prob/perm-1.png) |
+| `PERM`                | ![](images/prob/perm-2.png) |
 
 ## Factorial (N!)
 
