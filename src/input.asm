@@ -20,10 +20,20 @@
 ; entry will clobber the X value.
 ;
 ; Most button and menu handlers should probably use the various
-; closeInputAndRecallXxx() instead, to transfer the X or Y parameters into the
-; CP1 or CP2 variables. This decouples the implementations of those handlers
-; from the RPN stack, and making them easier move to different Flash Pages if
-; needed.
+; closeInputAndRecallXxx() instead. Those helper functions do 2 things:
+;
+;   1) Transfer the X and/or Y parameters into the CP1 or CP2 variables, which
+;   can be passed to the low-level implementation routines. This decouples the
+;   low-level implementation code from the RPN stack.
+;   2) Perform some high-level type validation, for example, verifying Real or
+;   Complex number, or a DATE object.
+;   3) Clear the rpnFlagsTvmCalculate flag, so that the next invocation of a
+;   TVM parameter button (N, I%YR, PV, PMT, TV) performs the "input"
+;   function instead of the "calculate" function.
+;
+; The calling code will want to use closeInput() directly if it wants to
+; override one of those behaviors. In particular, various TVM functions call
+; closeInput() because they have to set the rpnFlagsTvmCalculate differently.
 ;
 ; Input:
 ;   - rpnFlagsEditing: indicates if inputBuf needs to be parsed
