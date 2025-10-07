@@ -23,7 +23,7 @@ and more complicated features will get their own GitHub tickets.
 - [Near Future](#near-future)
 - [Medium Future](#medium-future)
 - [Far Future](#far-future)
-- [Highly Unlikely](#highly-unlikely)
+- [Unlikely](#unlikely)
 - [Not Planned](#not-planned)
 
 ## Near Future
@@ -50,7 +50,7 @@ and more complicated features will get their own GitHub tickets.
 
 ## Medium Future
 
-- implement RPL-style stack handling
+- implement RPL-style stack handling, probably most useful for programming
     - traditional RPN has some quirks
         - a small number of stack slots
         - duplication of the top of the stack upon `DROP`
@@ -59,7 +59,6 @@ and more complicated features will get their own GitHub tickets.
         - theoretically "infinite" stack, but in practice, limited by memory
         - conceptually simpler (no duplication of top of stack, no "disabling of
           stack lift")
-        - better for programming
     - implement something simple, like a fixed-sized RPL stack whose size is
       configurable (e.g. 64 levels, or 100 levels)
 - allow numbers in any base to be entered regardless of the BASE mode
@@ -75,19 +74,23 @@ and more complicated features will get their own GitHub tickets.
       may be available:
         - reserved for probable future use: `2ND INS`, `2ND LIST`, `2ND TEST`,
           `2ND CATALOG`, `2ND MEM`, `APPS`, `PRGM`, `VARS`, `"` (double quote)
-        - reserved for potential future use: `XTTn`, `2ND DISTR`, `2ND MATRIX`,
-          `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?` (`2ND UP` and `2ND DOWN`
-          are used by the TI-OS to control the LCD contrast)
-        - probably available: `2ND v`, `2ND w`, `2ND L1` to `2ND L6` (`2ND u`
-          now taken by the RollUp command)
+        - reserved for potential future use: `2ND w`, `XTTn`, `2ND DISTR`, `2ND
+          MATRIX`, `2ND [`, `2ND ]`, `ALPHA space`, `ALPHA ?` (`2ND UP` and `2ND
+          DOWN` are not available, used by the TI-OS to control the LCD
+          contrast)
+        - probably available: `2ND L1` to `2ND L6`
         - inaccessible (labeled on the calculator keypad, but the SDK does not
           provide access to them): `ALPHA F1` to `ALPHA F5`, `ALPHA UP`, `ALPHA
           DOWN`, `ALPHA SOLVE`
 - custom menu items
     - The HP-42S supports up to 18 (3 rows of 6 menus) to be customized through
       the `ASSIGN` and `CUSTOM` menus.
-    - This seems like a useful feature, but may require substantial refactoring
-      of the current menu system code.
+    - Require substantial refactoring of the current menu system code. For
+      example:
+        - requires stable menu identifiers (which don't change from version to
+          version). Currently menu identifiers are not stable.
+        - requires support for dynamically generated menu hierarchy, instead of
+          the current compile-time constant menu hierarchy
 - keystroke programming
     - The usefulness of RPN83P would be substantially enhanced with keystroke
       programming because it would allow end-users to automate repetitive
@@ -103,8 +106,7 @@ and more complicated features will get their own GitHub tickets.
         - input and output functions within programs
         - flow control operators and functions (e.g. `LBL`, `GOTO`, `CALL`,
           maybe structured statement, like `IF`, `WHILE`, `FOR`, etc.)
-    - I estimate that this feature will take about 1000-2000 hours of
-      programming.
+    - I estimate that this feature will take about 1000-2000 hours of work.
 - auto-insert an implied `1` when `EE` is pressed in certain conditions
     - on the HP-42S, if the `E` is pressed when the input buffer contains
       digits that can semantically parsed to a `0`, a `1` or `1.` or `-1` or
@@ -136,9 +138,18 @@ and more complicated features will get their own GitHub tickets.
     - display a menu of state files to user
     - allow user to select a state file
     - restore the entire state of the app from the state file
+- add a String type
+    - this becomes most useful if RPN83P becomes programmable
 
 ## Far Future
 
+- custom UNITs
+    - it might be possible to allow the user to add custom Unit entries within
+      the 12 provided UnitTypes.
+    - probably dependent on a lot of other infrastructure: dynamic menu
+      hierarchy (and overlay into the current UNIT menu structure), stable menu
+      identifiers, a persistence protocol to save these custom units
+    - not sure if the juice is worth the squeeze
 - automated testing infrastructure
     - assembly language programming is not amenable to unit testing because it
       is difficult if not almost impossible to isolate a piece of code to be
@@ -177,8 +188,6 @@ and more complicated features will get their own GitHub tickets.
       storage registers, storage variables, and potentially other stack
       registers
     - for non-programming use, I don't think this function is essential
-- add a String type
-    - this becomes most useful if RPN83P becomes programmable
 - TZDB rule based DST transitions for DATE objects
     - current only timezones with fixed offsets from UTC are supported
     - can probably implement the
@@ -226,10 +235,15 @@ and more complicated features will get their own GitHub tickets.
     - this would improve the usability of some menu folders (e.g. `BASE`,
       `DATE`) by reducing the number of menu pages that the user needs to scroll
 
-## Highly Unlikely
+## Unlikely
 
 These are features which are unlikely to be implemented for various reasons:
 
+- rational numbers
+    - I have never needed calculations with rational numbers. But I can see that
+      it could be useful in home construction and renovation industry in the US
+      where everything is still measured in inches, feet, yards, along with the
+      mind-numbing fractions of those awful units.
 - user-defined alphanumeric variables
     - The TI-OS supports only single-letter variables for real or complex types
       and access to these from RPN83P are provided through the `STO` and `RCL`
@@ -264,6 +278,3 @@ These are features which are unlikely to be implemented for various reasons:
 - computer algebra system (CAS)
     - The TI-83 Plus and TI-84 Plus do not support CAS, so it is highly unlikely
       that the RPN83P will support CAS either.
-- rational numbers
-    - Not something that I have ever needed, so I probably will not want to
-      spend my time implementing it.
