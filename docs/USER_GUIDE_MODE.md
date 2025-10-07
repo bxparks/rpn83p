@@ -141,11 +141,15 @@ document.
 
 ## Register and Stack Sizes
 
-The `RSIZ` and `RSZ?` menu items control the storage register size. Those are
-explained below in [Storage Register Size](#storage-register-size).
+The `RSIZ` command changes the allocation size of storage registers. The minimum
+(and default) is 25, the maximum is 100. The `RSZ?` function returns the current
+register size. For more details, see
+[USER_GUIDE_STORAGE.md](USER_GUIDE_STORAGE.md).
 
-The `SSIZ` and `SSZ?` menu items control the RPN stack size. Those were
-explained above in [RPN Stack Size](#rpn-stack-size).
+The `SSIZ` command changes the size of the RPN stack. The minimum (and default)
+is 4, the maximum is 8. The `SSZ?` function returns the current size of the RPN
+stack. For more details, see section on "RPN Stack in
+[USER_GUIDE_BASIC.md](USER_GUIDE_BASIC.md).
 
 ## Comma-EE Button Mode
 
