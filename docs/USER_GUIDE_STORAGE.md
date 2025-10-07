@@ -58,8 +58,9 @@ Similarly:
 - `RCL` `*` `00`: multiply `R00` to `X`
 - `RCL` `/` `00`: divide `R00` into `X`
 
-Indirect storage registers, the `STO` `IND` `nn` and `RCL` `IND` `nn`
-functionality from the HP-42S, are not supported (as of v0.9.0).
+Indirect storage registers (the `STO` `IND` `nn` and `RCL` `IND` `nn`
+functionality from the HP-42S) are not supported because they are mostly
+relevant in programming, and RPN83P does not yet support programming.
 
 ### Storage Register Size
 
