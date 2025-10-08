@@ -142,7 +142,7 @@ Missing features (partial list):
 - [Chapter 13: STAT Functions](USER_GUIDE_STAT.md)
 - [Chapter 14: CONV Functions](USER_GUIDE_CONV.md)
 - [Chapter 15: TVM Functions](USER_GUIDE_TVM.md)
-- [Chapter 16: UNIT Functions](SER_GUIDE_UNIT.md)
+- [Chapter 16: UNIT Functions](USER_GUIDE_UNIT.md)
 - [Chapter 17: DATE Functions](USER_GUIDE_DATE.md)
 - [Chapter 18: Catalog of Functions](USER_GUIDE_CATALOG.md)
 - [Chapter 19: TI-OS Interaction](USER_GUIDE_TIOS.md)
