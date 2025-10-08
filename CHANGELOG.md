@@ -38,10 +38,12 @@
             - Pressing a subsequent UNIT menu converts that Denominate number
               into the unit requested by the menu key.
         - Support misc Unit Functions (UFCN)
-            - UVAL: return display value without units
+            - UVAL: return display value without units (also activated by `2ND
+              v` key)
             - UBAS: convert to its "base unit"
-        - Increase number of supported units from 30 to 169.
-            - Support *all* units in the HP-19BII and the TI-85.
+        - Increase number of supported units from 30 to ~170.
+            - Support all 63 units on the HP-19BII and all 90 units on the
+              TI-85.
         - Reorganize UNIT menus across 13 sub MenuFolders: UFCN, LENG, AREA,
           VOL, TEMP, MASS, FORC, PRES, ENER, TIME, SPD, PWR, FUEL.
         - Support basic arithmetic operations on units: `CHS`, `+`, `-`, `*`,
@@ -100,12 +102,12 @@
             - Complex display modes (RECT, PRAD, PDEG)
             - `,EE` or `EE,` selection
             - `{..}` or `".."` selection
-            - 'BASE > DEC|BIN|OCT|HEX' selection
-            - 'BASE > WSIZ' selection
-            - 'BASE > CF' flag
-            - 'DATE > EPCH' selection and custom epoch date
-            - 'DATE > CLK > ATZ' application timezone
-            - 'DATE > CLK > CTZ' clock timezone
+            - BASE > DEC|BIN|OCT|HEX selection
+            - BASE > WSIZ selection
+            - BASE > CF flag
+            - DATE > EPCH selection and custom epoch date
+            - DATE > CLK > ATZ application timezone
+            - DATE > CLK > CTZ clock timezone
             - TVM Solver parameters: IYR1, IYR2, TMAX
         - Preserved
             - Storage registers (R00-R99)
