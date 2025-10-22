@@ -667,6 +667,7 @@ MenuGroup root mRoot [
             MenuItem hour mUnitHour
             MenuItem day mUnitDay
             MenuItem week mUnitWeek
+            MenuItem mon mUnitJulianMonth
             MenuItem year mUnitJulianYear
           ]
         ]

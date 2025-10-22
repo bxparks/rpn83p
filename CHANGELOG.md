@@ -1,6 +1,9 @@
 # Changelog
 
 - Unreleased
+    - UNIT
+        - add `UNIT > TIME > mon`, a month defined as exactly 1/12 of a Julian
+          year
 - 1.1.0 (2025-10-07)
     - DATE (**Major UI Change**)
         - Support additional method of entry of Duration objects:

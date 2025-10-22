@@ -75,7 +75,7 @@ unitTypeFuelId equ 12
 ; List of UnitType names.
 ;-----------------------------------------------------------------------------
 
-unitTypeNamesCount equ 174 ; number of unit type names
+unitTypeNamesCount equ 175 ; number of unit type names
 unitTypeNamesPoolSize equ 82 ; size of unit type names string pool
 
 unitTypeNullTypeName:
@@ -109,7 +109,7 @@ unitTypeFuelName:
 ; List of Units.
 ;-----------------------------------------------------------------------------
 
-unitsCount equ 174 ; number of units
+unitsCount equ 175 ; number of units
 unitTable:
 
 unitNullUnitInfo:
@@ -982,13 +982,18 @@ unitLitersPerHundredKiloMetersId equ 173
     .dw unitLitersPerHundredKiloMetersName ; name
     .db unitTypeFuelId ; unitTypeId
     .db $00, $80, $10, $00, $00, $00, $00, $00, $00 ; scale=1
+unitJulianMonthInfo:
+unitJulianMonthId equ 174
+    .dw unitJulianMonthName ; name
+    .db unitTypeTimeId ; unitTypeId
+    .db $00, $86, $26, $29, $80, $00, $00, $00, $00 ; scale=2629800
 
 ;-----------------------------------------------------------------------------
 ; List of Unit names.
 ;-----------------------------------------------------------------------------
 
-unitNamesCount equ 174 ; number of unit names
-unitNamesPoolSize equ 1168 ; size of unit names string pool
+unitNamesCount equ 175 ; number of unit names
+unitNamesPoolSize equ 1174 ; size of unit names string pool
 
 unitNullUnitName:
     .db "nullunit", 0
@@ -1338,3 +1343,5 @@ unitMilesPerGallonName:
     .db "mpg", 0
 unitLitersPerHundredKiloMetersName:
     .db 'L', Sslash, '1', '0', '0', 'k', 'm', 0
+unitJulianMonthName:
+    .db "month", 0

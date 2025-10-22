@@ -479,4 +479,11 @@ Units [
 
   Unit MilesPerGallon mpg Fuel 1
   Unit LitersPerHundredKiloMeters L<Sslash>100km Fuel 1
+
+  #----------------------------------------------------------------------------
+  # Additional units must be APPENDED to this file, to preserve backwards
+  # compatibility with previous versions of RPN83P.
+  #----------------------------------------------------------------------------
+
+  Unit JulianMonth month Time 2629800 # exactly 1/12 JulianYear
 ]

@@ -681,6 +681,10 @@ mUnitWeekHandler:
     ld a, unitWeekId
     jp commonUnitHandler
 
+mUnitJulianMonthHandler:
+    ld a, unitJulianMonthId
+    jp commonUnitHandler
+
 mUnitJulianYearHandler:
     ld a, unitJulianYearId
     jp commonUnitHandler

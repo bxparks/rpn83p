@@ -4170,23 +4170,23 @@ mUnitWeekId equ 444
     .dw 0 ; rowBeginId or altName
     .dw mUnitWeekHandler ; handler (to be implemented)
     .dw 0 ; nameSelector
+mUnitJulianMonth:
+mUnitJulianMonthId equ 445
+    .dw mUnitJulianMonthId ; id
+    .dw mUnitTimeId ; parentId
+    .dw mUnitJulianMonthName ; name
+    .db 0 ; numRows
+    .dw 0 ; rowBeginId or altName
+    .dw mUnitJulianMonthHandler ; handler (to be implemented)
+    .dw 0 ; nameSelector
 mUnitJulianYear:
-mUnitJulianYearId equ 445
+mUnitJulianYearId equ 446
     .dw mUnitJulianYearId ; id
     .dw mUnitTimeId ; parentId
     .dw mUnitJulianYearName ; name
     .db 0 ; numRows
     .dw 0 ; rowBeginId or altName
     .dw mUnitJulianYearHandler ; handler (to be implemented)
-    .dw 0 ; nameSelector
-mBlank446:
-mBlank446Id equ 446
-    .dw mBlank446Id ; id
-    .dw mUnitTimeId ; parentId
-    .dw mNullName ; name
-    .db 0 ; numRows
-    .dw 0 ; rowBeginId or altName
-    .dw mNullHandler ; handler (predefined)
     .dw 0 ; nameSelector
 ; MenuGroup SPD: children
 ; MenuGroup SPD: children: row 0
@@ -5401,8 +5401,8 @@ mSetClockId equ 576
 ; Pool of menu names as NUL-terminated C strings.
 ;-----------------------------------------------------------------------------
 
-mNamesCount equ 484 ; number of names and altnames
-mNamesPoolSize equ 2278 ; size of names string pool
+mNamesCount equ 485 ; number of names and altnames
+mNamesPoolSize equ 2282 ; size of names string pool
 
 mNullName:
     .db 0
@@ -6220,6 +6220,8 @@ mUnitDayName:
     .db "day", 0
 mUnitWeekName:
     .db "week", 0
+mUnitJulianMonthName:
+    .db "mon", 0
 mUnitJulianYearName:
     .db "year", 0
 mUnitMeterPerSecondName:
