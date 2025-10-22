@@ -274,8 +274,7 @@ EpochSecondsToRpnDate:
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnDateByDays:
     call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
-    jr z, addRpnDateByDaysAdd
-    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=days
+    call nz, cp1ExCp3PageTwo ; CP1=rpnDate; CP3=days
 addRpnDateByDaysAdd:
     ; if here: CP1=rpnDate, CP3=days
     ; Push CP1:Rpndate to FPS
@@ -302,8 +301,7 @@ addRpnDateByDaysAdd:
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnDateByDuration:
     call checkOp1DatePageTwo ; ZF=1 if CP1 is an RpnDate
-    jr z, addRpnDateByDurationAdd
-    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=duration
+    call nz, cp1ExCp3PageTwo ; CP1=rpnDate; CP3=duration
 addRpnDateByDurationAdd:
     ; if here: CP1=rpnDate, CP3=duration
     ; Push CP1:rpnDate to FPS
