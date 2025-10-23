@@ -47,7 +47,7 @@ ApplyRpnDenominateUnit:
 convertDisplayValueToRpnDenominate:
     call reserveRpnObject; FPS=[rpnDen]; (HL)=rpnDen; BC=BC
     ld a, c ; A=displayUnitId
-    call setHLRpnDenominatePageTwo; (HL):Denominate=den; A=A; BC=BC
+    call setHLRpnDenominatePageFour; (HL):Denominate=den; A=A; BC=BC
     call denominateSetDisplayValue ; den.baseValue=baseValue(OP1)
     call PopRpnObject1 ; FPS=[]; OP1=rpnDen
     ret
@@ -69,7 +69,7 @@ denominateSetDisplayValue:
     call convertDisplayValueToBaseValue ; OP1=baseValue
     pop de ; stack=[]; DE=&den.baseValue
     ; move the result into the baseValue of the rpnDen
-    call move9FromOp1PageTwo ; (DE)=den.basValue=OP1=baseValue
+    call move9FromOp1PageFour ; (DE)=den.basValue=OP1=baseValue
     ret
 
 ; Description: Convert the given displayValue given in displayUnit in OP1 to
@@ -96,7 +96,7 @@ convertDisplayValueToBaseValue:
     cp unitMilesPerGallonId
     jp z, fuelMpgToLkm
     ; All other units can be normalized with a simple scaling factor.
-    call op1ToOp2PageTwo ; OP2=baseValue; A=A
+    call op1ToOp2PageFour ; OP2=baseValue; A=A
     bcall(_GetUnitScale) ; OP1=scale
     bcall(_FPMult) ; OP1=baseValue=scale*baseValue
     ret
@@ -198,7 +198,7 @@ validateArithmeticUnitTypeOp3:
 ; Throws: Err:Invalid
 ; Destroys: A, HL
 validateArithmeticUnitType:
-    call getHLRpnObjectTypePageTwo ; A=rpnObjectType; preserves HL
+    call getHLRpnObjectTypePageFour ; A=rpnObjectType; preserves HL
     cp rpnObjectTypeDenominate
     ret nz
     ;
@@ -285,7 +285,7 @@ denominateGetDisplayValue:
 denominateGetDisplayValueInternal:
     ld a, (hl) ; A=displayUnitId
     skipDenominateUnitHL ; HL=baseValue
-    call move9ToOp1PageTwo ; OP1=baseValue; preserves A
+    call move9ToOp1PageFour ; OP1=baseValue; preserves A
     ; Special cases for temperature units.
     cp unitKelvinId
     ret z
@@ -301,9 +301,9 @@ denominateGetDisplayValueInternal:
     cp unitMilesPerGallonId
     jp z, fuelLkmToMpg
     ; All other units can be converted with a simple scaling factor.
-    call op1ToOp2PageTwo ; OP2=baseValue; preserves A
+    call op1ToOp2PageFour ; OP2=baseValue; preserves A
     bcall(_GetUnitScale) ; OP1=scale
-    call op1ExOp2PageTwo ; OP1=baseValue; OP2=scale
+    call op1ExOp2PageFour ; OP1=baseValue; OP2=scale
     bcall(_FPDiv) ; OP1=displayValue=normalizedValue/scale
     ret
 
@@ -318,7 +318,7 @@ denominateBaseValueToOp1:
     push de
     push bc
     skipDenominateUnitHL ; *HL=baseValue
-    call move9ToOp1PageTwo ; preserves A
+    call move9ToOp1PageFour ; preserves A
     pop bc
     pop de
     pop hl
@@ -337,7 +337,7 @@ op1ToDenominateBaseValue:
     push bc
     skipDenominateUnitHL ; *HL=baseValue
     ex de, hl ; *DE=baseValue
-    call move9FromOp1PageTwo ; preserves A
+    call move9FromOp1PageFour ; preserves A
     pop bc
     pop de
     pop hl
@@ -408,7 +408,7 @@ addDenominateByDenominate:
     call denominateBaseValueToOp1 ; OP1=baseValueHL
     ;
     push de ; stack=[denHL,denDE]
-    call op1ToOp2PageTwo ; OP2=baseValueHL
+    call op1ToOp2PageFour ; OP2=baseValueHL
     pop hl ; stack=[denHL]; HL=denDE
     call denominateBaseValueToOp1 ; OP1=baseValueDE
     ;
@@ -459,15 +459,15 @@ MultRpnDenominateByReal:
     call validateArithmeticUnitTypeOp1 ; throws Err:Invalid
     call validateArithmeticUnitTypeOp3 ; throws Err:Invalid
     ;
-    call getOp1RpnObjectTypePageTwo ; A=type; HL=OP1
+    call getOp1RpnObjectTypePageFour ; A=type; HL=OP1
     cp rpnObjectTypeReal
-    call z, cp1ExCp3PageTwo ; CP1=rpnDen; CP3=real
+    call z, cp1ExCp3PageFour ; CP1=rpnDen; CP3=real
     ;
     call PushRpnObject1 ; FPS=[rpnDen]; HL=FPS(rpnDen)
     skipRpnObjectTypeHL ; HL=denominate
     push hl ; stack=[denominate]
     call denominateBaseValueToOp1 ; OP1=baseValue
-    call op3ToOp2PageTwo ; OP2=real
+    call op3ToOp2PageFour ; OP2=real
     bcall(_FPMult) ; OP1=real*baseValue
     ;
     pop hl ; stack=[]; HL=den
@@ -497,7 +497,7 @@ DivRpnDenominateByDenominate:
     skipRpnObjectTypeHL ; HL=divisor
     ;
     call denominateBaseValueToOp1 ; OP1=divisor
-    call op1ToOp2PageTwo ; OP2=divisor
+    call op1ToOp2PageFour ; OP2=divisor
     ;
     pop hl ; stack=[]; HL=dividend
     call denominateBaseValueToOp1 ; OP1=dividend
@@ -523,7 +523,7 @@ DivRpnDenominateByReal:
     skipRpnObjectTypeHL ; HL=denominate
     push hl ; stack=[denominate]
     call denominateBaseValueToOp1 ; OP1=baseValue
-    call op3ToOp2PageTwo ; OP2=divisor
+    call op3ToOp2PageFour ; OP2=divisor
     bcall(_FPDiv) ; OP1=baseValue/divisor
     ;
     pop hl ; stack=[]; HL=denominate
@@ -550,7 +550,7 @@ RpnDenominatePercent:
     skipRpnObjectTypeHL ; HL=den
     call denominateBaseValueToOp1 ; OP1:Real=baseValue
     push hl
-    call op3ToOp2PageTwo
+    call op3ToOp2PageFour
     bcall(_PercentFunction) ; OP1=Y*X/100
     pop hl
     call op1ToDenominateBaseValue ; rpnDen=abs(baseValue)
@@ -576,7 +576,7 @@ RpnDenominatePercentChange:
     ;
     skipRpnObjectTypeHL ; HL=denX
     call denominateBaseValueToOp1 ; OP1:Real=baseValueX
-    call op1ToOp2PageTwo ; OP2=baseValueX
+    call op1ToOp2PageFour ; OP2=baseValueX
     ;
     pop hl ; stack=[]; HL=rpnDenY
     skipRpnObjectTypeHL ; HL=denY
@@ -661,7 +661,7 @@ modDenominateByDenominate:
     ;
     push de ; stack=[denDE]
     push hl ; stack=[denDE,denHL]
-    call op1ToOp2PageTwo ; OP2:Real=baseValueDE
+    call op1ToOp2PageFour ; OP2:Real=baseValueDE
     pop hl ; stack=[denDE]; HL=denHL
     pop de ; stack=[]; DE=denDE,HL=denHL
     ;
@@ -694,7 +694,7 @@ RpnDenominateMin:
     ;
     skipRpnObjectTypeHL ; HL=denX
     call denominateBaseValueToOp1 ; OP1:Real=baseValueX
-    call op1ToOp2PageTwo ; OP2=baseValueX
+    call op1ToOp2PageFour ; OP2=baseValueX
     ;
     pop hl ; stack=[]; HL=rpnDenY
     skipRpnObjectTypeHL ; HL=denY
@@ -732,7 +732,7 @@ RpnDenominateMax:
     ;
     skipRpnObjectTypeHL ; HL=denX
     call denominateBaseValueToOp1 ; OP1:Real=baseValueX
-    call op1ToOp2PageTwo ; OP2=baseValueX
+    call op1ToOp2PageFour ; OP2=baseValueX
     ;
     pop hl ; stack=[]; HL=rpnDenY
     skipRpnObjectTypeHL ; HL=denY
@@ -892,7 +892,7 @@ RpnDenominateRoundToN:
 ; Input: OP1:Real=celsius
 temperatureCToK:
     ld hl, constCelsiusOffset
-    call move9ToOp2PageTwo
+    call move9ToOp2PageFour
     bcall(_FPAdd)
     ret
 
@@ -901,7 +901,7 @@ temperatureCToK:
 ; Input: OP1:Real=kelvin
 temperatureKToC:
     ld hl, constCelsiusOffset
-    call move9ToOp2PageTwo
+    call move9ToOp2PageFour
     bcall(_FPSub)
     ret
 
@@ -983,14 +983,14 @@ temperatureFToC:
 ; Output: OP1:Real=Lkm or mpg
 fuelMpgToLkm:
 fuelLkmToMpg:
-    call op1ToOp2PageTwo ; OP2=mpg|Lkm; A=A
+    call op1ToOp2PageFour ; OP2=mpg|Lkm; A=A
     call op1SetLkmMpgScale
     bcall(_FPDiv) ; OP1=scale/(mpg|Lkm)
     ret
 
 op1SetLkmMpgScale:
     ld hl, constLkmMpgScale
-    jp move9ToOp1PageTwo
+    jp move9ToOp1PageFour
 
 constLkmMpgScale: ; 235.21458333333
     .db $00, $82, $23, $52, $14, $58, $33, $33, $33

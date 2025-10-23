@@ -973,7 +973,6 @@ defpage(1)
 ; - DATE object formatting (formatdate2.asm)
 ; - EPCH functions (*epoch*.asm)
 ; - CLK functions (rtc2.asm)
-; - UNIT functions (denominate2.asm)
 ; - SHOW formatting (show2.asm)
 ;-----------------------------------------------------------------------------
 
@@ -999,9 +998,6 @@ defpage(2)
 #include "genericdate2.asm"
 #include "rtc2.asm"
 #include "formatdate2.asm"
-
-#include "denominate2.asm"
-#include "formatdenominate2.asm"
 
 #include "float2.asm"
 #include "integer40.asm"
@@ -1041,13 +1037,19 @@ defpage(3)
 ; Flash Page 4.
 ;
 ; - UNIT definitions generated from unitdef.txt (unitdef.asm)
+; - UNIT functions (denominate2.asm, formatdenominate4.asm)
 ;-----------------------------------------------------------------------------
 
 defpage(4)
 
 #include "unitdef.asm"
 #include "unit4.asm"
+#include "denominate4.asm"
+#include "formatdenominate4.asm"
+
 #include "cstring4.asm"
+#include "memory4.asm"
+#include "rpnobject4.asm"
 
 ;-----------------------------------------------------------------------------
 

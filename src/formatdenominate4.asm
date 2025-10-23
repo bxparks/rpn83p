@@ -56,7 +56,7 @@ formatDenominateNameForInvalid:
     ; extract "INVALID"
     push hl ; stack=[denominate]
     ld hl, unitInvalidName
-    call copyCStringPageTwo
+    call copyCStringPageFour
     pop hl ; stack=[]; HL=denominate
     ret
 
@@ -92,5 +92,5 @@ formatDenominateValue:
     pop de ; stack=[denominate]; DE=stringBuf
     ; Copy the formatted string to dest
     ld hl, OP3
-    call copyCStringPageTwo ; copy HL to DE
+    call copyCStringPageFour ; copy HL to DE
     ret
