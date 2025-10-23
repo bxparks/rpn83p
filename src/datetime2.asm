@@ -164,8 +164,7 @@ epochDaysToRpnDateTimeAlt:
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnDateTimeBySeconds:
     call checkOp1DateTimePageTwo ; ZF=1 if CP1 is an RpnDateTime
-    jr z, addRpnDateTimeBySecondsAdd
-    call cp1ExCp3PageTwo ; CP1=rpnDateTime, CP3=seconds
+    call nz, cp1ExCp3PageTwo ; CP1=rpnDateTime, CP3=seconds
 addRpnDateTimeBySecondsAdd:
     ; if here: CP1=rpnDateTime, CP3=seconds
     ; Push CP1:RpnDateTime to FPS
@@ -192,8 +191,7 @@ addRpnDateTimeBySecondsAdd:
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnDateTimeByRpnDuration:
     call checkOp1DateTimePageTwo ; ZF=1 if CP1 is an RpnDateTime
-    jr z, addRpnDateTimeByRpnDurationAdd
-    call cp1ExCp3PageTwo ; CP1=rpnDateTime, CP3=duration
+    call nz, cp1ExCp3PageTwo ; CP1=rpnDateTime, CP3=duration
 addRpnDateTimeByRpnDurationAdd:
     ; if here: CP1=rpnDateTime, CP3=duration
     ; Push CP1:RpnDateTime to FPS
