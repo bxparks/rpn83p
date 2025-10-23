@@ -105,7 +105,7 @@ pushRpnObject:
 ; Input: none
 ; Output: HL=pointer to RpnObject on FPS
 ; Preserves: BC, DE
-reserveRpnObject:
+ReserveRpnObject:
     push bc
     push de
     ld hl, (FPS)
@@ -155,7 +155,7 @@ popRpnObject:
 ; Input: none
 ; Output: (FPS) decreased by 18 bytes
 ; Preserves: all
-dropRpnObject:
+DropRpnObject:
     push hl
     push de
     ld de, 18

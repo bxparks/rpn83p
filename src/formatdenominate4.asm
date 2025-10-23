@@ -24,13 +24,13 @@
 FormatDenominate:
     skipRpnObjectTypeHL ; HL=denominate
     ; Print 'name'
-    call formatDenominateName
+    call FormatDenominateName
     ; Print '='
     ld a, '='
     ld (de), a
     inc de
     ; Extract 'value'
-    call extractDenominateValue ; OP1='value'
+    call ExtractDenominateValue ; OP1='value'
     ; Format 'value'
     call formatDenominateValue
     ret
@@ -43,7 +43,7 @@ FormatDenominate:
 ;   - DE=points to next character
 ; Preserves: BC, HL
 ; Destroys: A
-formatDenominateName:
+FormatDenominateName:
     ld a, (hl) ; A=unitId
     call checkValidDenominate ; CF=0 if invalid; A=unitId
     jr nc, formatDenominateNameForInvalid
@@ -56,7 +56,7 @@ formatDenominateNameForInvalid:
     ; extract "INVALID"
     push hl ; stack=[denominate]
     ld hl, unitInvalidName
-    call copyCStringPageTwo
+    call copyCStringPageFour
     pop hl ; stack=[]; HL=denominate
     ret
 
@@ -71,7 +71,7 @@ unitInvalidName:
 ; Output:
 ;   - OP1:Real=value
 ; Preserves: DE
-extractDenominateValue:
+ExtractDenominateValue:
     ld a, (hl) ; A=unitId
     call checkValidDenominate ; CF=0 if invalid; A=unitId
     jp nc, denominateBaseValueToOp1 ; OP1=baseValue
@@ -92,5 +92,5 @@ formatDenominateValue:
     pop de ; stack=[denominate]; DE=stringBuf
     ; Copy the formatted string to dest
     ld hl, OP3
-    call copyCStringPageTwo ; copy HL to DE
+    call copyCStringPageFour ; copy HL to DE
     ret
