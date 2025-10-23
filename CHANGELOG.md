@@ -4,6 +4,9 @@
     - UNIT
         - add `UNIT > TIME > mon`, a month defined as exactly 1/12 of a Julian
           year
+    - DATE
+        - convert Date to DateTime when adding or subtracting Duration if the
+          Duration has non-zero minutes or seconds components
 - 1.1.0 (2025-10-07)
     - DATE (**Major UI Change**)
         - Support additional method of entry of Duration objects:

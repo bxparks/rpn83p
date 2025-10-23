@@ -10,6 +10,24 @@
 ; entry.
 ;-----------------------------------------------------------------------------
 
+; Description: Check if the duration object in HL represents whole number of
+; days (i.e. minutes==0 and seconds==0).
+; Input: HL:Duration=duration
+; Output: ZF=1 if duration.minutes==0 and duration.seconds==0
+; Destroys: A
+durationIsWholeDays:
+    push hl
+    inc hl
+    inc hl ; skip days
+    inc hl ; skip hours
+    ld a, (hl) ; A=minutes
+    inc hl
+    or (hl) ; A=minutes|seconds
+    pop hl
+    ret
+
+;-----------------------------------------------------------------------------
+
 ; Description: Convert RpnDuration to relative seconds.
 ; Input: OP1:RpnDuration
 ; Output: OP1:real

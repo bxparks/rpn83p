@@ -304,9 +304,22 @@ AddRpnDateByDuration:
     call nz, cp1ExCp3PageTwo ; CP1=rpnDate; CP3=duration
 addRpnDateByDurationAdd:
     ; if here: CP1=rpnDate, CP3=duration
+    ; Check if Duration has partial days
+    ld hl, OP3+rpnObjectTypeSizeOf ; HL:(Duration*)=duration
+    call durationIsWholeDays ; ZF=1 if Duration is whole days
+    jr z, addRpnDateByDurationOfDays
+    ; [[fallthrough]]
+
+addRpnDateByDurationOfSeconds:
+    ; Convert CP1=Date to DateTime
+    call ExtendRpnDateToDateTime ; CP1=RpnDateTime(rpnDate)
+    jp addRpnDateTimeByRpnDurationAdd
+
+addRpnDateByDurationOfDays:
     ; Push CP1:rpnDate to FPS
     call PushRpnObject1 ; FPS=[rpnDate]; HL=rpnDate
     push hl ; stack=[rpnDate]
+    ;
     ; Convert OP3:RpnDuration to days
     ld hl, OP3+rpnObjectTypeSizeOf ; DE:(Duration*)=duration
     ld c, (hl)
@@ -397,7 +410,7 @@ subRpnDateByRpnDuration:
     ; invert the sign of duration in OP3
     ld hl, OP3+rpnObjectTypeSizeOf
     call chsDuration
-    jr addRpnDateByDurationAdd
+    jp addRpnDateByDurationAdd
 
 ; Description: Convert RpnDate into RpnDateTime by appending a Time field of
 ; "00:00:00", i.e. T{0,0,0}.
@@ -405,7 +418,7 @@ subRpnDateByRpnDuration:
 ;   - OP1:RpnDate
 ; Output:
 ;   - OP1:RpnDateTime
-; Destroys: OP1
+; Destroys: A, DE, HL, OP1
 ExtendRpnDateToDateTime:
     ld a, rpnObjectTypeDateTime
     call setOp1RpnObjectTypePageTwo ; HL=OP1+rpnObjectTypeSizeOf
