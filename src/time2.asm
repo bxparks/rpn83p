@@ -150,8 +150,7 @@ secondsToTime:
 ; Destroys: all, OP1-OP4
 AddRpnTimeBySeconds:
     call checkOp1TimePageTwo ; ZF=1 if CP1 is an RpnTime
-    jr z, addRpnTimeBySecondsAdd
-    call cp1ExCp3PageTwo ; CP1=rpnTime; CP3=seconds
+    call nz, cp1ExCp3PageTwo ; CP1=rpnTime; CP3=seconds
 addRpnTimeBySecondsAdd:
     ; if here: CP1=rpnTime, CP3=seconds
     call PushRpnObject1 ; FPS=[rpnTime]; HL=rpnTime
@@ -177,8 +176,7 @@ addRpnTimeBySecondsAdd:
 ; Destroys: all, OP1-OP4
 AddRpnTimeByDuration:
     call checkOp1TimePageTwo ; ZF=1 if CP1 is an RpnTime
-    jr z, addRpnTimeByDurationAdd
-    call cp1ExCp3PageTwo ; CP1=rpnTime; CP3=rpnDuration
+    call nz, cp1ExCp3PageTwo ; CP1=rpnTime; CP3=rpnDuration
 addRpnTimeByDurationAdd:
     ; if here: CP1=rpnTime, CP3=duration
     ; Push CP1:RpnTime to FPS
