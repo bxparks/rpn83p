@@ -536,24 +536,6 @@ _FormatComplexPolarDeg equ _FormatComplexPolarDegLabel-branchTableBase
     .dw FormatComplexPolarDeg
     .db 1
 
-; unit1.asm
-_ExtractUnitNameLabel:
-_ExtractUnitName equ _ExtractUnitNameLabel-branchTableBase
-    .dw ExtractUnitName
-    .db 1
-_GetUnitTypeIdLabel:
-_GetUnitTypeId equ _GetUnitTypeIdLabel-branchTableBase
-    .dw GetUnitTypeId
-    .db 1
-_GetUnitBaseIdLabel:
-_GetUnitBaseId equ _GetUnitBaseIdLabel-branchTableBase
-    .dw GetUnitBaseId
-    .db 1
-_GetUnitScaleLabel:
-_GetUnitScale equ _GetUnitScaleLabel-branchTableBase
-    .dw GetUnitScale
-    .db 1
-
 ; universal.asm
 _UniversalAddLabel:
 _UniversalAdd equ _UniversalAddLabel-branchTableBase
@@ -1845,3 +1827,25 @@ _ExtractMenuNamesLabel:
 _ExtractMenuNames equ _ExtractMenuNamesLabel-branchTableBase
     .dw ExtractMenuNames
     .db 3
+
+;-----------------------------------------------------------------------------
+; Branch table entries for routines on Flash Page 4.
+;-----------------------------------------------------------------------------
+
+; unit4.asm
+_ExtractUnitNameLabel:
+_ExtractUnitName equ _ExtractUnitNameLabel-branchTableBase
+    .dw ExtractUnitName
+    .db 4
+_GetUnitTypeIdLabel:
+_GetUnitTypeId equ _GetUnitTypeIdLabel-branchTableBase
+    .dw GetUnitTypeId
+    .db 4
+_GetUnitBaseIdLabel:
+_GetUnitBaseId equ _GetUnitBaseIdLabel-branchTableBase
+    .dw GetUnitBaseId
+    .db 4
+_GetUnitScaleLabel:
+_GetUnitScale equ _GetUnitScaleLabel-branchTableBase
+    .dw GetUnitScale
+    .db 4

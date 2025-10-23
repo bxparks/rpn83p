@@ -62,7 +62,7 @@ unitInfoFieldScale equ 3
 ;    ex de, hl ; DE=namebuf
 ;    ld l, (ix + unitTypeInfoFieldName)
 ;    ld h, (ix + unitTypeInfoFieldName + 1)
-;    call copyCStringPageOne ; DE+=sizeof(name)
+;    call copyCStringPageFour ; DE+=sizeof(name)
 ;    ex de, hl ; HL=nameBuf+sizeof(name)
 ;    pop bc
 ;    pop de
@@ -131,7 +131,7 @@ ExtractUnitName:
     ex de, hl ; DE=namebuf
     ld l, (ix + unitInfoFieldName)
     ld h, (ix + unitInfoFieldName + 1)
-    call copyCStringPageOne ; DE+=sizeof(name)
+    call copyCStringPageFour ; DE+=sizeof(name)
     ex de, hl ; HL=nameBuf+sizeof(name)
     pop bc
     pop de
