@@ -319,8 +319,7 @@ chsDuration:
 ; Destroys: all, OP1,OP2
 AddRpnDurationBySeconds:
     call checkOp1DurationPageTwo ; ZF=1 if CP1 is an RpnDuration
-    jr z, addRpnDurationBySecondsAdd
-    call cp1ExCp3PageTwo ; CP1=rpnDuration; CP3=seconds
+    call nz, cp1ExCp3PageTwo ; CP1=rpnDuration; CP3=seconds
 addRpnDurationBySecondsAdd:
     ; if here: CP1=rpnDuration, CP3=seconds
     call PushRpnObject1 ; FPS=[rpnDuration]; HL=rpnDuration
