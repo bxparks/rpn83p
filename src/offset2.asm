@@ -73,8 +73,7 @@ RpnOffsetUtc:
 ; Throws: Err:Domain if hours is invalid (|hours|>24h or not multiple of 15 min)
 AddRpnOffsetByHours:
     call checkOp1OffsetPageTwo ; ZF=1 if CP1 is an RpnOffset
-    jr z, addRpnOffsetByHoursAdd
-    call cp1ExCp3PageTwo ; CP1=rpnOffset; CP3=hours
+    call nz, cp1ExCp3PageTwo ; CP1=rpnOffset; CP3=hours
 addRpnOffsetByHoursAdd:
     ; if here: CP1=rpnOffset, CP3=hours
     ; Push CP1:RpnOffset to FPS
@@ -134,8 +133,7 @@ addOffsetByOffset:
 ; Destroys: all, OP1-OP4
 AddRpnOffsetByDuration:
     call checkOp1OffsetPageTwo ; ZF=1 if CP1 is an RpnDate
-    jr z, addRpnOffsetByDurationAdd
-    call cp1ExCp3PageTwo ; CP1=rpnDate; CP3=rpnDuration
+    call nz, cp1ExCp3PageTwo ; CP1=rpnDate; CP3=rpnDuration
 addRpnOffsetByDurationAdd:
     ; if here: CP1=rpnOffset, CP3=rpnDuration
     ld hl, OP3+rpnObjectTypeSizeOf ; HE=duration
