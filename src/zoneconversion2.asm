@@ -101,7 +101,8 @@ convertRpnOffsetDateTimeToOffset:
     ; clean up FPS
     call dropRaw9 ; FPS=[rpnOffsetDateTime,rpnOffset]
     call dropRaw9 ; FPS=[rpnOffsetDateTime]
-    jp dropRpnObject ; FPS=[]
+    call DropRpnObject ; FPS=[]
+    ret
 
 ;-----------------------------------------------------------------------------
 

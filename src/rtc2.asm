@@ -126,7 +126,7 @@ RtcSetClock:
     ; set the RTC
     call setRtcNowFromEpochSeconds
     ; clean up
-    call dropRpnObject ; FPS=[]
+    call DropRpnObject ; FPS=[]
     ret
 
 ;-----------------------------------------------------------------------------

@@ -549,12 +549,12 @@ formIntStringLoopEnd:
 showRpnDenominate:
     skipRpnObjectTypeHL ; HL=denominate
     ; Print 'name'
-    call formatDenominateName
+    bcall(_FormatDenominateName)
     ; Print '='
     ld a, '='
     ld (de), a
     inc de
     ; Extract 'value'
-    call extractDenominateValue ; OP1='value'
+    bcall(_ExtractDenominateValue) ; OP1='value'
     ; Format 'value'
     jp formRealString

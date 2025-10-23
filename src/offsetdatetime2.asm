@@ -26,7 +26,7 @@ RpnOffsetDateTimeToEpochSeconds:
     call offsetDateTimeToEpochSeconds ; HL:(i40*)=reserved=epochSeconds
     ; copy back to OP1
     call popRaw9Op1 ; FPS=[rpnOffsetDateTime]; HL=OP1=epochSeconds
-    call dropRpnObject ; FPS=[]
+    call DropRpnObject ; FPS=[]
     jp convertI40ToOP1 ; OP1=float(OP1)
 
 ; Description: Convert OffsetDateTime{} to relative epochSeconds.
@@ -63,7 +63,7 @@ EpochSecondsToRpnOffsetDateTime:
 epochSecondsToRpnOffsetDateTimeAltEntry:
     push bc ; stack=[targetTimeZone]
     ; reserve RpnObject on FPS
-    call reserveRpnObject ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
+    call ReserveRpnObject ; FPS=[rpnOffsetDateTime]; HL=rpnOffsetDateTime
     ex de, hl ; DE=rpnOffsetDateTime
     call pushRaw9Op1 ; FPS=[rpnOffsetDateTime,epochSeconds]; HL=epochSeconds
     ; convert to RpnOffsetDateTime
@@ -267,8 +267,9 @@ subRpnOffsetDateTimeByRpnOffsetDateTime:
     call convertI40ToOP1 ; OP1=float(Y-X)
     ; clean up FPS
     call dropRaw9
-    call dropRpnObject
-    jp dropRpnObject
+    call DropRpnObject
+    call DropRpnObject
+    ret
 subRpnOffsetDateTimeByRpnDuration:
     call shrinkOp2ToOp1PageTwo ; remove 2-byte gap
     ; convert OP3 to seconds on the FPS stack

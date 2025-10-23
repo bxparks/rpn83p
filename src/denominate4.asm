@@ -45,7 +45,7 @@ ApplyRpnDenominateUnit:
 ;   - CP1:RpnDenominate
 ; Destroys: all
 convertDisplayValueToRpnDenominate:
-    call reserveRpnObject; FPS=[rpnDen]; (HL)=rpnDen; BC=BC
+    bcall(_ReserveRpnObject); FPS=[rpnDen]; (HL)=rpnDen; BC=BC
     ld a, c ; A=displayUnitId
     call setHLRpnDenominatePageFour; (HL):Denominate=den; A=A; BC=BC
     call denominateSetDisplayValue ; den.baseValue=baseValue(OP1)
@@ -257,7 +257,7 @@ GetRpnDenominateDisplayValue:
     bcall(_PushRpnObject1) ; FPS=[rpnDen]; HL=rpnDen
     skipRpnObjectTypeHL ; HL=denominate
     call denominateGetDisplayValue ; OP1=displayValue
-    call dropRpnObject ; FPS=[];
+    bcall(_DropRpnObject) ; FPS=[];
     ret
 getRpnDenominateDisplayValueErr:
     bcall(_ErrDataType)
@@ -393,7 +393,7 @@ AddRpnDenominateByDenominate:
     skipRpnObjectTypeHL
     ex de, hl ; HL=FPS(OP1); DE=FPS(OP3)
     call addDenominateByDenominate ; baseValue(HL)+=baseValue(DE)
-    call dropRpnObject ; FPS=[CP1]
+    bcall(_DropRpnObject) ; FPS=[CP1]
     bcall(_PopRpnObject1) ; FPS=[]; OP1=RpnObject
     ret
 
@@ -443,7 +443,7 @@ SubRpnDenominateByDenominate:
     ex de, hl ; HL=FPS(OP1); DE=FPS(OP3)
     ;
     call addDenominateByDenominate; baseValue(HL)+=baseValue(DE)
-    call dropRpnObject ; FPS=[CP1]
+    bcall(_DropRpnObject) ; FPS=[CP1]
     bcall(_PopRpnObject1) ; FPS=[]; OP1=RpnObject
     ret
 
@@ -504,8 +504,8 @@ DivRpnDenominateByDenominate:
     ;
     bcall(_FPDiv) ; OP1=dividend/divisor
     ;
-    call dropRpnObject
-    call dropRpnObject ; FPS=[]
+    bcall(_DropRpnObject)
+    bcall(_DropRpnObject) ; FPS=[]
     ret
 
 ;-----------------------------------------------------------------------------
@@ -582,8 +582,8 @@ RpnDenominatePercentChange:
     skipRpnObjectTypeHL ; HL=denY
     call denominateBaseValueToOp1 ; OP1:Real=baseValueY
 
-    call dropRpnObject ; FPS=[baseValueY]
-    call dropRpnObject ; FPS=[]
+    bcall(_DropRpnObject) ; FPS=[baseValueY]
+    bcall(_DropRpnObject) ; FPS=[]
     ;
     bcall(_PercentChangeFunction) ; OP1=100*(X-Y)/Y
     ret
@@ -618,7 +618,7 @@ RpnDenominateSign:
     skipRpnObjectTypeHL ; HL=den
     call denominateBaseValueToOp1 ; OP1:Real=baseValue
     bcall(_SignFunction) ; sign(baseValue)
-    call dropRpnObject ; FPS=[]
+    bcall(_DropRpnObject) ; FPS=[]
     ret
 
 ;-----------------------------------------------------------------------------
@@ -644,7 +644,7 @@ RpnDenominateMod:
     ex de, hl ; HL=denY; DE=denX
     ;
     call modDenominateByDenominate ; denY.baseValue=(Y mod X)
-    call dropRpnObject ; FPS=[rpnDenY]
+    bcall(_DropRpnObject) ; FPS=[rpnDenY]
     bcall(_PopRpnObject1) ; FPS=[]; OP1=rpnDenY
     ret
 
@@ -705,10 +705,10 @@ RpnDenominateMin:
     jr z, rpnDenominateMinSelectY
 rpnDenominateMinSelectX:
     bcall(_PopRpnObject1) ; FPS=[rpnDenY]; OP1=rpnDenX
-    call dropRpnObject ; FPS=[]
+    bcall(_DropRpnObject) ; FPS=[]
     ret
 rpnDenominateMinSelectY:
-    call dropRpnObject ; FPS=[rpnDenY]
+    bcall(_DropRpnObject) ; FPS=[rpnDenY]
     bcall(_PopRpnObject1) ; FPS=[]; OP1=rpnDenY
     ret
 
@@ -742,10 +742,10 @@ RpnDenominateMax:
     jr nc, rpnDenominateMaxSelectY
 rpnDenominateMaxSelectX:
     bcall(_PopRpnObject1) ; FPS=[rpnDenY]; OP1=rpnDenX
-    call dropRpnObject ; FPS=[]
+    bcall(_DropRpnObject) ; FPS=[]
     ret
 rpnDenominateMaxSelectY:
-    call dropRpnObject ; FPS=[rpnDenY]
+    bcall(_DropRpnObject) ; FPS=[rpnDenY]
     bcall(_PopRpnObject1) ; FPS=[]; OP1=rpnDenY
     ret
 
