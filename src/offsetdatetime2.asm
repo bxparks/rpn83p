@@ -137,8 +137,7 @@ EpochSecondsToRpnOffsetDateTimeUTC:
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnOffsetDateTimeBySeconds:
     call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
-    jr z, addRpnOffsetDateTimeBySecondsAdd
-    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=seconds
+    call nz, cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=seconds
 addRpnOffsetDateTimeBySecondsAdd:
     ; if here: CP1=rpnOffsetDateTime, CP3=seconds.
     ; Save the rpnOffsetDateTime to FPS, to save the offset, and to remove
@@ -167,8 +166,7 @@ addRpnOffsetDateTimeBySecondsAdd:
 ; Destroys: all, OP1, OP2, OP3-OP6
 AddRpnOffsetDateTimeByDuration:
     call checkOp1OffsetDateTimePageTwo ; ZF=1 if CP1 is an RpnOffsetDateTime
-    jr z, addRpnOffsetDateTimeByDurationAdd
-    call cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=duration
+    call nz, cp1ExCp3PageTwo ; CP1=rpnOffsetDateTime; CP3=duration
 addRpnOffsetDateTimeByDurationAdd:
     ; if here: CP1=rpnOffsetDateTime, CP3=duration.
     ; Save the rpnOffsetDateTime in the FPS, to save the offset, and to remove
