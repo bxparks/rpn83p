@@ -108,7 +108,7 @@ move9ToOp3PageOne:
 ; Destroys: BC, DE, HL
 ; Preserves: A
 move9ToOp4PageOne:
-    ld de, OP3
+    ld de, OP4
     ld bc, 9
     ldir
     ret
