@@ -1098,10 +1098,12 @@ handleKeySto:
     ret nz ; do nothing if cancelled
     ; close inputBuf only if STO is actually requested
     call closeInputAndRecallNone
+    ; Check for 'STO IND' which is unsupported right now.
+    ld a, (argModifier)
     cp argModifierIndirect
     ret nc ; TODO: implement this
     bcall(_RclStackX) ; OP1/OP2=X
-    ; Set up Sto parameters
+    ; Set up StoOpGeneric parameters
     ld a, (argValue) ; A=indexOrLetter
     ld c, a ; C=index or letter
     ld a, (argModifier)
@@ -1129,6 +1131,7 @@ handleKeyRcl:
     ret nz ; do nothing if cancelled
     ; close inputBuf only if RCL is actually requested
     call closeInputAndRecallNone
+    ld a, (argModifier)
     cp argModifierIndirect
     ret nc ; TODO: implement this
     ld a, (argValue) ; A=varLetter
