@@ -420,7 +420,7 @@ The columns in the table mean the following:
 | **`ENER`**        |           |       |       |             |
 | `eV`              | `eV`      |       | TI    | electron volt, 1.602176634e-19 J (exact) by defn |
 | `erg`             | `erg`     |       | TI    | 1e-7 J        |
-| `joule`           | `J`       |       | TI    | **base unit**, kg\*m/s^2 |
+| `joule`           | `J`       |       | TI    | **base unit**, kg\*m^2/s^2 |
 | `kilojoule`       | `kJ`      |       | TI    | 1000 J        |
 | `ft·lbf`          | `ftlb`    |       | TI    | 1.3558179483314 J (14 digits) |
 | `watt·h`          | `Wh`      |       |       | 3600 J        |
