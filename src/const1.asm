@@ -20,7 +20,7 @@ op2Set0PageOne:
 ; Description: Set OP1 to 0.0. Faster version of bcall(_OP1Set0).
 ; Destroys: all, HL
 op4Set0PageOne:
-    ld hl, const0
+    ld hl, const0PageOne
     jp move9ToOp4PageOne
 
 ;-----------------------------------------------------------------------------

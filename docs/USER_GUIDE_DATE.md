@@ -2,7 +2,7 @@
 
 This document describes the `DATE` features of the RPN83P application.
 
-**Version**: 1.1.0 (2025-10-07)\
+**Version**: 1.1.1 (2025-11-14)\
 **Project Home**: https://github.com/bxparks/rpn83p \
 **Parent Document**: [USER_GUIDE.md](USER_GUIDE.md)
 

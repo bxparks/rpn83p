@@ -26,6 +26,20 @@
 branchTableBase equ $4000
 
 ;-----------------------------------------------------------------------------
+; Branch table entries for routines on Flash Page 0.
+;-----------------------------------------------------------------------------
+
+; display.asm
+_printOP1Label:
+_printOP1 equ _printOP1Label-branchTableBase
+    .dw printOP1
+    .db 0
+_vEraseEOLLabel:
+_vEraseEOL equ _vEraseEOLLabel-branchTableBase
+    .dw vEraseEOL
+    .db 0
+
+;-----------------------------------------------------------------------------
 ; Branch table entries for routines on Flash Page 1.
 ;-----------------------------------------------------------------------------
 
@@ -641,6 +655,10 @@ _DebugClear equ _DebugClearLabel-branchTableBase
 _DebugOP1Label:
 _DebugOP1 equ _DebugOP1Label-branchTableBase
     .dw DebugOP1
+    .db 1
+_DebugCP1Label:
+_DebugCP1 equ _DebugCP1Label-branchTableBase
+    .dw DebugCP1
     .db 1
 _DebugUnsignedALabel:
 _DebugUnsignedA equ _DebugUnsignedALabel-branchTableBase
