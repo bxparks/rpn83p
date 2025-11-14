@@ -108,7 +108,7 @@ move9ToOp3PageOne:
 ; Destroys: BC, DE, HL
 ; Preserves: A
 move9ToOp4PageOne:
-    ld de, OP3
+    ld de, OP4
     ld bc, 9
     ldir
     ret
@@ -144,13 +144,6 @@ op1ToOp3PageOne:
     ld hl, OP1
     jr move9ToOp3PageOne
 
-; Description: Move 9 bytes from OP1 to OP4.
-; Destroys: BC, DE, HL
-; Preserves: A
-op1ToOp4PageOne:
-    ld de, OP4
-    jr move9FromOp1PageOne
-
 ; Description: Move 9 bytes from OP2 to OP1.
 ; Destroys: BC, DE, HL
 ; Preserves: A
@@ -171,13 +164,6 @@ op3ToOp1PageOne:
 op3ToOp2PageOne:
     ld hl, OP3
     jr move9ToOp2PageOne
-
-; Description: Move 9 bytes from OP4 to OP1.
-; Destroys: BC, DE, HL
-; Preserves: A
-op4ToOp1PageOne:
-    ld hl, OP4
-    jr move9ToOp1PageOne
 
 ;-----------------------------------------------------------------------------
 ; Complex numbers in OPx registers. Complex numbers are stored in consecutive

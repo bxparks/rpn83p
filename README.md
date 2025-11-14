@@ -124,7 +124,7 @@ Missing features (partial list):
 - vectors and matrices
 - keystroke programming
 
-**Version**: 1.1.0 (2025-10-07) \
+**Version**: 1.1.1 (2025-11-14) \
 **Project Home**: https://github.com/bxparks/rpn83p \
 **User Guide**: [USER_GUIDE.md](docs/USER_GUIDE.md) \
 **Changelog**: [CHANGELOG.md](CHANGELOG.md)

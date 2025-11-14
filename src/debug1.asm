@@ -172,6 +172,40 @@ DebugOP1:
 
 ;------------------------------------------------------------------------------
 
+; Description: Print out CP1 at debug line.
+; Input: CP1=OP1/OP2
+; Output:
+; Destroys: OP3
+DebugCP1:
+    push af
+    push bc
+    push de
+    push hl
+    ld hl, (curRow)
+    push hl
+    ld hl, (penCol)
+    push hl
+
+    ld hl, debugCurCol*$100+debugCurRow ; $(curCol)(curRow)
+    ld (curRow), hl
+    ld hl, debugPenRow*$100 ; $(penRow)(penCol)
+    ld (penCol), hl
+
+    bcall(_printOP1)
+    bcall(_vEraseEOL)
+
+    pop hl
+    ld (penCol), hl
+    pop hl
+    ld (curRow), hl
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+
+;------------------------------------------------------------------------------
+
 ; Description: Print the unsigned A on the debug line.
 ; Input: A
 ; Output: A printed on debug line
