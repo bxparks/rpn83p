@@ -1,6 +1,7 @@
 # Changelog
 
 - Unreleased
+- 1.1.1 (2025-11-14)
     - **Bug Fix**: Fix regression of `Y^X`, `XROOTY`, and `2^X` functions when
       `CRES` is active *and* `X` is Real (not Complex).
     - **Bug Fix**: Fix regression of `STO {op} nn` when storing Complex numbers
