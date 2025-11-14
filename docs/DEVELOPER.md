@@ -53,6 +53,7 @@ table in `rpn83p.asm`, and all of them start with the prefix `_Debug`:
 - `_DebugPString`
 - `_DebugClear`
 - `_DebugOP1`
+- `_DebugCP1`
 - `_DebugEEPos`
 - `_DebugUnsignedA`
 - `_DebugSignedA`
